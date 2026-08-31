@@ -3,8 +3,8 @@
 bookey 관리자 백오피스 (Next.js).
 
 관련 저장소
-- **[project-bookey-backend](https://github.com/Jay-0315/project-bookey-backend)** — 백엔드 API, 기획서
-- **[project-bookey-app](https://github.com/Jay-0315/project-bookey-app)** — 모바일 앱
+- **[project-bookey-backend](https://github.com/project-bookey/project-bookey-backend)** — 백엔드 API
+- **[project-bookey-app](https://github.com/project-bookey/project-bookey-app)** — 모바일 앱
 
 > 사용자 앱과 **코드·빌드·도메인·인증을 공유하지 않습니다.** 관리자 번들이 사용자에게
 > 전달되는 경로를 원천 차단하기 위해 저장소부터 분리했습니다. 검색엔진 색인도 막혀 있습니다.
