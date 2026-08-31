@@ -68,3 +68,28 @@ BOOKEY_API_URL=https://api.bookey.app npm run types
 ```bash
 npm run typecheck
 ```
+
+## GCP 배포
+
+GitHub Actions가 `main` 브랜치 푸시 또는 수동 실행 시 Docker 이미지를 빌드해 Artifact Registry에 푸시하고 Cloud Run에 배포합니다.
+
+GitHub Repository Variables에 아래 값을 등록합니다.
+
+| 키 | 예시 |
+|---|---|
+| `GCP_PROJECT_ID` | `bookey-prod` |
+| `GCP_REGION` | `asia-northeast1` |
+| `GCP_ARTIFACT_REGISTRY_REPOSITORY` | `bookey` |
+| `GCP_CLOUD_RUN_SERVICE` | `bookey-admin` |
+| `GCP_WORKLOAD_IDENTITY_PROVIDER` | `projects/123456789/locations/global/workloadIdentityPools/github/providers/github` |
+| `GCP_SERVICE_ACCOUNT` | `github-cloud-run@bookey-prod.iam.gserviceaccount.com` |
+| `NEXT_PUBLIC_ADMIN_API_URL` | `https://api.bookey.app` |
+
+최초 1회 GCP 리소스 예시:
+
+```bash
+gcloud services enable run.googleapis.com artifactregistry.googleapis.com iamcredentials.googleapis.com
+gcloud artifacts repositories create bookey --repository-format=docker --location=asia-northeast1
+```
+
+Workload Identity Federation은 GitHub 저장소와 GCP 서비스 계정을 연결해야 합니다. 배포 서비스 계정에는 최소한 Artifact Registry 쓰기 권한과 Cloud Run 배포 권한을 부여합니다.
