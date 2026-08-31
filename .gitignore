@@ -44,3 +44,6 @@ next-env.d.ts
 # ── Next.js 자동 생성
 AGENTS.md
 CLAUDE.md
+
+# 브레인스토밍 시각 컴패니언 세션
+.superpowers/
