@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# ── 생성물 (OpenAPI → TS)
+src/api/generated.ts
+
+# ── Next.js 자동 생성
+AGENTS.md
+CLAUDE.md
