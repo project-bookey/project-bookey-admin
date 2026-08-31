@@ -1,168 +1,50 @@
-export type Page<T> = {
-  content: T[];
-  page: number;
-  size: number;
-  totalElements: number;
-  totalPages: number;
-  hasNext: boolean;
-};
+/**
+ * 관리자 API 응답 타입.
+ *
+ * 실제 정의는 백엔드가 발행하는 OpenAPI 문서에서 생성한다(`npm run types`).
+ * 이 파일은 생성 타입에 화면에서 쓰기 좋은 이름을 붙여 다시 내보내는 얇은 층이다.
+ * 여기에 필드를 직접 적지 않는다 — 서버와 어긋나기 시작하는 지점이 되기 때문이다.
+ */
+import type { components } from '@/api/generated';
 
-export type AdminRole = 'SUPER_ADMIN' | 'OPERATOR' | 'SUPPORT' | 'VIEWER';
+type Schemas = components['schemas'];
 
-export type AdminProfile = {
-  id: number;
-  email: string;
-  name: string;
-  role: AdminRole;
-  totpEnabled: boolean;
-  lastLoginAt?: string;
-};
+/** 페이지 응답 봉투. 서버가 내려주는 형태를 그대로 쓰되 항목 타입만 갈아끼운다. */
+export type Page<T> = Omit<Schemas['PageResponseUserRow'], 'content'> & { content: T[] };
 
-export type LoginResponse = {
-  accessToken?: string;
-  expiresInSec: number;
-  totpRequired: boolean;
-  admin?: AdminProfile;
-};
+// ── 인증 ─────────────────────────────────────────────────
+export type AdminProfile = Schemas['AdminProfile'];
+export type LoginResponse = Schemas['LoginResponse'];
+export type AdminRole = NonNullable<AdminProfile['role']>;
 
-export type Dashboard = {
-  totalUsers: number;
-  activeUsersToday: number;
-  readingSessionsToday: number;
-  finishedBooksToday: number;
-  verifiedReviewRatio: number;
-  pendingModeration: number;
-  overdueModeration: number;
-  activeClubs: number;
-  notificationConversionRate7d: number;
-};
+// ── 대시보드 ─────────────────────────────────────────────
+export type Dashboard = Schemas['DashboardView'];
 
-export type UserStatus = 'ACTIVE' | 'WRITE_BANNED' | 'SUSPENDED' | 'TERMINATED';
+// ── 회원 ────────────────────────────────────────────────
+export type UserRow = Schemas['UserRow'];
+export type UserDetail = Schemas['UserDetailView'];
+export type SanctionRow = Schemas['SanctionRow'];
+export type UserStatus = NonNullable<UserRow['status']>;
+export type SanctionType = NonNullable<SanctionRow['type']>;
 
-export type UserRow = {
-  id: number;
-  handle: string;
-  nickname: string;
-  maskedEmail?: string;
-  status: UserStatus;
-  createdAt: string;
-  booksReading: number;
-  booksFinished: number;
-};
+// ── 도서 ────────────────────────────────────────────────
+export type BookRow = Schemas['BookRow'];
 
-export type SanctionType = 'WARN' | 'WRITE_BAN' | 'SUSPEND' | 'TERMINATE';
+// ── 신고 큐 ─────────────────────────────────────────────
+export type ModerationRow = Schemas['ModerationRow'];
+export type ModerationSource = NonNullable<ModerationRow['sourceType']>;
+export type ModerationStatus = NonNullable<ModerationRow['status']>;
+export type ModerationResolution = NonNullable<Schemas['ResolveRequest']['resolution']>;
 
-export type SanctionRow = {
-  id: number;
-  type: SanctionType;
-  reason: string;
-  startsAt: string;
-  endsAt?: string;
-  releasedAt?: string;
-  adminId: number;
-};
+// ── 검증 심사 ───────────────────────────────────────────
+export type ReviewRow = Schemas['ReviewRow'];
+export type VerificationLevel = NonNullable<ReviewRow['verificationLevel']>;
 
-export type UserDetail = {
-  id: number;
-  handle: string;
-  nickname: string;
-  email?: string;
-  status: UserStatus;
-  createdAt: string;
-  totalSessions: number;
-  totalDurationSec: number;
-  reviewCount: number;
-  clubCount: number;
-  sanctions: SanctionRow[];
-};
+// ── 모임 ────────────────────────────────────────────────
+export type ClubRow = Schemas['ClubRow'];
+export type ClubStatus = NonNullable<ClubRow['status']>;
 
-export type BookRow = {
-  id: number;
-  isbn13?: string;
-  title: string;
-  author?: string;
-  publisher?: string;
-  totalPages?: number;
-  source: string;
-  userCreated: boolean;
-  createdAt: string;
-};
-
-export type ModerationSource = 'REVIEW' | 'POST' | 'CLUB_POST' | 'CLUB' | 'USER';
-export type ModerationStatus = 'PENDING' | 'IN_REVIEW' | 'RESOLVED';
-export type ModerationResolution = 'KEEP' | 'HIDE' | 'DELETE' | 'SANCTION';
-
-export type ModerationRow = {
-  id: number;
-  sourceType: ModerationSource;
-  sourceId: number;
-  reason: string;
-  reportCount: number;
-  priority: number;
-  slaDueAt: string;
-  overdue: boolean;
-  status: ModerationStatus;
-  assignedAdminId?: number;
-  contentPreview?: string;
-  authorId?: number;
-  authorNickname?: string;
-};
-
-export type VerificationLevel = 'VERIFIED_FULL' | 'VERIFIED_PARTIAL' | 'UNVERIFIED' | 'FLAGGED';
-
-export type ReviewRow = {
-  id: number;
-  bookId: number;
-  bookTitle?: string;
-  authorId: number;
-  authorNickname?: string;
-  rating?: number;
-  body: string;
-  verificationLevel: VerificationLevel;
-  verificationSnapshot?: Record<string, unknown>;
-  reportCount: number;
-  status: string;
-  createdAt: string;
-};
-
-export type ClubStatus = 'RECRUITING' | 'ACTIVE' | 'ENDED' | 'ARCHIVED';
-
-export type ClubRow = {
-  id: number;
-  name: string;
-  joinCode: string;
-  status: ClubStatus;
-  memberCount: number;
-  memberLimit: number;
-  startsAt: string;
-  endsAt: string;
-  ownerId: number;
-  ownerNickname?: string;
-  postCount: number;
-  createdAt: string;
-};
-
-export type NotificationStats = {
-  sent7d: number;
-  converted7d: number;
-  conversionRate: number;
-  pushEnabled: boolean;
-};
-
-export type OpsFlagRow = {
-  key: string;
-  enabled: boolean;
-  note?: string;
-  updatedAt: string;
-};
-
-export type AuditRow = {
-  id: number;
-  adminId: number;
-  action: string;
-  targetType?: string;
-  targetId?: number;
-  reason?: string;
-  ip?: string;
-  createdAt: string;
-};
+// ── 운영 ────────────────────────────────────────────────
+export type NotificationStats = Schemas['NotificationStats'];
+export type OpsFlagRow = Schemas['OpsFlagRow'];
+export type AuditRow = Schemas['AuditRow'];
