@@ -30,6 +30,24 @@ export type SanctionType = NonNullable<SanctionRow['type']>;
 // ── 도서 ────────────────────────────────────────────────
 export type BookRow = Schemas['BookRow'];
 
+// ── 광고/배너 ───────────────────────────────────────────
+export type BannerAdminView = {
+  id: number;
+  kind: BannerKind;
+  title: string;
+  subtitle?: string;
+  imageUrl?: string;
+  bgColor?: string;
+  linkUrl?: string;
+  sortOrder: number;
+  enabled: boolean;
+  startsAt: string;
+  endsAt: string;
+};
+
+export type BannerUpsertRequest = Omit<BannerAdminView, 'id'>;
+export type BannerKind = 'AD' | 'NOTICE';
+
 // ── 신고 큐 ─────────────────────────────────────────────
 export type ModerationRow = Schemas['ModerationRow'];
 export type ModerationSource = NonNullable<ModerationRow['sourceType']>;

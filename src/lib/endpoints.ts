@@ -1,6 +1,6 @@
 import { adminApi } from './api';
 import type {
-  AdminProfile, AuditRow, BookRow, ClubRow, ClubStatus, Dashboard, LoginResponse,
+  AdminProfile, AuditRow, BannerAdminView, BannerKind, BannerUpsertRequest, BookRow, ClubRow, ClubStatus, Dashboard, LoginResponse,
   ModerationResolution, ModerationRow, ModerationSource, ModerationStatus, NotificationStats,
   OpsFlagRow, Page, ReviewRow, SanctionType, UserDetail, UserRow, UserStatus, VerificationLevel,
 } from './types';
@@ -38,6 +38,16 @@ export const booksApi = {
     adminApi<Page<BookRow>>('/admin/v1/books', { query: { keyword, page, size: 20 } }),
   update: (bookId: number, body: Record<string, unknown>) =>
     adminApi<void>(`/admin/v1/books/${bookId}`, { method: 'PATCH', body }),
+};
+
+export const adsApi = {
+  list: (kind?: BannerKind) => adminApi<BannerAdminView[]>('/admin/v1/banners', { query: { kind } }),
+  create: (body: BannerUpsertRequest) =>
+    adminApi<BannerAdminView>('/admin/v1/banners', { method: 'POST', body }),
+  update: (bannerId: number, body: BannerUpsertRequest) =>
+    adminApi<BannerAdminView>(`/admin/v1/banners/${bannerId}`, { method: 'PUT', body }),
+  remove: (bannerId: number) =>
+    adminApi<void>(`/admin/v1/banners/${bannerId}`, { method: 'DELETE' }),
 };
 
 export const moderationApi = {
