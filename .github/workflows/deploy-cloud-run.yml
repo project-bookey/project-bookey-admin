@@ -81,6 +81,9 @@ jobs:
           region: ${{ env.REGION }}
           service: ${{ env.SERVICE }}
           image: ${{ env.IMAGE }}
+          flags: >-
+            --allow-unauthenticated
+            --port=8080
           env_vars: |
             NEXT_PUBLIC_ADMIN_API_URL=${{ vars.NEXT_PUBLIC_ADMIN_API_URL }}
 
