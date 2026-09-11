@@ -1,7 +1,7 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { PageHeader, Shell } from '@/components/Shell';
 import { Button, Card, Empty, Input, Table, Tag, formatDateTime } from '@/components/ui';
@@ -137,9 +137,11 @@ export default function AdsPage() {
                         }}
                       />
                       <div className="min-w-0">
-                        <p className="truncate text-[14px] font-bold">{banner.title}</p>
+                        <p className="truncate text-[14px] font-bold">
+                          <InlineBoldText text={banner.title} />
+                        </p>
                         <p className="mt-0.5 line-clamp-1 text-[12.5px] text-[var(--color-muted)]">
-                          {banner.subtitle || '부제 없음'}
+                          <InlineBoldText text={banner.subtitle || '부제 없음'} />
                         </p>
                       </div>
                     </div>
@@ -211,21 +213,21 @@ function AdDialog({ kind, banner, onClose }: { kind?: BannerKind; banner?: Banne
       <Card className="max-h-[92vh] w-full max-w-3xl overflow-y-auto p-6">
         <p className="eyebrow">{banner ? `${TAB_LABEL[banner.kind]} 수정` : `${TAB_LABEL[kind ?? 'AD']} 생성`}</p>
         <h2 className="mt-1 font-serif text-[20px] font-bold">
-          {banner ? banner.title : `새 ${TAB_LABEL[kind ?? 'AD']}`}
+          <InlineBoldText text={banner ? banner.title : `새 ${TAB_LABEL[kind ?? 'AD']}`} />
         </h2>
 
         <div className="mt-5 grid grid-cols-[1fr_220px] gap-5">
           <div className="flex flex-col gap-3">
-            <Input
+            <BoldTextInput
               label="제목"
               value={draft.title}
-              onChange={(e) => setDraft({ ...draft, title: e.target.value })}
+              onChange={(title) => setDraft({ ...draft, title })}
               placeholder="예: 9월 독서 챌린지"
             />
-            <Input
+            <BoldTextInput
               label="부제"
               value={draft.subtitle}
-              onChange={(e) => setDraft({ ...draft, subtitle: e.target.value })}
+              onChange={(subtitle) => setDraft({ ...draft, subtitle })}
               placeholder="앱에 표시할 짧은 설명"
             />
             <Input
@@ -290,9 +292,11 @@ function AdDialog({ kind, banner, onClose }: { kind?: BannerKind; banner?: Banne
               }}
             >
               <div className="flex h-full flex-col justify-end">
-                <p className="text-[18px] font-bold leading-tight">{draft.title || '광고 제목'}</p>
+                <p className="text-[18px] font-bold leading-tight">
+                  <InlineBoldText text={draft.title || '광고 제목'} />
+                </p>
                 <p className="mt-1 text-[13px] leading-snug text-[var(--color-muted)]">
-                  {draft.subtitle || '광고 부제'}
+                  <InlineBoldText text={draft.subtitle || '광고 부제'} />
                 </p>
               </div>
             </div>
@@ -314,6 +318,87 @@ function AdDialog({ kind, banner, onClose }: { kind?: BannerKind; banner?: Banne
       </Card>
     </div>
   );
+}
+
+function BoldTextInput({
+  label,
+  value,
+  onChange,
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+}) {
+  const ref = useRef<HTMLInputElement>(null);
+
+  const applyBold = () => {
+    const input = ref.current;
+    const start = input?.selectionStart ?? value.length;
+    const end = input?.selectionEnd ?? value.length;
+    const selected = value.slice(start, end);
+    const wrapped = `**${selected || '굵게'}**`;
+    const next = `${value.slice(0, start)}${wrapped}${value.slice(end)}`;
+    onChange(next);
+
+    requestAnimationFrame(() => {
+      input?.focus();
+      const cursorStart = start + 2;
+      const cursorEnd = cursorStart + (selected || '굵게').length;
+      input?.setSelectionRange(cursorStart, cursorEnd);
+    });
+  };
+
+  return (
+    <label className="block">
+      <span className="eyebrow mb-1.5 block">{label}</span>
+      <div className="flex overflow-hidden rounded-lg border border-[var(--color-line)] bg-[var(--color-surface)] focus-within:border-[var(--color-ink)]">
+        <input
+          ref={ref}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className="min-w-0 flex-1 bg-transparent px-3 py-2 text-[14px] outline-none"
+        />
+        <button
+          type="button"
+          onClick={applyBold}
+          title="선택한 글자를 굵게"
+          className="border-l border-[var(--color-line)] px-3 py-2 font-serif text-[14px] font-bold text-[var(--color-ink)] hover:bg-[var(--color-surface-alt)]"
+        >
+          B
+        </button>
+      </div>
+      <span className="mt-1 block font-mono text-[11px] text-[var(--color-faint)]">
+        굵게 보일 문구를 선택하고 B를 누르세요.
+      </span>
+    </label>
+  );
+}
+
+function InlineBoldText({ text }: { text: string }) {
+  return parseBoldSegments(text).map((segment, index) => (
+    <span key={`${segment.text}-${index}`} className={segment.bold ? 'font-bold text-[var(--color-ink)]' : undefined}>
+      {segment.text}
+    </span>
+  ));
+}
+
+function parseBoldSegments(text: string): { text: string; bold: boolean }[] {
+  const segments: { text: string; bold: boolean }[] = [];
+  const pattern = /\*\*([^*]+)\*\*/g;
+  let cursor = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = pattern.exec(text)) !== null) {
+    if (match.index > cursor) segments.push({ text: text.slice(cursor, match.index), bold: false });
+    segments.push({ text: match[1], bold: true });
+    cursor = pattern.lastIndex;
+  }
+
+  if (cursor < text.length) segments.push({ text: text.slice(cursor), bold: false });
+  return segments.length > 0 ? segments : [{ text, bold: false }];
 }
 
 function fromBanner(banner: BannerAdminView): Draft {
