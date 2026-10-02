@@ -5,6 +5,91 @@
  */
 
 export interface paths {
+    "/api/v1/clubs/{clubId}/meetings/{meetingId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["meetingDetail"];
+        put: operations["updateMeeting"];
+        post?: never;
+        delete: operations["cancelMeeting"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/v1/banners/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** 배너 수정 — 전체 필드 교체 */
+        put: operations["update"];
+        post?: never;
+        /** 배너 삭제 */
+        delete: operations["delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/wallet/exchange": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 책갈피 교환 — 엽서(1책갈피) · 우표(2책갈피) */
+        post: operations["exchange"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/subscriptions/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 구독 결제 검증 — IAP 영수증 또는 Toss paymentKey 검증 후 구독 활성화 */
+        post: operations["verify"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/subscriptions/checkout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 구독 결제 시작 — 결제 SDK/웹 위젯에 넘길 주문 계약 */
+        post: operations["checkout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/sessions/{sessionId}/end": {
         parameters: {
             query?: never;
@@ -107,6 +192,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/reviews/{reviewId}/comments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 댓글 목록 — 최상위만, 오래된 순 */
+        get: operations["list"];
+        put?: never;
+        /** 댓글 작성 — parentId 를 주면 답글(1단계) */
+        post: operations["create_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/posts": {
         parameters: {
             query?: never;
@@ -117,8 +220,94 @@ export interface paths {
         /** 내 독후감 목록 */
         get: operations["listMine"];
         put?: never;
-        /** 독후감 작성 — 기본 비공개 */
-        post: operations["create_1"];
+        /** 독후감 작성 */
+        post: operations["create_2"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/posts/{postId}/like": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 좋아요 토글 */
+        post: operations["like"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/posts/{postId}/comments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 댓글 목록 — 오래된 순, 루트 댓글에 답글을 묶어 내린다 */
+        get: operations["list_1"];
+        put?: never;
+        /** 댓글 작성 — parentId 를 주면 답글 */
+        post: operations["create_3"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/posts/images": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 독후감 사진 업로드 — 글에 붙이기 전 임시 저장, 24시간 안에 안 붙이면 삭제 */
+        post: operations["upload"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/postcards": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 엽서 보내기 — 무료 일 5장(KST 자정 리셋) → 보유 엽서. 우표 동봉 가능 */
+        post: operations["send"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/postcards/{postcardId}/reply": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 답장 — 우표 1개 소모(동봉 엽서는 무료). 성립하면 자동 맞팔로우 */
+        post: operations["reply"];
         delete?: never;
         options?: never;
         head?: never;
@@ -159,6 +348,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/avatar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 프로필 사진 업로드 — 온보딩 필수 단계 */
+        post: operations["uploadAvatar"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/library": {
         parameters: {
             query?: never;
@@ -167,7 +373,7 @@ export interface paths {
             cookie?: never;
         };
         /** 서재 목록 — 상태별 필터 */
-        get: operations["list"];
+        get: operations["list_2"];
         put?: never;
         /** 서재에 책 추가 */
         post: operations["add"];
@@ -245,6 +451,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/follows/{userId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 팔로우 — 한 방향, 이미 팔로우 중이면 그대로 성공 */
+        post: operations["follow"];
+        /** 언팔로우 — 내 방향만 끊는다 */
+        delete: operations["unfollow"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/clubs": {
         parameters: {
             query?: never;
@@ -256,7 +480,7 @@ export interface paths {
         get: operations["myClubs"];
         put?: never;
         /** 모임 만들기 — 초대 코드 자동 발급 */
-        post: operations["create_2"];
+        post: operations["create_4"];
         delete?: never;
         options?: never;
         head?: never;
@@ -274,6 +498,23 @@ export interface paths {
         put?: never;
         /** 호스트 권한 넘기기 */
         post: operations["transferHost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clubs/{clubId}/seats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 자리 늘리기 (호스트) — 자리당 책갈피 차감, 모임이 끝나면 늘린 자리는 사라진다 */
+        post: operations["expandSeats"];
         delete?: never;
         options?: never;
         head?: never;
@@ -308,7 +549,7 @@ export interface paths {
         get: operations["feed"];
         put?: never;
         /** 글 · 댓글 작성 */
-        post: operations["create_3"];
+        post: operations["create_5"];
         delete?: never;
         options?: never;
         head?: never;
@@ -400,6 +641,90 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/clubs/{clubId}/meetings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["meetings"];
+        put?: never;
+        post: operations["createMeeting"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clubs/{clubId}/meetings/{meetingId}/note/ops": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 모임 노트 연산 적용 — 요소 id 기준 upsert·delete. 실시간 연결이 끊겼을 때 쓴다 */
+        post: operations["applyMeetingNoteOps"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clubs/{clubId}/meetings/{meetingId}/note/images": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 모임 노트 사진 올리기 — 응답 id 를 photo 요소의 imageId 로 넣어 보내야 24시간 뒤 정리되지 않는다 */
+        post: operations["uploadMeetingNoteImage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clubs/{clubId}/meetings/{meetingId}/attendees/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["attend"];
+        delete: operations["unattend"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clubs/{clubId}/logs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 읽기로그 하루 보드 — 그날 조각 + 모임 합산(date 는 KST, 비우면 오늘) */
+        get: operations["day"];
+        put?: never;
+        /** 조각 남기기 — 사진 한 장(선택) + 한 줄, 쪽에 붙이면 그 쪽까지 읽은 멤버에게만 보인다 */
+        post: operations["create_6"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/clubs/{clubId}/kick": {
         parameters: {
             query?: never;
@@ -411,6 +736,23 @@ export interface paths {
         put?: never;
         /** 멤버 강퇴 (호스트) — 사유 필수 */
         post: operations["kick"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clubs/{clubId}/join": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 공개 모임 참가 — 추천 모임 상세에서 코드 없이 참가 */
+        post: operations["joinPublic"];
         delete?: never;
         options?: never;
         head?: never;
@@ -434,6 +776,86 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/clubs/{clubId}/chat/unlock": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["unlockChat"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clubs/{clubId}/chat/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["chatMessages"];
+        put?: never;
+        post: operations["sendChat"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clubs/{clubId}/chat/gifts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["giftChat"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clubs/{clubId}/activity/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["startActivity"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clubs/{clubId}/activity/end": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["endActivity"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/clubs/join": {
         parameters: {
             query?: never;
@@ -445,6 +867,42 @@ export interface paths {
         put?: never;
         /** 코드로 참가 — 도서 자동 등록 + 진척 공유 동의 */
         post: operations["join"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/chats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 내 채팅 목록 — 마지막 메시지·안읽음 수 포함 */
+        get: operations["list_3"];
+        put?: never;
+        /** 채팅방 열기 — 맞팔로우인 상대만, 이미 있으면 그 방 */
+        post: operations["open_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/chats/{chatId}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 메시지 커서 페이지(최신순) — 첫 페이지를 열면 읽음 처리된다 */
+        get: operations["messages"];
+        put?: never;
+        /** 메시지 보내기 — 언팔로우된 상대에게는 보낼 수 없다 */
+        post: operations["send_1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -486,6 +944,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/books/{bookId}/like": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 좋아요 토글 */
+        post: operations["like_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bookmark-purchases/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 책갈피 단건 결제 검증 — 결제 승인 후 책갈피 적립 */
+        post: operations["verify_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bookmark-purchases/checkout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 책갈피 단건 결제 시작 — 결제 SDK/웹 위젯에 넘길 주문 계약 */
+        post: operations["checkout_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/auth/social": {
         parameters: {
             query?: never;
@@ -495,8 +1004,42 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** 소셜 로그인 (Apple/Google/Kakao) */
+        /** 소셜 로그인 (Apple/Google/Kakao) — 미가입 소셜 계정은 바로 가입 */
         post: operations["socialLogin"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/social/link": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 소셜 계정 연동 */
+        post: operations["linkSocial"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/signup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 이메일 회원가입 — 설정에 따라 이메일 코드 또는 휴대폰 본인인증 필요 */
+        post: operations["signup"];
         delete?: never;
         options?: never;
         head?: never;
@@ -532,6 +1075,93 @@ export interface paths {
         /** 로그아웃 — 모든 리프레시 토큰 폐기 */
         post: operations["logout"];
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 이메일 로그인 */
+        post: operations["login"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/email/code": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 가입 이메일 인증 코드 발급 (EMAIL_CODE 모드) */
+        post: operations["requestEmailCode"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/attendance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 오늘 출석 상태 */
+        get: operations["status"];
+        put?: never;
+        /** 오늘 출석체크 — KST 기준 하루 한 번 보상 */
+        post: operations["checkIn"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/v1/users/{userId}/wallet": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 지갑 수동 조정 — 책갈피·엽서·우표, 사유 필수 (베타 운영 경로) */
+        post: operations["adjustWallet"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/v1/users/{userId}/subscription": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 구독 수동 지급 — 사유 필수 (IAP 검증 전 운영 경로) */
+        post: operations["grantSubscription"];
+        /** 구독 회수 */
+        delete: operations["revokeSubscription"];
         options?: never;
         head?: never;
         patch?: never;
@@ -605,6 +1235,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/v1/editor-picks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 에디터 픽 목록 */
+        get: operations["list_4"];
+        put?: never;
+        /** 에디터 픽 추가 */
+        post: operations["create_7"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/v1/clubs/{clubId}/transfer-host": {
         parameters: {
             query?: never;
@@ -656,6 +1304,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/v1/banners": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 배너/공지 전체 목록 — 비활성·기간 외 포함 */
+        get: operations["list_5"];
+        put?: never;
+        /** 배너 생성 */
+        post: operations["create_8"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/v1/auth/totp": {
         parameters: {
             query?: never;
@@ -683,7 +1349,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** 관리자 로그인 — 2FA 활성 계정은 totpCode 필수 */
-        post: operations["login"];
+        post: operations["login_1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -700,7 +1366,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** 관리자 계정 생성 (SUPER_ADMIN) */
-        post: operations["create_4"];
+        post: operations["create_9"];
         delete?: never;
         options?: never;
         head?: never;
@@ -714,15 +1380,16 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** 리뷰 단건 조회 */
+        get: operations["detail"];
         put?: never;
         post?: never;
         /** 리뷰 삭제 */
-        delete: operations["delete"];
+        delete: operations["delete_1"];
         options?: never;
         head?: never;
         /** 리뷰 수정 — 등급은 재산정하지 않는다 */
-        patch: operations["update"];
+        patch: operations["update_1"];
         trace?: never;
     };
     "/api/v1/posts/{postId}": {
@@ -732,15 +1399,16 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** 독후감 한 건 — 비공개는 작성자만, 남의 글은 조회수를 올린다 */
+        get: operations["get"];
         put?: never;
         post?: never;
         /** 독후감 삭제 */
-        delete: operations["delete_1"];
+        delete: operations["delete_2"];
         options?: never;
         head?: never;
         /** 독후감 수정 · 공개 범위 변경 */
-        patch: operations["update_1"];
+        patch: operations["update_2"];
         trace?: never;
     };
     "/api/v1/notifications/settings": {
@@ -771,11 +1439,12 @@ export interface paths {
         get: operations["me"];
         put?: never;
         post?: never;
-        delete?: never;
+        /** 계정 영구 삭제 — 개인정보·로그인 수단 제거 및 계정 종료 */
+        delete: operations["deleteAccount"];
         options?: never;
         head?: never;
         /** 프로필 수정 */
-        patch: operations["update_2"];
+        patch: operations["update_3"];
         trace?: never;
     };
     "/api/v1/library/{recordId}/progress": {
@@ -827,7 +1496,7 @@ export interface paths {
         options?: never;
         head?: never;
         /** 모임 정보 수정 (호스트) */
-        patch: operations["update_3"];
+        patch: operations["update_4"];
         trace?: never;
     };
     "/api/v1/clubs/{clubId}/sharing": {
@@ -847,6 +1516,25 @@ export interface paths {
         patch: operations["updateSharing"];
         trace?: never;
     };
+    "/api/v1/clubs/{clubId}/posts/{postId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 토론 상세 — 댓글 포함 */
+        get: operations["detail_1"];
+        put?: never;
+        post?: never;
+        /** 삭제 (작성자 또는 운영자) */
+        delete: operations["delete_3"];
+        options?: never;
+        head?: never;
+        /** 글 · 조각 수정 — 작성자만, 한 줄과 쪽을 보낸 값으로 바꾼다 */
+        patch: operations["update_5"];
+        trace?: never;
+    };
     "/admin/v1/ops-flags/{key}": {
         parameters: {
             query?: never;
@@ -862,6 +1550,24 @@ export interface paths {
         head?: never;
         /** 운영 스위치 변경 — PUSH_ENABLED 는 긴급 킬스위치 (SUPER_ADMIN) */
         patch: operations["updateOpsFlag"];
+        trace?: never;
+    };
+    "/admin/v1/editor-picks/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** 에디터 픽 삭제 */
+        delete: operations["delete_4"];
+        options?: never;
+        head?: never;
+        /** 에디터 픽 수정 — 정렬·메모 */
+        patch: operations["update_6"];
         trace?: never;
     };
     "/admin/v1/books/{bookId}": {
@@ -898,6 +1604,108 @@ export interface paths {
         patch: operations["changeRole"];
         trace?: never;
     };
+    "/api/v1/wallet": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 내 지갑 — 잔액 · 오늘 남은 무료 엽서 · 구독 상태 */
+        get: operations["wallet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users/{userId}/stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 유저의 독서 통계 — 마이페이지 기록 카드(스트릭·히트맵)용, 최대 366일 */
+        get: operations["stats"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users/{userId}/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 유저 프로필 — 열람 시 방문 기록이 남는다 (방문 수는 전체 공개) */
+        get: operations["profile"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users/{userId}/posts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 유저의 공개 독후감 — 피드에서 휘발된 글도 여기엔 축적 */
+        get: operations["posts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users/{userId}/library": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 유저의 서재 — 마이페이지 선반용. 남의 서재면 각오(commitment) 메모는 비운다 */
+        get: operations["library"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users/{userId}/library/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 유저의 서재 상태별 개수 */
+        get: operations["librarySummary"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/stats": {
         parameters: {
             query?: never;
@@ -923,7 +1731,7 @@ export interface paths {
             cookie?: never;
         };
         /** 도서별 세션 목록 */
-        get: operations["list_1"];
+        get: operations["list_6"];
         put?: never;
         post?: never;
         delete?: never;
@@ -941,6 +1749,23 @@ export interface paths {
         };
         /** 진행 중인 세션 조회 — 앱 재시작 시 복원 */
         get: operations["current"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reviews/{reviewId}/comments/{commentId}/replies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 답글 목록 — 오래된 순 */
+        get: operations["replies"];
         put?: never;
         post?: never;
         delete?: never;
@@ -975,6 +1800,40 @@ export interface paths {
         };
         /** 내가 쓴 리뷰 */
         get: operations["listMine_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public/onboarding/categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 온보딩 선호 카테고리 — 실제 책 메타 기반 (비회원) */
+        get: operations["onboardingCategories"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public/onboarding/books": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 온보딩 책 고르기 — 표지 있는 책, 카테고리 부분 일치 (비회원) */
+        get: operations["onboardingBooks"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1068,6 +1927,108 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/posts/{postId}/likers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 내 글에 좋아요 누른 사람 — 글 주인 + 구독 회원 전용 */
+        get: operations["likers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/posts/feed": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 광장 독후감 피드 — HOT(좋아요·시간 감쇠) 또는 NEW(최신순) */
+        get: operations["feed_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/posts/clubs/{clubId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 모임 독후감 목록 — 그 모임 활성 멤버만, 최신순 */
+        get: operations["listByClub"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/postcards/sent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 보낸 엽서 */
+        get: operations["sent"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/postcards/inbox": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 받은 엽서 */
+        get: operations["inbox"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/plaza/feed": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 광장 피드 — 완독 자랑(FINISH). 밑줄(QUOTE)은 걷어내 늘 빈 페이지 */
+        get: operations["feed_2"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/notifications": {
         parameters: {
             query?: never;
@@ -1076,7 +2037,24 @@ export interface paths {
             cookie?: never;
         };
         /** 내 알림 목록 */
-        get: operations["list_2"];
+        get: operations["list_7"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/visitors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 내 방문자 목록 — 구독 회원 전용 (숫자는 프로필에서 전체 공개) */
+        get: operations["visitors"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1093,11 +2071,11 @@ export interface paths {
             cookie?: never;
         };
         /** 독서 기록 상세 — 진척도 포함 */
-        get: operations["detail"];
+        get: operations["detail_2"];
         put?: never;
         post?: never;
         /** 서재에서 삭제 */
-        delete: operations["delete_2"];
+        delete: operations["delete_5"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1112,6 +2090,57 @@ export interface paths {
         };
         /** 서재 상태별 개수 */
         get: operations["summary_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/follows/following": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 팔로잉 목록 */
+        get: operations["following"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/follows/following-ids": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 내가 팔로우하는 사람 id 전부 — 팔로우 버튼 상태 판정용 */
+        get: operations["followingIds"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/follows/followers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 팔로워 목록 */
+        get: operations["followers"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1137,19 +2166,199 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/clubs/{clubId}/posts/{postId}": {
+    "/api/v1/clubs/{clubId}/reading-now": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** 토론 상세 — 댓글 포함 */
-        get: operations["detail_1"];
+        /** 지금 읽는 중 — 열린 독서 세션이 있는 멤버(진척 비공개·나 제외) */
+        get: operations["readingNow"];
         put?: never;
         post?: never;
-        /** 삭제 (작성자 또는 운영자) */
-        delete: operations["delete_3"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clubs/{clubId}/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 공개 모임 미리보기 — 추천 모임 상세 진입용 */
+        get: operations["previewById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clubs/{clubId}/places/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["searchPlaces"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clubs/{clubId}/places/geocode": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["geocodePlace"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clubs/{clubId}/places/address-search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["searchAddresses"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clubs/{clubId}/meetings/{meetingId}/note": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 모임 노트 — 아직 아무도 쓰지 않았으면 빈 노트(id null, version 0) */
+        get: operations["meetingNote"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clubs/{clubId}/meeting-notes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 모임 노트 피드 — 빈 노트는 빼고 최근에 고친 순. 썸네일용 문서 포함 */
+        get: operations["meetingNoteFeed"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clubs/{clubId}/logs/week": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 주간 공유 카드 — 한 주(월~일, KST) 합산과 대표 조각 6개(보는 사람에게 가려지지 않은 것만) */
+        get: operations["week"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clubs/{clubId}/logs/days": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 요일 스트립 — 날짜마다 조각 수(최대 14일) */
+        get: operations["days"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clubs/{clubId}/chat": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["chatState"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clubs/{clubId}/chat/gift-candidates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["giftCandidates"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clubs/{clubId}/activity/current": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["currentActivity"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -1189,6 +2398,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/clubs/activity-cards/mine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 내 함께 독서 기록 카드 — 모든 클럽, 최근 50장(노트 스티커용) */
+        get: operations["myActivityCards"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/books/{bookId}": {
         parameters: {
             query?: never;
@@ -1197,7 +2423,7 @@ export interface paths {
             cookie?: never;
         };
         /** 도서 상세 — 검증 평점과 전체 평점을 분리해 제공 */
-        get: operations["detail_2"];
+        get: operations["detail_3"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1223,6 +2449,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/books/{bookId}/posts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 책별 공개 독후감 목록 — 최신순 */
+        get: operations["posts_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/books/recommended": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 추천 도서 — 에디터 픽 */
+        get: operations["recommended"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/books/popular": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 인기 도서 — 서재에 담긴 수 순 */
+        get: operations["popular"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/books/isbn/{isbn13}": {
         parameters: {
             query?: never;
@@ -1232,6 +2509,57 @@ export interface paths {
         };
         /** ISBN 조회 — 바코드 스캔 결과 처리 */
         get: operations["findByIsbn"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/books/curation/yes24": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** YES24 큐레이션 — 베스트셀러·스테디셀러·신상품 (1시간 캐시) */
+        get: operations["yes24Curation"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/banners": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 활성 배너/공지 목록 — 기간 내, 정렬 순 */
+        get: operations["list_8"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/signup-config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 가입 화면 구성 — 요구 인증 수단(EMAIL_CODE|IDENTITY)과 포트원 SDK 키 */
+        get: operations["signupConfig"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1438,7 +2766,75 @@ export interface paths {
         put?: never;
         post?: never;
         /** 세션 삭제 */
-        delete: operations["delete_4"];
+        delete: operations["delete_6"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reviews/{reviewId}/comments/{commentId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** 댓글 삭제 — 본인만 */
+        delete: operations["delete_7"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/posts/{postId}/comments/{commentId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** 댓글 삭제 — 본인만, 답글도 함께 지워진다 */
+        delete: operations["delete_8"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/postcards/{postcardId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** 엽서 삭제 — 보낸 사람 또는 받은 사람만 */
+        delete: operations["delete_9"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications/{notificationId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** 내 알림 삭제 */
+        delete: operations["delete_10"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1456,6 +2852,23 @@ export interface paths {
         post?: never;
         /** 모임 나가기 */
         delete: operations["leave"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/chats/{chatId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** 채팅방 삭제 — 참가자만, 메시지도 함께 삭제된다 */
+        delete: operations["delete_11"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1482,6 +2895,138 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        UpsertMeetingRequest: {
+            title: string;
+            description?: string;
+            /** Format: date-time */
+            startsAt: string;
+            /** Format: date-time */
+            endsAt?: string;
+            placeName: string;
+            address: string;
+            /** Format: double */
+            latitude?: number;
+            /** Format: double */
+            longitude?: number;
+            mapUrl?: string;
+            /** Format: date-time */
+            responseDeadline?: string;
+        };
+        MeetingAttendeeView: {
+            /** Format: int64 */
+            userId?: number;
+            nickname?: string;
+            avatarUrl?: string;
+        };
+        MeetingView: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: int64 */
+            clubId?: number;
+            title?: string;
+            description?: string;
+            /** Format: date-time */
+            startsAt?: string;
+            /** Format: date-time */
+            endsAt?: string;
+            placeName?: string;
+            address?: string;
+            /** Format: double */
+            latitude?: number;
+            /** Format: double */
+            longitude?: number;
+            mapUrl?: string;
+            /** Format: date-time */
+            responseDeadline?: string;
+            status?: string;
+            /** Format: int64 */
+            attendeeCount: number;
+            attending: boolean;
+            host: boolean;
+            attendeeNicknames: string[];
+            attendees: components["schemas"]["MeetingAttendeeView"][];
+        };
+        BannerUpsertRequest: {
+            /** @enum {string} */
+            kind: "AD" | "NOTICE";
+            title: string;
+            subtitle?: string;
+            imageUrl?: string;
+            bgColor?: string;
+            linkUrl?: string;
+            /** Format: int32 */
+            sortOrder: number;
+            enabled: boolean;
+            /** Format: date-time */
+            startsAt: string;
+            /** Format: date-time */
+            endsAt: string;
+        };
+        BannerAdminView: {
+            /** Format: int64 */
+            id: number;
+            /** @enum {string} */
+            kind: "AD" | "NOTICE";
+            title: string;
+            subtitle?: string;
+            imageUrl?: string;
+            bgColor?: string;
+            linkUrl?: string;
+            /** Format: int32 */
+            sortOrder: number;
+            enabled: boolean;
+            /** Format: date-time */
+            startsAt: string;
+            /** Format: date-time */
+            endsAt: string;
+        };
+        ExchangeRequest: {
+            /** @enum {string} */
+            target: "POSTCARD" | "STAMP";
+            /** Format: int32 */
+            quantity: number;
+        };
+        WalletView: {
+            /** Format: int32 */
+            bookmarkBalance: number;
+            /** Format: int32 */
+            postcardBalance: number;
+            /** Format: int32 */
+            stampBalance: number;
+            /** Format: int32 */
+            freePostcardsLeftToday: number;
+            subscriptionActive: boolean;
+            /** Format: int32 */
+            subscriptionPriceKrw: number;
+        };
+        SubscriptionVerifyRequest: {
+            /** @enum {string} */
+            provider: "APPLE" | "GOOGLE" | "TOSS" | "ADMIN";
+            productId: string;
+            orderId?: string;
+            /** Format: int32 */
+            amountKrw?: number;
+            paymentKey?: string;
+            receiptData?: string;
+            originalTransactionId?: string;
+        };
+        SubscriptionCheckoutRequest: {
+            /** @enum {string} */
+            provider: "APPLE" | "GOOGLE" | "TOSS" | "ADMIN";
+        };
+        SubscriptionCheckoutView: {
+            /** @enum {string} */
+            provider: "APPLE" | "GOOGLE" | "TOSS" | "ADMIN";
+            productId: string;
+            orderId: string;
+            /** Format: int32 */
+            amountKrw: number;
+            customerKey: string;
+            checkoutUrl?: string;
+            tossClientKey?: string;
+            successUrl?: string;
+            failUrl?: string;
+        };
         EndRequest: {
             /** Format: int32 */
             endPage?: number;
@@ -1591,12 +3136,37 @@ export interface components {
             };
             /** Format: int32 */
             helpfulCount: number;
+            /** Format: int64 */
+            commentCount: number;
             /** Format: date-time */
             createdAt: string;
         };
         ReportRequest: {
             reason: string;
             detail?: string;
+        };
+        CreateReviewCommentRequest: {
+            body: string;
+            /** Format: int64 */
+            parentId?: number;
+        };
+        ReviewCommentView: {
+            /** Format: int64 */
+            id: number;
+            /** Format: int64 */
+            reviewId: number;
+            /** Format: int64 */
+            parentId?: number;
+            /** Format: int64 */
+            authorId: number;
+            authorNickname: string;
+            authorAvatarUrl?: string;
+            body: string;
+            mine: boolean;
+            /** Format: int64 */
+            replyCount: number;
+            /** Format: date-time */
+            createdAt: string;
         };
         CreatePostRequest: {
             /** Format: int64 */
@@ -1606,34 +3176,182 @@ export interface components {
             title: string;
             bodyMd: string;
             /** @enum {string} */
-            visibility?: "PUBLIC" | "LINK" | "PRIVATE";
+            visibility: "PUBLIC" | "LINK" | "PRIVATE" | "CLUB";
             tags: string[];
+            imageIds: number[];
+            /** @description 더 쓰지 않는다 — 보내도 무시한다(옛 앱 호환) */
+            quoteIds?: number[];
+            /**
+             * Format: int64
+             * @description 모임 안에서 쓸 때 그 모임 id — 활성 멤버·진행 중 모임만
+             */
+            clubId?: number;
+        };
+        BookQuoteView: {
+            /** Format: int64 */
+            id: number;
+            /** Format: int64 */
+            bookId: number;
+            bookTitle: string;
+            bookCoverUrl?: string;
+            /** Format: int32 */
+            page?: number;
+            content: string;
+            /** Format: int64 */
+            authorId: number;
+            authorNickname: string;
+            authorAvatarUrl?: string;
+            /** Format: int64 */
+            agreeCount: number;
+            agreedByMe: boolean;
+            mine: boolean;
+            /** Format: int64 */
+            commentCount: number;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        PostImageView: {
+            /** Format: int64 */
+            id: number;
+            url: string;
+            /** Format: int32 */
+            width?: number;
+            /** Format: int32 */
+            height?: number;
         };
         PostView: {
             /** Format: int64 */
-            id?: number;
-            slug?: string;
-            title?: string;
-            bodyMd?: string;
+            id: number;
+            slug: string;
+            title: string;
+            bodyMd: string;
             /** @enum {string} */
-            visibility?: "PUBLIC" | "LINK" | "PRIVATE";
+            visibility: "PUBLIC" | "LINK" | "PRIVATE" | "CLUB";
             tags: string[];
             /** Format: int64 */
             bookId?: number;
             bookTitle?: string;
             bookCoverUrl?: string;
             authorHandle?: string;
-            authorNickname?: string;
+            authorNickname: string;
             /** Format: date-time */
             publishedAt?: string;
             /** Format: int32 */
             viewCount: number;
+            /** Format: int64 */
+            authorId: number;
+            authorAvatarUrl?: string;
+            excerpt: string;
+            images: components["schemas"]["PostImageView"][];
+            quotes: components["schemas"]["BookQuoteView"][];
+            /** Format: int64 */
+            likeCount: number;
+            likedByMe: boolean;
+            /** Format: int64 */
+            commentCount: number;
+            mine: boolean;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: int64 */
+            clubId?: number;
+            clubName?: string;
+        };
+        PostLikeView: {
+            liked: boolean;
+            /** Format: int64 */
+            likeCount: number;
+        };
+        CreatePostCommentRequest: {
+            body: string;
+            /** Format: int64 */
+            parentId?: number;
+        };
+        PostCommentView: {
+            /** Format: int64 */
+            id: number;
+            /** Format: int64 */
+            postId: number;
+            /** Format: int64 */
+            parentId?: number;
+            /** Format: int64 */
+            authorId: number;
+            authorNickname: string;
+            authorAvatarUrl?: string;
+            body: string;
+            mine: boolean;
+            /** Format: date-time */
+            createdAt: string;
+            replies: components["schemas"]["PostCommentView"][];
+        };
+        SendPostcardRequest: {
+            /** Format: int64 */
+            toUserId: number;
+            /**
+             * Format: int64
+             * @description 어떤 독후감을 보고 보냈나 — 수신함에 컨텍스트로 표시
+             */
+            postId?: number;
+            body: string;
+            /** @description 우표 동봉 — 내 우표 1개를 부담해 상대가 무료로 답장하게 한다 */
+            attachStamp: boolean;
+        };
+        PostcardView: {
+            /** Format: int64 */
+            id: number;
+            /** Format: int64 */
+            fromUserId: number;
+            fromNickname: string;
+            fromAvatarUrl?: string;
+            /** Format: int64 */
+            toUserId: number;
+            toNickname: string;
+            toAvatarUrl?: string;
+            /** Format: int64 */
+            postId?: number;
+            postTitle?: string;
+            body: string;
+            stampAttached: boolean;
+            /** @enum {string} */
+            status: "SENT" | "REPLIED";
+            replyBody?: string;
+            /** Format: date-time */
+            repliedAt?: string;
+            mine: boolean;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        ReplyPostcardRequest: {
+            body: string;
         };
         DeviceRegisterRequest: {
             /** @enum {string} */
             platform: "IOS" | "ANDROID";
             pushToken: string;
             pushEnabled?: boolean;
+        };
+        MeResponse: {
+            /** Format: int64 */
+            id: number;
+            handle: string;
+            nickname: string;
+            email?: string;
+            avatarUrl?: string;
+            gender?: string;
+            /** Format: date */
+            birthDate?: string;
+            timezone: string;
+            notifyTone: string;
+            /** Format: int32 */
+            quietHoursStart: number;
+            /** Format: int32 */
+            quietHoursEnd: number;
+            /** Format: int32 */
+            dailyNotifyCap: number;
+            /** Format: int32 */
+            clubNotifyCap: number;
+            allowNudge: boolean;
+            status: string;
+            preferredCategories: string[];
         };
         AddBookRequest: {
             /** Format: int64 */
@@ -1645,6 +3363,7 @@ export interface components {
             /** Format: int32 */
             totalPagesOverride?: number;
             reread?: boolean;
+            commitment?: string;
         };
         BookSummary: {
             /** Format: int64 */
@@ -1705,6 +3424,7 @@ export interface components {
             /** Format: int32 */
             rating?: number;
             abandonReason?: string;
+            commitment?: string;
         };
         FinishRequest: {
             /** Format: int32 */
@@ -1713,6 +3433,15 @@ export interface components {
         AbandonRequest: {
             /** @enum {string} */
             reason: "BORING" | "DIFFICULT" | "NO_TIME" | "NOT_MY_TASTE" | "OTHER";
+        };
+        FollowUserView: {
+            /** Format: int64 */
+            userId: number;
+            nickname: string;
+            avatarUrl?: string;
+            mutual: boolean;
+            /** Format: date-time */
+            followedAt: string;
         };
         CheckpointRequest: {
             title?: string;
@@ -1788,6 +3517,16 @@ export interface components {
             members: components["schemas"]["MemberProgressView"][];
             checkpoints: components["schemas"]["CheckpointView"][];
             nextCheckpoint?: components["schemas"]["CheckpointView"];
+            seatPolicy: components["schemas"]["ClubSeatPolicy"];
+            allowNudge: boolean;
+        };
+        ClubSeatPolicy: {
+            /** Format: int32 */
+            freeLimit: number;
+            /** Format: int32 */
+            maxLimit: number;
+            /** Format: int32 */
+            costPerSeat: number;
         };
         MemberProgressView: {
             /** Format: int64 */
@@ -1816,9 +3555,19 @@ export interface components {
             /** Format: int64 */
             userId: number;
         };
+        ExpandSeatsRequest: {
+            /** Format: int32 */
+            targetLimit: number;
+        };
+        ClubSeatResult: {
+            /** Format: int32 */
+            memberLimit: number;
+            /** Format: int32 */
+            bookmarkBalance: number;
+        };
         CreateClubPostRequest: {
             /** @enum {string} */
-            type?: "DISCUSSION" | "QUESTION" | "QUOTE" | "NOTICE" | "CHECKPOINT";
+            type?: "DISCUSSION" | "QUESTION" | "QUOTE" | "NOTICE" | "CHECKPOINT" | "LOG";
             body: string;
             /** Format: int32 */
             anchorPage?: number;
@@ -1835,7 +3584,7 @@ export interface components {
             /** Format: int64 */
             parentId?: number;
             /** @enum {string} */
-            type: "DISCUSSION" | "QUESTION" | "QUOTE" | "NOTICE" | "CHECKPOINT";
+            type: "DISCUSSION" | "QUESTION" | "QUOTE" | "NOTICE" | "CHECKPOINT" | "LOG";
             /** Format: int64 */
             authorId: number;
             authorNickname: string;
@@ -1855,6 +3604,13 @@ export interface components {
             /** Format: date-time */
             createdAt: string;
             comments: components["schemas"]["ClubPostView"][];
+            imageUrl?: string;
+            /** Format: int32 */
+            imageWidth?: number;
+            /** Format: int32 */
+            imageHeight?: number;
+            /** Format: date-time */
+            editedAt?: string;
         };
         ReactionRequest: {
             /** @enum {string} */
@@ -1866,15 +3622,116 @@ export interface components {
             /** @enum {string} */
             messageKey: "READ_TOGETHER" | "CHECKPOINT_SOON" | "WAITING";
         };
+        /** @description 노트 연산 — 요소 id 기준 upsert({t:'upsert', el}) · delete({t:'delete', id}). 같은 연산을 다시 보내도 결과가 같다 */
+        ApplyMeetingNoteOpsRequest: {
+            ops: {
+                [key: string]: unknown;
+            }[];
+            /** @description 보낸 기기 식별자 — 실시간 방송에서 자기 연산을 알아보는 데 쓴다 */
+            clientId?: string;
+        };
+        MeetingNoteOpsResult: {
+            /** Format: int32 */
+            version: number;
+        };
+        MeetingNoteImageView: {
+            /** Format: int64 */
+            id: number;
+            url: string;
+            /** Format: int32 */
+            width?: number;
+            /** Format: int32 */
+            height?: number;
+        };
         KickRequest: {
             /** Format: int64 */
             userId: number;
             reason: string;
         };
+        JoinPublicRequest: {
+            adoptTargetDate?: boolean;
+            shareProgress?: boolean;
+        };
+        UnlockResult: {
+            unlocked: boolean;
+            /** Format: int32 */
+            bookmarkBalance: number;
+        };
+        SendChatRequest: {
+            body: string;
+        };
+        ChatMessageView: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: int64 */
+            senderId?: number;
+            senderNickname?: string;
+            body?: string;
+            /** Format: date-time */
+            createdAt?: string;
+            mine?: boolean;
+        };
+        GiftChatRequest: {
+            /** Format: int64 */
+            userId: number;
+        };
+        ActivitySessionView: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: int64 */
+            meetingId?: number;
+            /** Format: date-time */
+            startedAt?: string;
+            /** Format: date-time */
+            endedAt?: string;
+            /** Format: int32 */
+            durationSec?: number;
+        };
+        ActivityCardView: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: int64 */
+            clubId?: number;
+            clubName?: string;
+            meetingTitle?: string;
+            nickname?: string;
+            /** Format: int32 */
+            durationSec: number;
+            /** Format: date-time */
+            endedAt?: string;
+        };
         JoinRequest: {
             code: string;
             adoptTargetDate?: boolean;
             shareProgress?: boolean;
+        };
+        OpenChatRequest: {
+            /** Format: int64 */
+            userId: number;
+        };
+        ChatSummaryView: {
+            /** Format: int64 */
+            id: number;
+            /** Format: int64 */
+            otherUserId: number;
+            otherNickname: string;
+            otherAvatarUrl?: string;
+            lastMessageBody?: string;
+            /** @enum {string} */
+            lastMessageType?: "TEXT" | "STICKER";
+            lastStickerCode?: string;
+            /** Format: date-time */
+            lastMessageAt?: string;
+            /** Format: int64 */
+            unreadCount: number;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        SendMessageRequest: {
+            body?: string;
+            /** @enum {string} */
+            type?: "TEXT" | "STICKER";
+            stickerCode?: string;
         };
         ManualBookRequest: {
             title: string;
@@ -1899,31 +3756,53 @@ export interface components {
             votes: number;
             applied: boolean;
         };
+        BookLikeView: {
+            liked: boolean;
+            /** Format: int64 */
+            likeCount: number;
+        };
+        BookmarkPurchaseVerifyRequest: {
+            /** @enum {string} */
+            provider: "APPLE" | "GOOGLE" | "TOSS" | "ADMIN";
+            productId: string;
+            orderId: string;
+            /** Format: int32 */
+            quantity: number;
+            /** Format: int32 */
+            amountKrw: number;
+            paymentKey?: string;
+            receiptData?: string;
+            originalTransactionId?: string;
+        };
+        BookmarkPurchaseCheckoutRequest: {
+            /** @enum {string} */
+            provider: "APPLE" | "GOOGLE" | "TOSS" | "ADMIN";
+            /** Format: int32 */
+            quantity: number;
+        };
+        BookmarkPurchaseCheckoutView: {
+            /** @enum {string} */
+            provider: "APPLE" | "GOOGLE" | "TOSS" | "ADMIN";
+            productId: string;
+            orderId: string;
+            /** Format: int32 */
+            quantity: number;
+            /** Format: int32 */
+            bonusQuantity: number;
+            /** Format: int32 */
+            totalQuantity: number;
+            /** Format: int32 */
+            amountKrw: number;
+            customerKey: string;
+            checkoutUrl?: string;
+            tossClientKey?: string;
+            successUrl?: string;
+            failUrl?: string;
+        };
         SocialLoginRequest: {
             /** @enum {string} */
-            provider: "APPLE" | "GOOGLE" | "KAKAO" | "DEV";
+            provider: "APPLE" | "GOOGLE" | "KAKAO";
             token: string;
-            nickname?: string;
-        };
-        MeResponse: {
-            /** Format: int64 */
-            id: number;
-            handle: string;
-            nickname: string;
-            email?: string;
-            avatarUrl?: string;
-            timezone: string;
-            notifyTone: string;
-            /** Format: int32 */
-            quietHoursStart: number;
-            /** Format: int32 */
-            quietHoursEnd: number;
-            /** Format: int32 */
-            dailyNotifyCap: number;
-            /** Format: int32 */
-            clubNotifyCap: number;
-            allowNudge: boolean;
-            status: string;
         };
         TokenResponse: {
             accessToken: string;
@@ -1933,8 +3812,70 @@ export interface components {
             newUser: boolean;
             user: components["schemas"]["MeResponse"];
         };
+        EmailSignupRequest: {
+            /** Format: email */
+            email: string;
+            password: string;
+            nickname: string;
+            code?: string;
+            identityVerificationId?: string;
+            termsAgreed: boolean;
+            termsVersion: string;
+            privacyAgreed: boolean;
+            privacyVersion: string;
+        };
         RefreshRequest: {
             refreshToken: string;
+        };
+        EmailLoginRequest: {
+            /** Format: email */
+            email: string;
+            password: string;
+        };
+        EmailCodeRequest: {
+            /** Format: email */
+            email: string;
+        };
+        EmailCodeResponse: {
+            /** Format: int64 */
+            expiresInSec: number;
+            devCode?: string;
+        };
+        AttendanceView: {
+            checkedInToday: boolean;
+            /** Format: int32 */
+            monthlyAttendanceDays: number;
+            /** Format: int32 */
+            monthlyMaxDays: number;
+            /** Format: int32 */
+            rewardEveryDays: number;
+            /** Format: int32 */
+            nextRewardDay?: number;
+            nextRewardType?: string;
+            /** Format: int32 */
+            rewardedPostcards: number;
+            /** Format: int32 */
+            rewardedStamps: number;
+            /** Format: int32 */
+            postcardBalance: number;
+            /** Format: int32 */
+            stampBalance: number;
+            /** Format: date */
+            attendanceDate?: string;
+        };
+        WalletAdjustRequest: {
+            /** Format: int32 */
+            bookmarks: number;
+            /** Format: int32 */
+            postcards: number;
+            /** Format: int32 */
+            stamps: number;
+            reason: string;
+        };
+        SubscriptionGrantRequest: {
+            /** Format: int32 */
+            months: number;
+            reason: string;
         };
         SanctionRequest: {
             /** @enum {string} */
@@ -1953,6 +3894,21 @@ export interface components {
             resolution: "KEEP" | "HIDE" | "DELETE" | "SANCTION";
             note?: string;
             sanction?: components["schemas"]["SanctionRequest"];
+        };
+        EditorPickCreateRequest: {
+            /** Format: int64 */
+            bookId: number;
+            /** Format: int32 */
+            sortOrder: number;
+            note?: string;
+        };
+        EditorPickView: {
+            /** Format: int64 */
+            id: number;
+            book: components["schemas"]["BookSummary"];
+            /** Format: int32 */
+            sortOrder: number;
+            note?: string;
         };
         ClubActionRequest: {
             reason: string;
@@ -1997,11 +3953,18 @@ export interface components {
             hasSpoiler?: boolean;
         };
         UpdatePostRequest: {
+            /** Format: int64 */
+            bookId?: number;
             title?: string;
             bodyMd?: string;
-            tags: string[];
+            /** @description 생략하면 유지, 빈 목록이면 비움 */
+            tags?: string[];
             /** @enum {string} */
-            visibility?: "PUBLIC" | "LINK" | "PRIVATE";
+            visibility?: "PUBLIC" | "LINK" | "PRIVATE" | "CLUB";
+            /** @description 생략하면 유지, 빈 목록이면 사진을 전부 뗌 */
+            imageIds?: number[];
+            /** @description 더 쓰지 않는다 — 보내도 무시한다(옛 앱 호환) */
+            quoteIds?: number[];
         };
         NotificationSettingsRequest: {
             /** @enum {string} */
@@ -2019,6 +3982,10 @@ export interface components {
         UpdateProfileRequest: {
             nickname?: string;
             avatarUrl?: string;
+            gender?: string;
+            /** Format: date */
+            birthDate?: string;
+            preferredCategories: string[];
         };
         UpdateProgressRequest: {
             /** Format: int32 */
@@ -2035,8 +4002,6 @@ export interface components {
             description?: string;
             /** @enum {string} */
             visibility?: "CODE_ONLY" | "LINK" | "PUBLIC";
-            /** Format: int32 */
-            memberLimit?: number;
             /** Format: date */
             endsAt?: string;
             allowNudge?: boolean;
@@ -2045,8 +4010,20 @@ export interface components {
             shareProgress?: boolean;
             allowNudge?: boolean;
         };
+        UpdateClubPostRequest: {
+            body?: string;
+            /** Format: int32 */
+            anchorPage?: number;
+            /** @enum {string} */
+            spoilerLevel?: "NONE" | "PAGE" | "BOOK";
+        };
         OpsFlagRequest: {
             enabled: boolean;
+            note?: string;
+        };
+        EditorPickUpdateRequest: {
+            /** Format: int32 */
+            sortOrder: number;
             note?: string;
         };
         UpdateBookRequest: {
@@ -2081,83 +4058,28 @@ export interface components {
             longestStreakDays: number;
             daily: components["schemas"]["DailyStat"][];
         };
-        VerificationPreview: {
-            /** @enum {string} */
-            expectedLevel: "VERIFIED_FULL" | "VERIFIED_PARTIAL" | "UNVERIFIED" | "FLAGGED";
-            /** Format: double */
-            coverage: number;
-            /** Format: int32 */
-            timerSessionCount: number;
+        UserProfileView: {
             /** Format: int64 */
-            verifiedMinutes: number;
+            userId: number;
+            nickname: string;
+            avatarUrl?: string;
+            handle: string;
             /** Format: int64 */
-            requiredMinutes: number;
-            flags: string[];
-            canRate: boolean;
-        };
-        PageResponseReviewView: {
-            content?: components["schemas"]["ReviewView"][];
-            /** Format: int32 */
-            page?: number;
-            /** Format: int32 */
-            size?: number;
+            followerCount: number;
             /** Format: int64 */
-            totalElements?: number;
-            /** Format: int32 */
-            totalPages?: number;
-            hasNext?: boolean;
-        };
-        BookDetail: {
-            book: components["schemas"]["BookSummary"];
-            description?: string;
-            verifiedRating?: components["schemas"]["RatingSummary"];
-            overallRating?: components["schemas"]["RatingSummary"];
+            followingCount: number;
             /** Format: int64 */
-            verifiedReviewCount: number;
-        };
-        RatingSummary: {
-            /** Format: double */
-            average?: number;
+            visitCount: number;
             /** Format: int64 */
-            count: number;
+            publicPostCount: number;
+            iFollow: boolean;
+            followsMe: boolean;
+            mutual: boolean;
+            canChat: boolean;
+            me: boolean;
         };
         PageResponsePostView: {
             content?: components["schemas"]["PostView"][];
-            /** Format: int32 */
-            page?: number;
-            /** Format: int32 */
-            size?: number;
-            /** Format: int64 */
-            totalElements?: number;
-            /** Format: int32 */
-            totalPages?: number;
-            hasNext?: boolean;
-        };
-        NotificationView: {
-            /** Format: int64 */
-            id: number;
-            /** @enum {string} */
-            type: "HABIT" | "LAG" | "MICRO_MISSION" | "STREAK" | "ALMOST_DONE" | "ACHIEVEMENT" | "CLEANUP" | "CLUB_CHECKPOINT_DUE" | "CLUB_CHECKPOINT_RESULT" | "CLUB_OVERTAKEN" | "CLUB_FALLBEHIND" | "CLUB_NEW_POST" | "CLUB_NUDGE" | "CLUB_ENDED";
-            /** Format: int32 */
-            lagLevel?: number;
-            /** Format: int64 */
-            readingRecordId?: number;
-            /** Format: int64 */
-            clubId?: number;
-            title: string;
-            body: string;
-            payload: {
-                [key: string]: unknown;
-            };
-            /** Format: date-time */
-            scheduledAt: string;
-            /** Format: date-time */
-            sentAt?: string;
-            /** Format: date-time */
-            openedAt?: string;
-        };
-        PageResponseNotificationView: {
-            content?: components["schemas"]["NotificationView"][];
             /** Format: int32 */
             page?: number;
             /** Format: int32 */
@@ -2192,6 +4114,218 @@ export interface components {
             /** Format: int64 */
             paused: number;
         };
+        PageResponseReviewCommentView: {
+            content?: components["schemas"]["ReviewCommentView"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasNext?: boolean;
+        };
+        VerificationPreview: {
+            /** @enum {string} */
+            expectedLevel: "VERIFIED_FULL" | "VERIFIED_PARTIAL" | "UNVERIFIED" | "FLAGGED";
+            /** Format: double */
+            coverage: number;
+            /** Format: int32 */
+            timerSessionCount: number;
+            /** Format: int64 */
+            verifiedMinutes: number;
+            /** Format: int64 */
+            requiredMinutes: number;
+            flags: string[];
+            canRate: boolean;
+        };
+        PageResponseReviewView: {
+            content?: components["schemas"]["ReviewView"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasNext?: boolean;
+        };
+        BookDetail: {
+            book: components["schemas"]["BookSummary"];
+            description?: string;
+            verifiedRating?: components["schemas"]["RatingSummary"];
+            overallRating?: components["schemas"]["RatingSummary"];
+            /** Format: int64 */
+            verifiedReviewCount: number;
+            liked: boolean;
+            /** Format: int64 */
+            likeCount: number;
+            /** Format: int64 */
+            myRecordId?: number;
+            purchaseLink?: string;
+            addonLink?: string;
+            tableOfContents?: string;
+        };
+        RatingSummary: {
+            /** Format: double */
+            average?: number;
+            /** Format: int64 */
+            count: number;
+        };
+        LikerView: {
+            /** Format: int64 */
+            userId: number;
+            nickname: string;
+            avatarUrl?: string;
+            /** Format: date-time */
+            likedAt: string;
+        };
+        PageResponseLikerView: {
+            content?: components["schemas"]["LikerView"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasNext?: boolean;
+        };
+        PageResponsePostCommentView: {
+            content?: components["schemas"]["PostCommentView"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasNext?: boolean;
+        };
+        PageResponsePostcardView: {
+            content?: components["schemas"]["PostcardView"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasNext?: boolean;
+        };
+        PageResponsePlazaItemView: {
+            content?: components["schemas"]["PlazaItemView"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasNext?: boolean;
+        };
+        PlazaItemView: {
+            /** @enum {string} */
+            type: "QUOTE" | "FINISH";
+            /** Format: int64 */
+            authorId: number;
+            authorNickname: string;
+            authorAvatarUrl?: string;
+            /** Format: int64 */
+            bookId: number;
+            bookTitle: string;
+            bookCoverUrl?: string;
+            /** Format: date-time */
+            occurredAt: string;
+        };
+        NotificationView: {
+            /** Format: int64 */
+            id: number;
+            /** @enum {string} */
+            type: "HABIT" | "LAG" | "MICRO_MISSION" | "STREAK" | "ALMOST_DONE" | "ACHIEVEMENT" | "CLEANUP" | "POSTCARD_RECEIVED" | "POSTCARD_REPLIED" | "FOLLOWED" | "FOLLOW_CONNECTED" | "CHAT_MESSAGE" | "POST_LIKED" | "POST_COMMENTED" | "CLUB_CHECKPOINT_DUE" | "CLUB_CHECKPOINT_RESULT" | "CLUB_OVERTAKEN" | "CLUB_FALLBEHIND" | "CLUB_NEW_POST" | "CLUB_NUDGE" | "CLUB_ENDED" | "CLUB_NOTE_PAGE" | "CLUB_WEEKLY_LOG";
+            /** Format: int32 */
+            lagLevel?: number;
+            /** Format: int64 */
+            readingRecordId?: number;
+            /** Format: int64 */
+            clubId?: number;
+            title: string;
+            body: string;
+            payload: {
+                [key: string]: unknown;
+            };
+            /** Format: date-time */
+            scheduledAt: string;
+            /** Format: date-time */
+            sentAt?: string;
+            /** Format: date-time */
+            openedAt?: string;
+        };
+        PageResponseNotificationView: {
+            content?: components["schemas"]["NotificationView"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasNext?: boolean;
+        };
+        PageResponseVisitorView: {
+            content?: components["schemas"]["VisitorView"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasNext?: boolean;
+        };
+        VisitorView: {
+            /** Format: int64 */
+            userId: number;
+            nickname: string;
+            avatarUrl?: string;
+            /** Format: date-time */
+            visitedAt: string;
+        };
+        PageResponseFollowUserView: {
+            content?: components["schemas"]["FollowUserView"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasNext?: boolean;
+        };
+        FollowingIdsView: {
+            ids: number[];
+        };
+        ClubMemberBrief: {
+            /** Format: int64 */
+            userId: number;
+            nickname: string;
+            avatarUrl?: string;
+            /** @enum {string} */
+            role: "HOST" | "MODERATOR" | "MEMBER";
+            isMe: boolean;
+            /** Format: double */
+            completionRate?: number;
+            readingNow: boolean;
+        };
         ClubSummaryView: {
             /** Format: int64 */
             id: number;
@@ -2210,6 +4344,9 @@ export interface components {
             averageCompletionRate?: number;
             /** Format: int32 */
             unreadPostCount: number;
+            /** @enum {string} */
+            myRole: "HOST" | "MODERATOR" | "MEMBER";
+            members: components["schemas"]["ClubMemberBrief"][];
         };
         PageResponseClubSummaryView: {
             content?: components["schemas"]["ClubSummaryView"][];
@@ -2240,17 +4377,13 @@ export interface components {
             bestQuotes: string[];
             topDiscussant?: string;
         };
-        PageResponseClubPostView: {
-            content?: components["schemas"]["ClubPostView"][];
-            /** Format: int32 */
-            page?: number;
-            /** Format: int32 */
-            size?: number;
+        ReadingNowView: {
             /** Format: int64 */
-            totalElements?: number;
-            /** Format: int32 */
-            totalPages?: number;
-            hasNext?: boolean;
+            userId: number;
+            nickname: string;
+            avatarUrl?: string;
+            /** Format: date-time */
+            startedAt: string;
         };
         ClubPreview: {
             /** Format: int64 */
@@ -2273,6 +4406,141 @@ export interface components {
             joinable: boolean;
             joinBlockedReason?: string;
         };
+        PageResponseClubPostView: {
+            content?: components["schemas"]["ClubPostView"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasNext?: boolean;
+        };
+        PlaceView: {
+            id?: string;
+            name?: string;
+            address?: string;
+            roadAddress?: string;
+            /** Format: double */
+            latitude: number;
+            /** Format: double */
+            longitude: number;
+            phone?: string;
+            mapUrl?: string;
+        };
+        Coordinates: {
+            /** Format: double */
+            latitude: number;
+            /** Format: double */
+            longitude: number;
+        };
+        AddressView: {
+            address?: string;
+            roadAddress?: string;
+            buildingName?: string;
+            zonecode?: string;
+            /** Format: double */
+            latitude: number;
+            /** Format: double */
+            longitude: number;
+        };
+        /** @description 모임 공유 노트 — 모임 하나에 대형노트 한 권. 아직 아무도 쓰지 않았으면 id 는 null, version 0, 빈 문서 */
+        MeetingNoteView: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: int64 */
+            clubId: number;
+            /** Format: int64 */
+            meetingId: number;
+            meetingTitle?: string;
+            /** Format: date-time */
+            meetingStartsAt?: string;
+            /** @description 대형노트 문서 {v, paper, kind:'large', elements[]} — 앱이 소유한 JSON */
+            document: {
+                [key: string]: unknown;
+            };
+            /** Format: int32 */
+            version: number;
+            /** Format: int32 */
+            elementCount: number;
+            /** @description 노트에 손댄 멤버 — 처음 손댄 순 */
+            contributors: components["schemas"]["MeetingAttendeeView"][];
+            /** Format: date-time */
+            updatedAt?: string;
+            /** @description 끝난 클럽·취소된 모임이면 true — 읽기만 된다 */
+            readOnly: boolean;
+        };
+        PageResponseMeetingNoteView: {
+            content?: components["schemas"]["MeetingNoteView"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasNext?: boolean;
+        };
+        ClubLogDayView: {
+            /** Format: date */
+            date: string;
+            logs: components["schemas"]["ClubPostView"][];
+            summary: components["schemas"]["ClubLogSummary"];
+        };
+        ClubLogSummary: {
+            /** Format: int64 */
+            pagesRead: number;
+            /** Format: int64 */
+            durationSec: number;
+            /** Format: int64 */
+            readerCount: number;
+            /** Format: int32 */
+            logCount: number;
+        };
+        ClubLogWeekView: {
+            /** Format: date */
+            weekStart: string;
+            /** Format: date */
+            weekEnd: string;
+            clubName: string;
+            book?: components["schemas"]["BookSummary"];
+            summary: components["schemas"]["ClubLogSummary"];
+            highlights: components["schemas"]["ClubPostView"][];
+            topQuote?: string;
+        };
+        ClubLogDayCount: {
+            /** Format: date */
+            date: string;
+            /** Format: int32 */
+            logCount: number;
+        };
+        ChatState: {
+            unlocked: boolean;
+            /** Format: int32 */
+            unlockCost: number;
+            /** Format: int32 */
+            bookmarkBalance: number;
+            /** Format: int64 */
+            unreadCount: number;
+            /** Format: int64 */
+            totalMessageCount: number;
+            /** Format: date-time */
+            lastActivityAt?: string;
+        };
+        ChatMessagesView: {
+            messages?: components["schemas"]["ChatMessageView"][];
+            /** Format: int64 */
+            nextBeforeId?: number;
+        };
+        ChatGiftCandidate: {
+            /** Format: int64 */
+            userId?: number;
+            nickname?: string;
+            unlocked: boolean;
+        };
         PageResponseClubPreview: {
             content?: components["schemas"]["ClubPreview"][];
             /** Format: int32 */
@@ -2284,6 +4552,42 @@ export interface components {
             /** Format: int32 */
             totalPages?: number;
             hasNext?: boolean;
+        };
+        PageResponseChatSummaryView: {
+            content?: components["schemas"]["ChatSummaryView"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasNext?: boolean;
+        };
+        PopularBookView: {
+            book: components["schemas"]["BookSummary"];
+            /** Format: int64 */
+            savedCount: number;
+        };
+        BannerView: {
+            /** Format: int64 */
+            id: number;
+            /** @enum {string} */
+            kind: "AD" | "NOTICE";
+            title: string;
+            subtitle?: string;
+            imageUrl?: string;
+            bgColor?: string;
+            linkUrl?: string;
+            /** Format: int32 */
+            sortOrder: number;
+        };
+        SignupConfigResponse: {
+            verification: string;
+            portoneStoreId?: string;
+            portoneChannelKey?: string;
+            identityDevStub: boolean;
         };
         PageResponseUserRow: {
             content?: components["schemas"]["UserRow"][];
@@ -2548,6 +4852,16 @@ export interface components {
     headers: never;
     pathItems: never;
 }
+export type SchemaUpsertMeetingRequest = components['schemas']['UpsertMeetingRequest'];
+export type SchemaMeetingAttendeeView = components['schemas']['MeetingAttendeeView'];
+export type SchemaMeetingView = components['schemas']['MeetingView'];
+export type SchemaBannerUpsertRequest = components['schemas']['BannerUpsertRequest'];
+export type SchemaBannerAdminView = components['schemas']['BannerAdminView'];
+export type SchemaExchangeRequest = components['schemas']['ExchangeRequest'];
+export type SchemaWalletView = components['schemas']['WalletView'];
+export type SchemaSubscriptionVerifyRequest = components['schemas']['SubscriptionVerifyRequest'];
+export type SchemaSubscriptionCheckoutRequest = components['schemas']['SubscriptionCheckoutRequest'];
+export type SchemaSubscriptionCheckoutView = components['schemas']['SubscriptionCheckoutView'];
 export type SchemaEndRequest = components['schemas']['EndRequest'];
 export type SchemaClubProgressEcho = components['schemas']['ClubProgressEcho'];
 export type SchemaSessionEndResult = components['schemas']['SessionEndResult'];
@@ -2557,37 +4871,77 @@ export type SchemaManualRequest = components['schemas']['ManualRequest'];
 export type SchemaCreateReviewRequest = components['schemas']['CreateReviewRequest'];
 export type SchemaReviewView = components['schemas']['ReviewView'];
 export type SchemaReportRequest = components['schemas']['ReportRequest'];
+export type SchemaCreateReviewCommentRequest = components['schemas']['CreateReviewCommentRequest'];
+export type SchemaReviewCommentView = components['schemas']['ReviewCommentView'];
 export type SchemaCreatePostRequest = components['schemas']['CreatePostRequest'];
+export type SchemaBookQuoteView = components['schemas']['BookQuoteView'];
+export type SchemaPostImageView = components['schemas']['PostImageView'];
 export type SchemaPostView = components['schemas']['PostView'];
+export type SchemaPostLikeView = components['schemas']['PostLikeView'];
+export type SchemaCreatePostCommentRequest = components['schemas']['CreatePostCommentRequest'];
+export type SchemaPostCommentView = components['schemas']['PostCommentView'];
+export type SchemaSendPostcardRequest = components['schemas']['SendPostcardRequest'];
+export type SchemaPostcardView = components['schemas']['PostcardView'];
+export type SchemaReplyPostcardRequest = components['schemas']['ReplyPostcardRequest'];
 export type SchemaDeviceRegisterRequest = components['schemas']['DeviceRegisterRequest'];
+export type SchemaMeResponse = components['schemas']['MeResponse'];
 export type SchemaAddBookRequest = components['schemas']['AddBookRequest'];
 export type SchemaBookSummary = components['schemas']['BookSummary'];
 export type SchemaProgressView = components['schemas']['ProgressView'];
 export type SchemaReadingRecordView = components['schemas']['ReadingRecordView'];
 export type SchemaFinishRequest = components['schemas']['FinishRequest'];
 export type SchemaAbandonRequest = components['schemas']['AbandonRequest'];
+export type SchemaFollowUserView = components['schemas']['FollowUserView'];
 export type SchemaCheckpointRequest = components['schemas']['CheckpointRequest'];
 export type SchemaCreateClubRequest = components['schemas']['CreateClubRequest'];
 export type SchemaCheckpointView = components['schemas']['CheckpointView'];
 export type SchemaClubHomeView = components['schemas']['ClubHomeView'];
+export type SchemaClubSeatPolicy = components['schemas']['ClubSeatPolicy'];
 export type SchemaMemberProgressView = components['schemas']['MemberProgressView'];
 export type SchemaTransferHostRequest = components['schemas']['TransferHostRequest'];
+export type SchemaExpandSeatsRequest = components['schemas']['ExpandSeatsRequest'];
+export type SchemaClubSeatResult = components['schemas']['ClubSeatResult'];
 export type SchemaCreateClubPostRequest = components['schemas']['CreateClubPostRequest'];
 export type SchemaClubPostView = components['schemas']['ClubPostView'];
 export type SchemaReactionRequest = components['schemas']['ReactionRequest'];
 export type SchemaNudgeRequest = components['schemas']['NudgeRequest'];
+export type SchemaApplyMeetingNoteOpsRequest = components['schemas']['ApplyMeetingNoteOpsRequest'];
+export type SchemaMeetingNoteOpsResult = components['schemas']['MeetingNoteOpsResult'];
+export type SchemaMeetingNoteImageView = components['schemas']['MeetingNoteImageView'];
 export type SchemaKickRequest = components['schemas']['KickRequest'];
+export type SchemaJoinPublicRequest = components['schemas']['JoinPublicRequest'];
+export type SchemaUnlockResult = components['schemas']['UnlockResult'];
+export type SchemaSendChatRequest = components['schemas']['SendChatRequest'];
+export type SchemaChatMessageView = components['schemas']['ChatMessageView'];
+export type SchemaGiftChatRequest = components['schemas']['GiftChatRequest'];
+export type SchemaActivitySessionView = components['schemas']['ActivitySessionView'];
+export type SchemaActivityCardView = components['schemas']['ActivityCardView'];
 export type SchemaJoinRequest = components['schemas']['JoinRequest'];
+export type SchemaOpenChatRequest = components['schemas']['OpenChatRequest'];
+export type SchemaChatSummaryView = components['schemas']['ChatSummaryView'];
+export type SchemaSendMessageRequest = components['schemas']['SendMessageRequest'];
 export type SchemaManualBookRequest = components['schemas']['ManualBookRequest'];
 export type SchemaPageSuggestionRequest = components['schemas']['PageSuggestionRequest'];
 export type SchemaPageSuggestionResponse = components['schemas']['PageSuggestionResponse'];
+export type SchemaBookLikeView = components['schemas']['BookLikeView'];
+export type SchemaBookmarkPurchaseVerifyRequest = components['schemas']['BookmarkPurchaseVerifyRequest'];
+export type SchemaBookmarkPurchaseCheckoutRequest = components['schemas']['BookmarkPurchaseCheckoutRequest'];
+export type SchemaBookmarkPurchaseCheckoutView = components['schemas']['BookmarkPurchaseCheckoutView'];
 export type SchemaSocialLoginRequest = components['schemas']['SocialLoginRequest'];
-export type SchemaMeResponse = components['schemas']['MeResponse'];
 export type SchemaTokenResponse = components['schemas']['TokenResponse'];
+export type SchemaEmailSignupRequest = components['schemas']['EmailSignupRequest'];
 export type SchemaRefreshRequest = components['schemas']['RefreshRequest'];
+export type SchemaEmailLoginRequest = components['schemas']['EmailLoginRequest'];
+export type SchemaEmailCodeRequest = components['schemas']['EmailCodeRequest'];
+export type SchemaEmailCodeResponse = components['schemas']['EmailCodeResponse'];
+export type SchemaAttendanceView = components['schemas']['AttendanceView'];
+export type SchemaWalletAdjustRequest = components['schemas']['WalletAdjustRequest'];
+export type SchemaSubscriptionGrantRequest = components['schemas']['SubscriptionGrantRequest'];
 export type SchemaSanctionRequest = components['schemas']['SanctionRequest'];
 export type SchemaOverrideVerificationRequest = components['schemas']['OverrideVerificationRequest'];
 export type SchemaResolveRequest = components['schemas']['ResolveRequest'];
+export type SchemaEditorPickCreateRequest = components['schemas']['EditorPickCreateRequest'];
+export type SchemaEditorPickView = components['schemas']['EditorPickView'];
 export type SchemaClubActionRequest = components['schemas']['ClubActionRequest'];
 export type SchemaLoginRequest = components['schemas']['LoginRequest'];
 export type SchemaAdminProfile = components['schemas']['AdminProfile'];
@@ -2601,25 +4955,57 @@ export type SchemaUpdateProgressRequest = components['schemas']['UpdateProgressR
 export type SchemaUpdateGoalRequest = components['schemas']['UpdateGoalRequest'];
 export type SchemaUpdateClubRequest = components['schemas']['UpdateClubRequest'];
 export type SchemaUpdateSharingRequest = components['schemas']['UpdateSharingRequest'];
+export type SchemaUpdateClubPostRequest = components['schemas']['UpdateClubPostRequest'];
 export type SchemaOpsFlagRequest = components['schemas']['OpsFlagRequest'];
+export type SchemaEditorPickUpdateRequest = components['schemas']['EditorPickUpdateRequest'];
 export type SchemaUpdateBookRequest = components['schemas']['UpdateBookRequest'];
 export type SchemaDailyStat = components['schemas']['DailyStat'];
 export type SchemaStatsSummary = components['schemas']['StatsSummary'];
+export type SchemaUserProfileView = components['schemas']['UserProfileView'];
+export type SchemaPageResponsePostView = components['schemas']['PageResponsePostView'];
+export type SchemaPageResponseReadingRecordView = components['schemas']['PageResponseReadingRecordView'];
+export type SchemaLibrarySummary = components['schemas']['LibrarySummary'];
+export type SchemaPageResponseReviewCommentView = components['schemas']['PageResponseReviewCommentView'];
 export type SchemaVerificationPreview = components['schemas']['VerificationPreview'];
 export type SchemaPageResponseReviewView = components['schemas']['PageResponseReviewView'];
 export type SchemaBookDetail = components['schemas']['BookDetail'];
 export type SchemaRatingSummary = components['schemas']['RatingSummary'];
-export type SchemaPageResponsePostView = components['schemas']['PageResponsePostView'];
+export type SchemaLikerView = components['schemas']['LikerView'];
+export type SchemaPageResponseLikerView = components['schemas']['PageResponseLikerView'];
+export type SchemaPageResponsePostCommentView = components['schemas']['PageResponsePostCommentView'];
+export type SchemaPageResponsePostcardView = components['schemas']['PageResponsePostcardView'];
+export type SchemaPageResponsePlazaItemView = components['schemas']['PageResponsePlazaItemView'];
+export type SchemaPlazaItemView = components['schemas']['PlazaItemView'];
 export type SchemaNotificationView = components['schemas']['NotificationView'];
 export type SchemaPageResponseNotificationView = components['schemas']['PageResponseNotificationView'];
-export type SchemaPageResponseReadingRecordView = components['schemas']['PageResponseReadingRecordView'];
-export type SchemaLibrarySummary = components['schemas']['LibrarySummary'];
+export type SchemaPageResponseVisitorView = components['schemas']['PageResponseVisitorView'];
+export type SchemaVisitorView = components['schemas']['VisitorView'];
+export type SchemaPageResponseFollowUserView = components['schemas']['PageResponseFollowUserView'];
+export type SchemaFollowingIdsView = components['schemas']['FollowingIdsView'];
+export type SchemaClubMemberBrief = components['schemas']['ClubMemberBrief'];
 export type SchemaClubSummaryView = components['schemas']['ClubSummaryView'];
 export type SchemaPageResponseClubSummaryView = components['schemas']['PageResponseClubSummaryView'];
 export type SchemaClubResultView = components['schemas']['ClubResultView'];
-export type SchemaPageResponseClubPostView = components['schemas']['PageResponseClubPostView'];
+export type SchemaReadingNowView = components['schemas']['ReadingNowView'];
 export type SchemaClubPreview = components['schemas']['ClubPreview'];
+export type SchemaPageResponseClubPostView = components['schemas']['PageResponseClubPostView'];
+export type SchemaPlaceView = components['schemas']['PlaceView'];
+export type SchemaCoordinates = components['schemas']['Coordinates'];
+export type SchemaAddressView = components['schemas']['AddressView'];
+export type SchemaMeetingNoteView = components['schemas']['MeetingNoteView'];
+export type SchemaPageResponseMeetingNoteView = components['schemas']['PageResponseMeetingNoteView'];
+export type SchemaClubLogDayView = components['schemas']['ClubLogDayView'];
+export type SchemaClubLogSummary = components['schemas']['ClubLogSummary'];
+export type SchemaClubLogWeekView = components['schemas']['ClubLogWeekView'];
+export type SchemaClubLogDayCount = components['schemas']['ClubLogDayCount'];
+export type SchemaChatState = components['schemas']['ChatState'];
+export type SchemaChatMessagesView = components['schemas']['ChatMessagesView'];
+export type SchemaChatGiftCandidate = components['schemas']['ChatGiftCandidate'];
 export type SchemaPageResponseClubPreview = components['schemas']['PageResponseClubPreview'];
+export type SchemaPageResponseChatSummaryView = components['schemas']['PageResponseChatSummaryView'];
+export type SchemaPopularBookView = components['schemas']['PopularBookView'];
+export type SchemaBannerView = components['schemas']['BannerView'];
+export type SchemaSignupConfigResponse = components['schemas']['SignupConfigResponse'];
 export type SchemaPageResponseUserRow = components['schemas']['PageResponseUserRow'];
 export type SchemaUserRow = components['schemas']['UserRow'];
 export type SchemaSanctionRow = components['schemas']['SanctionRow'];
@@ -2639,6 +5025,193 @@ export type SchemaAuditRow = components['schemas']['AuditRow'];
 export type SchemaPageResponseAuditRow = components['schemas']['PageResponseAuditRow'];
 export type $defs = Record<string, never>;
 export interface operations {
+    meetingDetail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: number;
+                meetingId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MeetingView"];
+                };
+            };
+        };
+    };
+    updateMeeting: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: number;
+                meetingId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpsertMeetingRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MeetingView"];
+                };
+            };
+        };
+    };
+    cancelMeeting: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: number;
+                meetingId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BannerUpsertRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["BannerAdminView"];
+                };
+            };
+        };
+    };
+    delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    exchange: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExchangeRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["WalletView"];
+                };
+            };
+        };
+    };
+    verify: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubscriptionVerifyRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    checkout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubscriptionCheckoutRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["SubscriptionCheckoutView"];
+                };
+            };
+        };
+    };
     end: {
         parameters: {
             query?: never;
@@ -2783,6 +5356,57 @@ export interface operations {
             };
         };
     };
+    list: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path: {
+                reviewId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponseReviewCommentView"];
+                };
+            };
+        };
+    };
+    create_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                reviewId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateReviewCommentRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ReviewCommentView"];
+                };
+            };
+        };
+    };
     listMine: {
         parameters: {
             query?: {
@@ -2806,7 +5430,7 @@ export interface operations {
             };
         };
     };
-    create_1: {
+    create_2: {
         parameters: {
             query?: never;
             header?: never;
@@ -2826,6 +5450,156 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["PostView"];
+                };
+            };
+        };
+    };
+    like: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                postId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PostLikeView"];
+                };
+            };
+        };
+    };
+    list_1: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path: {
+                postId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponsePostCommentView"];
+                };
+            };
+        };
+    };
+    create_3: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                postId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreatePostCommentRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PostCommentView"];
+                };
+            };
+        };
+    };
+    upload: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PostImageView"];
+                };
+            };
+        };
+    };
+    send: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SendPostcardRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PostcardView"];
+                };
+            };
+        };
+    };
+    reply: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                postcardId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReplyPostcardRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PostcardView"];
                 };
             };
         };
@@ -2872,7 +5646,34 @@ export interface operations {
             };
         };
     };
-    list: {
+    uploadAvatar: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MeResponse"];
+                };
+            };
+        };
+    };
+    list_2: {
         parameters: {
             query?: {
                 status?: "WANT_TO_READ" | "READING" | "PAUSED" | "FINISHED" | "ABANDONED";
@@ -3016,6 +5817,48 @@ export interface operations {
             };
         };
     };
+    follow: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["FollowUserView"];
+                };
+            };
+        };
+    };
+    unfollow: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     myClubs: {
         parameters: {
             query?: {
@@ -3039,7 +5882,7 @@ export interface operations {
             };
         };
     };
-    create_2: {
+    create_4: {
         parameters: {
             query?: never;
             header?: never;
@@ -3084,6 +5927,32 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    expandSeats: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExpandSeatsRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ClubSeatResult"];
+                };
             };
         };
     };
@@ -3137,7 +6006,7 @@ export interface operations {
             };
         };
     };
-    create_3: {
+    create_5: {
         parameters: {
             query?: never;
             header?: never;
@@ -3287,6 +6156,215 @@ export interface operations {
             };
         };
     };
+    meetings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MeetingView"][];
+                };
+            };
+        };
+    };
+    createMeeting: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpsertMeetingRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MeetingView"];
+                };
+            };
+        };
+    };
+    applyMeetingNoteOps: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: number;
+                meetingId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ApplyMeetingNoteOpsRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MeetingNoteOpsResult"];
+                };
+            };
+        };
+    };
+    uploadMeetingNoteImage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: number;
+                meetingId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MeetingNoteImageView"];
+                };
+            };
+        };
+    };
+    attend: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: number;
+                meetingId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MeetingView"];
+                };
+            };
+        };
+    };
+    unattend: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: number;
+                meetingId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MeetingView"];
+                };
+            };
+        };
+    };
+    day: {
+        parameters: {
+            query?: {
+                date?: string;
+            };
+            header?: never;
+            path: {
+                clubId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ClubLogDayView"];
+                };
+            };
+        };
+    };
+    create_6: {
+        parameters: {
+            query?: {
+                body?: string;
+                anchorPage?: number;
+                spoilerLevel?: "NONE" | "PAGE" | "BOOK";
+                readingSessionId?: number;
+            };
+            header?: never;
+            path: {
+                clubId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ClubPostView"];
+                };
+            };
+        };
+    };
     kick: {
         parameters: {
             query?: never;
@@ -3311,6 +6389,32 @@ export interface operations {
             };
         };
     };
+    joinPublic: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["JoinPublicRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ClubHomeView"];
+                };
+            };
+        };
+    };
     end_1: {
         parameters: {
             query?: never;
@@ -3328,6 +6432,150 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    unlockChat: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["UnlockResult"];
+                };
+            };
+        };
+    };
+    chatMessages: {
+        parameters: {
+            query?: {
+                beforeId?: number;
+            };
+            header?: never;
+            path: {
+                clubId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ChatMessagesView"];
+                };
+            };
+        };
+    };
+    sendChat: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SendChatRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ChatMessageView"];
+                };
+            };
+        };
+    };
+    giftChat: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GiftChatRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["UnlockResult"];
+                };
+            };
+        };
+    };
+    startActivity: {
+        parameters: {
+            query?: {
+                meetingId?: number;
+            };
+            header?: never;
+            path: {
+                clubId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ActivitySessionView"];
+                };
+            };
+        };
+    };
+    endActivity: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ActivityCardView"];
+                };
             };
         };
     };
@@ -3351,6 +6599,103 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["ClubHomeView"];
+                };
+            };
+        };
+    };
+    list_3: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponseChatSummaryView"];
+                };
+            };
+        };
+    };
+    open_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OpenChatRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ChatSummaryView"];
+                };
+            };
+        };
+    };
+    messages: {
+        parameters: {
+            query?: {
+                beforeId?: number;
+            };
+            header?: never;
+            path: {
+                chatId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ChatMessagesView"];
+                };
+            };
+        };
+    };
+    send_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                chatId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SendMessageRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ChatMessageView"];
                 };
             };
         };
@@ -3428,6 +6773,76 @@ export interface operations {
             };
         };
     };
+    like_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                bookId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["BookLikeView"];
+                };
+            };
+        };
+    };
+    verify_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BookmarkPurchaseVerifyRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["WalletView"];
+                };
+            };
+        };
+    };
+    checkout_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BookmarkPurchaseCheckoutRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["BookmarkPurchaseCheckoutView"];
+                };
+            };
+        };
+    };
     socialLogin: {
         parameters: {
             query?: never;
@@ -3438,6 +6853,54 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["SocialLoginRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["TokenResponse"];
+                };
+            };
+        };
+    };
+    linkSocial: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SocialLoginRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MeResponse"];
+                };
+            };
+        };
+    };
+    signup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmailSignupRequest"];
             };
         };
         responses: {
@@ -3481,6 +6944,164 @@ export interface operations {
             query?: never;
             header?: never;
             path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    login: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmailLoginRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["TokenResponse"];
+                };
+            };
+        };
+    };
+    requestEmailCode: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmailCodeRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["EmailCodeResponse"];
+                };
+            };
+        };
+    };
+    status: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["AttendanceView"];
+                };
+            };
+        };
+    };
+    checkIn: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["AttendanceView"];
+                };
+            };
+        };
+    };
+    adjustWallet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WalletAdjustRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    grantSubscription: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubscriptionGrantRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    revokeSubscription: {
+        parameters: {
+            query: {
+                reason: string;
+            };
+            header?: never;
+            path: {
+                userId: number;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -3586,6 +7207,50 @@ export interface operations {
             };
         };
     };
+    list_4: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["EditorPickView"][];
+                };
+            };
+        };
+    };
+    create_7: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EditorPickCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["EditorPickView"];
+                };
+            };
+        };
+    };
     transferHost_1: {
         parameters: {
             query: {
@@ -3664,6 +7329,52 @@ export interface operations {
             };
         };
     };
+    list_5: {
+        parameters: {
+            query?: {
+                kind?: "AD" | "NOTICE";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["BannerAdminView"][];
+                };
+            };
+        };
+    };
+    create_8: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BannerUpsertRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["BannerAdminView"];
+                };
+            };
+        };
+    };
     issueTotp: {
         parameters: {
             query?: never;
@@ -3686,7 +7397,7 @@ export interface operations {
             };
         };
     };
-    login: {
+    login_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -3710,7 +7421,7 @@ export interface operations {
             };
         };
     };
-    create_4: {
+    create_9: {
         parameters: {
             query?: never;
             header?: never;
@@ -3734,7 +7445,29 @@ export interface operations {
             };
         };
     };
-    delete: {
+    detail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                reviewId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ReviewView"];
+                };
+            };
+        };
+    };
+    delete_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -3754,7 +7487,7 @@ export interface operations {
             };
         };
     };
-    update: {
+    update_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -3780,7 +7513,29 @@ export interface operations {
             };
         };
     };
-    delete_1: {
+    get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                postId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PostView"];
+                };
+            };
+        };
+    };
+    delete_2: {
         parameters: {
             query?: never;
             header?: never;
@@ -3800,7 +7555,7 @@ export interface operations {
             };
         };
     };
-    update_1: {
+    update_2: {
         parameters: {
             query?: never;
             header?: never;
@@ -3868,7 +7623,25 @@ export interface operations {
             };
         };
     };
-    update_2: {
+    deleteAccount: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    update_3: {
         parameters: {
             query?: never;
             header?: never;
@@ -3966,7 +7739,7 @@ export interface operations {
             };
         };
     };
-    update_3: {
+    update_4: {
         parameters: {
             query?: never;
             header?: never;
@@ -4016,6 +7789,77 @@ export interface operations {
             };
         };
     };
+    detail_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: number;
+                postId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ClubPostView"];
+                };
+            };
+        };
+    };
+    delete_3: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: number;
+                postId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    update_5: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: number;
+                postId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateClubPostRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ClubPostView"];
+                };
+            };
+        };
+    };
     updateOpsFlag: {
         parameters: {
             query?: never;
@@ -4037,6 +7881,52 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    delete_4: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    update_6: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EditorPickUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["EditorPickView"];
+                };
             };
         };
     };
@@ -4086,6 +7976,145 @@ export interface operations {
             };
         };
     };
+    wallet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["WalletView"];
+                };
+            };
+        };
+    };
+    stats: {
+        parameters: {
+            query?: {
+                days?: number;
+            };
+            header?: never;
+            path: {
+                userId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["StatsSummary"];
+                };
+            };
+        };
+    };
+    profile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["UserProfileView"];
+                };
+            };
+        };
+    };
+    posts: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path: {
+                userId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponsePostView"];
+                };
+            };
+        };
+    };
+    library: {
+        parameters: {
+            query?: {
+                status?: "WANT_TO_READ" | "READING" | "PAUSED" | "FINISHED" | "ABANDONED";
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path: {
+                userId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponseReadingRecordView"];
+                };
+            };
+        };
+    };
+    librarySummary: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["LibrarySummary"];
+                };
+            };
+        };
+    };
     summary: {
         parameters: {
             query?: {
@@ -4108,7 +8137,7 @@ export interface operations {
             };
         };
     };
-    list_1: {
+    list_6: {
         parameters: {
             query?: {
                 readingRecordId?: number;
@@ -4148,6 +8177,32 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["SessionView"];
+                };
+            };
+        };
+    };
+    replies: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path: {
+                reviewId: number;
+                commentId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponseReviewCommentView"];
                 };
             };
         };
@@ -4193,6 +8248,49 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["PageResponseReviewView"];
+                };
+            };
+        };
+    };
+    onboardingCategories: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": string[];
+                };
+            };
+        };
+    };
+    onboardingBooks: {
+        parameters: {
+            query?: {
+                category?: string;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["BookSummary"][];
                 };
             };
         };
@@ -4318,7 +8416,151 @@ export interface operations {
             };
         };
     };
-    list_2: {
+    likers: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path: {
+                postId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponseLikerView"];
+                };
+            };
+        };
+    };
+    feed_1: {
+        parameters: {
+            query?: {
+                sort?: "HOT" | "NEW";
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponsePostView"];
+                };
+            };
+        };
+    };
+    listByClub: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path: {
+                clubId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponsePostView"];
+                };
+            };
+        };
+    };
+    sent: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponsePostcardView"];
+                };
+            };
+        };
+    };
+    inbox: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponsePostcardView"];
+                };
+            };
+        };
+    };
+    feed_2: {
+        parameters: {
+            query?: {
+                type?: "QUOTE" | "FINISH";
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponsePlazaItemView"];
+                };
+            };
+        };
+    };
+    list_7: {
         parameters: {
             query?: {
                 page?: number;
@@ -4341,7 +8583,30 @@ export interface operations {
             };
         };
     };
-    detail: {
+    visitors: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponseVisitorView"];
+                };
+            };
+        };
+    };
+    detail_2: {
         parameters: {
             query?: never;
             header?: never;
@@ -4363,7 +8628,7 @@ export interface operations {
             };
         };
     };
-    delete_2: {
+    delete_5: {
         parameters: {
             query?: never;
             header?: never;
@@ -4403,6 +8668,72 @@ export interface operations {
             };
         };
     };
+    following: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponseFollowUserView"];
+                };
+            };
+        };
+    };
+    followingIds: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["FollowingIdsView"];
+                };
+            };
+        };
+    };
+    followers: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponseFollowUserView"];
+                };
+            };
+        };
+    };
     result: {
         parameters: {
             query?: never;
@@ -4425,13 +8756,12 @@ export interface operations {
             };
         };
     };
-    detail_1: {
+    readingNow: {
         parameters: {
             query?: never;
             header?: never;
             path: {
                 clubId: number;
-                postId: number;
             };
             cookie?: never;
         };
@@ -4443,18 +8773,17 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ClubPostView"];
+                    "*/*": components["schemas"]["ReadingNowView"][];
                 };
             };
         };
     };
-    delete_3: {
+    previewById: {
         parameters: {
             query?: never;
             header?: never;
             path: {
                 clubId: number;
-                postId: number;
             };
             cookie?: never;
         };
@@ -4465,7 +8794,244 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "*/*": components["schemas"]["ClubPreview"];
+                };
+            };
+        };
+    };
+    searchPlaces: {
+        parameters: {
+            query: {
+                query: string;
+            };
+            header?: never;
+            path: {
+                clubId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PlaceView"][];
+                };
+            };
+        };
+    };
+    geocodePlace: {
+        parameters: {
+            query: {
+                address: string;
+            };
+            header?: never;
+            path: {
+                clubId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["Coordinates"];
+                };
+            };
+        };
+    };
+    searchAddresses: {
+        parameters: {
+            query: {
+                query: string;
+            };
+            header?: never;
+            path: {
+                clubId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["AddressView"][];
+                };
+            };
+        };
+    };
+    meetingNote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: number;
+                meetingId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MeetingNoteView"];
+                };
+            };
+        };
+    };
+    meetingNoteFeed: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path: {
+                clubId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponseMeetingNoteView"];
+                };
+            };
+        };
+    };
+    week: {
+        parameters: {
+            query?: {
+                weekOf?: string;
+            };
+            header?: never;
+            path: {
+                clubId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ClubLogWeekView"];
+                };
+            };
+        };
+    };
+    days: {
+        parameters: {
+            query: {
+                from: string;
+                to: string;
+            };
+            header?: never;
+            path: {
+                clubId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ClubLogDayCount"][];
+                };
+            };
+        };
+    };
+    chatState: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ChatState"];
+                };
+            };
+        };
+    };
+    giftCandidates: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ChatGiftCandidate"][];
+                };
+            };
+        };
+    };
+    currentActivity: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ActivitySessionView"];
+                };
             };
         };
     };
@@ -4514,7 +9080,27 @@ export interface operations {
             };
         };
     };
-    detail_2: {
+    myActivityCards: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ActivityCardView"][];
+                };
+            };
+        };
+    };
+    detail_3: {
         parameters: {
             query?: never;
             header?: never;
@@ -4562,6 +9148,75 @@ export interface operations {
             };
         };
     };
+    posts_1: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path: {
+                bookId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponsePostView"];
+                };
+            };
+        };
+    };
+    recommended: {
+        parameters: {
+            query?: {
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["BookSummary"][];
+                };
+            };
+        };
+    };
+    popular: {
+        parameters: {
+            query?: {
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PopularBookView"][];
+                };
+            };
+        };
+    };
     findByIsbn: {
         parameters: {
             query?: never;
@@ -4580,6 +9235,71 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["BookSummary"];
+                };
+            };
+        };
+    };
+    yes24Curation: {
+        parameters: {
+            query?: {
+                kind?: "BESTSELLER" | "STEADY" | "NEW";
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["BookSummary"][];
+                };
+            };
+        };
+    };
+    list_8: {
+        parameters: {
+            query?: {
+                kind?: "AD" | "NOTICE";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["BannerView"][];
+                };
+            };
+        };
+    };
+    signupConfig: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["SignupConfigResponse"];
                 };
             };
         };
@@ -4836,12 +9556,94 @@ export interface operations {
             };
         };
     };
-    delete_4: {
+    delete_6: {
         parameters: {
             query?: never;
             header?: never;
             path: {
                 sessionId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    delete_7: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                reviewId: number;
+                commentId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    delete_8: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                postId: number;
+                commentId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    delete_9: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                postcardId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    delete_10: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                notificationId: number;
             };
             cookie?: never;
         };
@@ -4862,6 +9664,26 @@ export interface operations {
             header?: never;
             path: {
                 clubId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    delete_11: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                chatId: number;
             };
             cookie?: never;
         };
