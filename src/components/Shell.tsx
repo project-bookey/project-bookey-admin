@@ -11,9 +11,11 @@ import { authApi } from '@/lib/endpoints';
 const NAV = [
   { href: '/', label: '대시보드' },
   { href: '/moderation', label: '신고 큐' },
+  { href: '/inquiries', label: '고객문의' },
   { href: '/users', label: '회원' },
   { href: '/books', label: '도서' },
   { href: '/ads', label: '광고센터' },
+  { href: '/faqs', label: 'FAQ' },
   { href: '/reviews', label: '검증 심사' },
   { href: '/clubs', label: '모임' },
   { href: '/notifications', label: '알림 운영' },

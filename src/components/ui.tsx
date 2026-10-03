@@ -80,6 +80,34 @@ export function Input({
   );
 }
 
+/** 여러 줄 입력. 줄바꿈은 그대로 보내고, maxLength 를 주면 오른쪽 아래에 글자 수를 센다. */
+export function Textarea({
+  label, hint, rows = 6, maxLength, ...props
+}: React.TextareaHTMLAttributes<HTMLTextAreaElement> & { label?: string; hint?: string }) {
+  const length = typeof props.value === 'string' ? props.value.length : 0;
+  return (
+    <label className="block">
+      {label ? <span className="eyebrow mb-1.5 block">{label}</span> : null}
+      <textarea
+        {...props}
+        rows={rows}
+        maxLength={maxLength}
+        className={`block w-full resize-y whitespace-pre-wrap rounded-lg border border-[var(--color-line)] bg-[var(--color-surface)] px-3 py-2 text-[14px] leading-relaxed outline-none focus:border-[var(--color-ink)] ${props.className ?? ''}`}
+      />
+      {hint || maxLength ? (
+        <span className="mt-1 flex items-start justify-between gap-3 font-mono text-[11px] text-[var(--color-faint)]">
+          <span>{hint}</span>
+          {maxLength ? (
+            <span className={`numeral shrink-0 ${length >= maxLength ? 'text-[var(--color-danger)]' : ''}`}>
+              {length} / {maxLength}
+            </span>
+          ) : null}
+        </span>
+      ) : null}
+    </label>
+  );
+}
+
 export function Select({
   label, children, ...props
 }: React.SelectHTMLAttributes<HTMLSelectElement> & { label?: string }) {
@@ -118,6 +146,34 @@ export function Table({ head, children }: { head: string[]; children: ReactNode 
 export function Empty({ children }: { children: ReactNode }) {
   return (
     <div className="px-4 py-14 text-center text-[14px] text-[var(--color-muted)]">{children}</div>
+  );
+}
+
+/** 페이지 넘김. page 는 0부터 센다. 한 쪽뿐이면 그리지 않는다. */
+export function Pager({ page, totalPages, onChange }: {
+  page: number;
+  totalPages: number;
+  onChange: (page: number) => void;
+}) {
+  if (totalPages <= 1) return null;
+  const isFirst = page <= 0;
+  const isLast = page >= totalPages - 1;
+  const link =
+    'rounded-lg px-3 py-1.5 font-mono text-[12px] font-bold text-[var(--color-ink)] transition hover:bg-[var(--color-surface-alt)] disabled:cursor-default disabled:opacity-30 disabled:hover:bg-transparent';
+  return (
+    <nav aria-label="페이지" className="flex items-center justify-center gap-2 py-3">
+      <button type="button" className={link} disabled={isFirst} onClick={() => onChange(page - 1)}>
+        ‹ 이전
+      </button>
+      <span className="font-mono text-[11px] text-[var(--color-faint)]">·</span>
+      <span className="numeral text-[12px]">
+        {page + 1} / {totalPages}
+      </span>
+      <span className="font-mono text-[11px] text-[var(--color-faint)]">·</span>
+      <button type="button" className={link} disabled={isLast} onClick={() => onChange(page + 1)}>
+        다음 ›
+      </button>
+    </nav>
   );
 }
 

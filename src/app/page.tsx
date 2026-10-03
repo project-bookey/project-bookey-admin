@@ -23,7 +23,7 @@ export default function DashboardPage() {
       <PageHeader title="대시보드" description="오늘의 지표와 처리해야 할 일" />
 
       <div className="px-7 py-6">
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div className="grid grid-cols-3 gap-3">
           <Stat label="전체 회원" value={data?.totalUsers ?? 0} />
           <Stat label="오늘 활동 회원" value={data?.activeUsersToday ?? 0} />
           <Stat label="오늘 독서 세션" value={data?.readingSessionsToday ?? 0} />
@@ -45,6 +45,12 @@ export default function DashboardPage() {
             label="SLA 초과 신고"
             value={data?.overdueModeration ?? 0}
             warn={(data?.overdueModeration ?? 0) > 0}
+          />
+          <Stat
+            label="답변 대기 문의"
+            value={data?.waitingInquiries ?? 0}
+            warn={(data?.waitingInquiries ?? 0) > 0}
+            href="/inquiries"
           />
         </div>
 
@@ -131,15 +137,24 @@ export default function DashboardPage() {
   );
 }
 
-function Stat({ label, value, target, warn }: {
+/** KPI 카드. href 를 주면 카드 전체가 해당 화면으로 가는 링크가 된다. */
+function Stat({ label, value, target, warn, href }: {
   label: string;
   value: number | string;
   target?: string;
   warn?: boolean;
+  href?: string;
 }) {
-  return (
-    <Card className="px-5 py-4">
-      <p className="eyebrow">{label}</p>
+  const card = (
+    <Card
+      className={`h-full px-5 py-4 ${
+        href ? 'transition group-hover:border-[var(--color-ink)]' : ''
+      }`}
+    >
+      <p className="eyebrow">
+        {label}
+        {href ? ' ›' : ''}
+      </p>
       <p
         className={`numeral mt-2 text-[26px] leading-none ${
           warn ? 'text-[var(--color-danger)]' : ''
@@ -151,6 +166,13 @@ function Stat({ label, value, target, warn }: {
         <p className="mt-1.5 font-mono text-[10.5px] text-[var(--color-faint)]">{target}</p>
       ) : null}
     </Card>
+  );
+
+  if (!href) return card;
+  return (
+    <Link href={href} className="group block">
+      {card}
+    </Link>
   );
 }
 
