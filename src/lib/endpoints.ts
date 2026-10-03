@@ -1,6 +1,7 @@
 import { adminApi } from './api';
 import type {
-  AdminProfile, AuditRow, BannerAdminView, BannerKind, BannerUpsertRequest, BookRow, ClubRow, ClubStatus, Dashboard, LoginResponse,
+  AdminProfile, AuditRow, BannerAdminView, BannerKind, BannerUpsertRequest, BookRow, ClubRow, ClubStatus, Dashboard,
+  FaqAdminView, FaqUpsertRequest, InquiryAdminView, InquiryCategory, InquiryRow, InquiryStatus, LoginResponse,
   ModerationResolution, ModerationRow, ModerationSource, ModerationStatus, NotificationStats,
   OpsFlagRow, Page, ReviewRow, SanctionType, UserDetail, UserRow, UserStatus, VerificationLevel,
 } from './types';
@@ -65,6 +66,41 @@ export const moderationApi = {
       sanction?: { type: SanctionType; reason: string; durationDays?: number };
     },
   ) => adminApi<void>(`/admin/v1/moderation/${ticketId}/resolve`, { method: 'POST', body }),
+};
+
+export const inquiriesApi = {
+  /** 답변 대기만 거르면 오래 기다린 순, 그 밖에는 최신 순으로 온다. */
+  list: (status?: InquiryStatus, category?: InquiryCategory, page = 0) =>
+    adminApi<Page<InquiryRow>>('/admin/v1/inquiries', {
+      query: { status, category, page, size: 20 },
+    }),
+  /** 상세를 열 때마다 서버가 열람 기록(VIEW_INQUIRY)을 남긴다. */
+  detail: (inquiryId: number) => adminApi<InquiryAdminView>(`/admin/v1/inquiries/${inquiryId}`),
+  /** 첫 답변 — 사용자에게 알림이 간다. */
+  answer: (inquiryId: number, answer: string) =>
+    adminApi<InquiryAdminView>(`/admin/v1/inquiries/${inquiryId}/answer`, {
+      method: 'POST',
+      body: { answer },
+    }),
+  /** 답변 수정 — 알림은 다시 가지 않는다. */
+  editAnswer: (inquiryId: number, answer: string) =>
+    adminApi<InquiryAdminView>(`/admin/v1/inquiries/${inquiryId}/answer`, {
+      method: 'PUT',
+      body: { answer },
+    }),
+};
+
+export const faqsApi = {
+  /** 숨긴 항목까지 노출 순서대로 모두 온다. */
+  list: () => adminApi<FaqAdminView[]>('/admin/v1/faqs'),
+  create: (body: FaqUpsertRequest) =>
+    adminApi<FaqAdminView>('/admin/v1/faqs', { method: 'POST', body }),
+  update: (faqId: number, body: FaqUpsertRequest) =>
+    adminApi<FaqAdminView>(`/admin/v1/faqs/${faqId}`, { method: 'PUT', body }),
+  remove: (faqId: number) => adminApi<void>(`/admin/v1/faqs/${faqId}`, { method: 'DELETE' }),
+  /** 숨긴 항목까지 전체 id 를 원하는 순서대로 보내야 한다 — 빠지면 서버가 400 으로 막는다. */
+  reorder: (ids: number[]) =>
+    adminApi<FaqAdminView[]>('/admin/v1/faqs/order', { method: 'PUT', body: { ids } }),
 };
 
 export const reviewsApi = {

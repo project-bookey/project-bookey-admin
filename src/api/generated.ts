@@ -21,6 +21,59 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/v1/inquiries/{inquiryId}/answer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** 답변 수정 — 알림은 다시 가지 않는다. 아직 답하지 않은 문의면 409 */
+        put: operations["editAnswer"];
+        /** 답변 등록 — 사용자에게 알림이 간다. 이미 답한 문의면 409 */
+        post: operations["answer"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/v1/faqs/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** FAQ 수정 · 숨기기 — 전체 필드 교체 */
+        put: operations["update"];
+        post?: never;
+        /** FAQ 삭제 */
+        delete: operations["delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/v1/faqs/order": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** FAQ 순서 바꾸기 — 전체 id 를 원하는 순서대로 */
+        put: operations["reorder"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/v1/banners/{id}": {
         parameters: {
             query?: never;
@@ -30,10 +83,10 @@ export interface paths {
         };
         get?: never;
         /** 배너 수정 — 전체 필드 교체 */
-        put: operations["update"];
+        put: operations["update_1"];
         post?: never;
         /** 배너 삭제 */
-        delete: operations["delete"];
+        delete: operations["delete_1"];
         options?: never;
         head?: never;
         patch?: never;
@@ -451,6 +504,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/inquiries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 내 문의 목록 — 최신순 */
+        get: operations["listMine_1"];
+        put?: never;
+        /** 문의 남기기 */
+        post: operations["create_4"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/inquiries/images": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 문의 사진 업로드 — 문의에 붙이기 전 임시 저장, 24시간 안에 안 붙이면 삭제 */
+        post: operations["upload_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/follows/{userId}": {
         parameters: {
             query?: never;
@@ -480,7 +568,7 @@ export interface paths {
         get: operations["myClubs"];
         put?: never;
         /** 모임 만들기 — 초대 코드 자동 발급 */
-        post: operations["create_4"];
+        post: operations["create_5"];
         delete?: never;
         options?: never;
         head?: never;
@@ -549,7 +637,7 @@ export interface paths {
         get: operations["feed"];
         put?: never;
         /** 글 · 댓글 작성 */
-        post: operations["create_5"];
+        post: operations["create_6"];
         delete?: never;
         options?: never;
         head?: never;
@@ -691,6 +779,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/clubs/{clubId}/meetings/{meetingId}/note/close": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 모임 노트 마무리 — 모임을 연 사람(또는 호스트)만. 마무리하면 모두 읽기만 된다 */
+        post: operations["closeMeetingNote"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/clubs/{clubId}/meetings/{meetingId}/attendees/me": {
         parameters: {
             query?: never;
@@ -718,7 +823,7 @@ export interface paths {
         get: operations["day"];
         put?: never;
         /** 조각 남기기 — 사진 한 장(선택) + 한 줄, 쪽에 붙이면 그 쪽까지 읽은 멤버에게만 보인다 */
-        post: operations["create_6"];
+        post: operations["create_7"];
         delete?: never;
         options?: never;
         head?: never;
@@ -819,6 +924,24 @@ export interface paths {
         put?: never;
         post: operations["giftChat"];
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clubs/{clubId}/background": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 클럽 배경 사진 올리기 (호스트) — 클럽 머리에 깔린다. 이전 사진은 지운다 */
+        post: operations["uploadBackground"];
+        /** 클럽 배경 사진 빼기 (호스트) — 종이 바탕으로 돌아간다 */
+        delete: operations["removeBackground"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1063,6 +1186,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/auth/password/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 비밀번호 재설정 — 코드가 맞으면 새 비밀번호로 바꾸고 다른 기기는 로그아웃한 뒤 로그인시킨다 */
+        post: operations["resetPassword"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/password/code": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 비밀번호 재설정 코드 발급 — 가입된 이메일로 6자리 코드를 보낸다 */
+        post: operations["requestPasswordResetCode"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/auth/logout": {
         parameters: {
             query?: never;
@@ -1235,6 +1392,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/v1/faqs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** FAQ 전체 목록 — 숨긴 것 포함, 정렬 순 */
+        get: operations["list_4"];
+        put?: never;
+        /** FAQ 추가 — 맨 뒤에 붙는다 */
+        post: operations["create_8"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/v1/editor-picks": {
         parameters: {
             query?: never;
@@ -1243,10 +1418,10 @@ export interface paths {
             cookie?: never;
         };
         /** 에디터 픽 목록 */
-        get: operations["list_4"];
+        get: operations["list_5"];
         put?: never;
         /** 에디터 픽 추가 */
-        post: operations["create_7"];
+        post: operations["create_9"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1312,10 +1487,10 @@ export interface paths {
             cookie?: never;
         };
         /** 배너/공지 전체 목록 — 비활성·기간 외 포함 */
-        get: operations["list_5"];
+        get: operations["list_6"];
         put?: never;
         /** 배너 생성 */
-        post: operations["create_8"];
+        post: operations["create_10"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1366,7 +1541,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** 관리자 계정 생성 (SUPER_ADMIN) */
-        post: operations["create_9"];
+        post: operations["create_11"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1385,11 +1560,11 @@ export interface paths {
         put?: never;
         post?: never;
         /** 리뷰 삭제 */
-        delete: operations["delete_1"];
+        delete: operations["delete_2"];
         options?: never;
         head?: never;
         /** 리뷰 수정 — 등급은 재산정하지 않는다 */
-        patch: operations["update_1"];
+        patch: operations["update_2"];
         trace?: never;
     };
     "/api/v1/posts/{postId}": {
@@ -1404,11 +1579,11 @@ export interface paths {
         put?: never;
         post?: never;
         /** 독후감 삭제 */
-        delete: operations["delete_2"];
+        delete: operations["delete_3"];
         options?: never;
         head?: never;
         /** 독후감 수정 · 공개 범위 변경 */
-        patch: operations["update_2"];
+        patch: operations["update_3"];
         trace?: never;
     };
     "/api/v1/notifications/settings": {
@@ -1444,7 +1619,7 @@ export interface paths {
         options?: never;
         head?: never;
         /** 프로필 수정 */
-        patch: operations["update_3"];
+        patch: operations["update_4"];
         trace?: never;
     };
     "/api/v1/library/{recordId}/progress": {
@@ -1496,7 +1671,7 @@ export interface paths {
         options?: never;
         head?: never;
         /** 모임 정보 수정 (호스트) */
-        patch: operations["update_4"];
+        patch: operations["update_5"];
         trace?: never;
     };
     "/api/v1/clubs/{clubId}/sharing": {
@@ -1528,11 +1703,11 @@ export interface paths {
         put?: never;
         post?: never;
         /** 삭제 (작성자 또는 운영자) */
-        delete: operations["delete_3"];
+        delete: operations["delete_4"];
         options?: never;
         head?: never;
         /** 글 · 조각 수정 — 작성자만, 한 줄과 쪽을 보낸 값으로 바꾼다 */
-        patch: operations["update_5"];
+        patch: operations["update_6"];
         trace?: never;
     };
     "/admin/v1/ops-flags/{key}": {
@@ -1563,11 +1738,11 @@ export interface paths {
         put?: never;
         post?: never;
         /** 에디터 픽 삭제 */
-        delete: operations["delete_4"];
+        delete: operations["delete_5"];
         options?: never;
         head?: never;
         /** 에디터 픽 수정 — 정렬·메모 */
-        patch: operations["update_6"];
+        patch: operations["update_7"];
         trace?: never;
     };
     "/admin/v1/books/{bookId}": {
@@ -1731,7 +1906,7 @@ export interface paths {
             cookie?: never;
         };
         /** 도서별 세션 목록 */
-        get: operations["list_6"];
+        get: operations["list_7"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1799,7 +1974,7 @@ export interface paths {
             cookie?: never;
         };
         /** 내가 쓴 리뷰 */
-        get: operations["listMine_1"];
+        get: operations["listMine_2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2037,7 +2212,7 @@ export interface paths {
             cookie?: never;
         };
         /** 내 알림 목록 */
-        get: operations["list_7"];
+        get: operations["list_8"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2075,7 +2250,7 @@ export interface paths {
         put?: never;
         post?: never;
         /** 서재에서 삭제 */
-        delete: operations["delete_5"];
+        delete: operations["delete_6"];
         options?: never;
         head?: never;
         patch?: never;
@@ -2090,6 +2265,41 @@ export interface paths {
         };
         /** 서재 상태별 개수 */
         get: operations["summary_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/inquiries/{inquiryId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 문의 한 건과 답변 — 내 문의만 */
+        get: operations["get_1"];
+        put?: never;
+        post?: never;
+        /** 문의 삭제 — 답변 전후 상관없이 지운다 */
+        delete: operations["delete_7"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/inquiries/categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 문의 유형 — 앱 칩 순서, 맨 앞이 기본값 */
+        get: operations["categories"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2141,6 +2351,23 @@ export interface paths {
         };
         /** 팔로워 목록 */
         get: operations["followers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/faqs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** FAQ 목록 — 노출 중인 것만, 정렬 순 */
+        get: operations["list_9"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2542,7 +2769,7 @@ export interface paths {
             cookie?: never;
         };
         /** 활성 배너/공지 목록 — 기간 내, 정렬 순 */
-        get: operations["list_8"];
+        get: operations["list_10"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2670,6 +2897,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/v1/inquiries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 고객문의 목록 — 답변 대기만 보면 오래 기다린 순, 그 밖에는 최신순 */
+        get: operations["list_11"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/v1/inquiries/{inquiryId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 고객문의 상세 — 열람 로그가 남는다 */
+        get: operations["detail_4"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/v1/dashboard": {
         parameters: {
             query?: never;
@@ -2766,7 +3027,7 @@ export interface paths {
         put?: never;
         post?: never;
         /** 세션 삭제 */
-        delete: operations["delete_6"];
+        delete: operations["delete_8"];
         options?: never;
         head?: never;
         patch?: never;
@@ -2783,7 +3044,7 @@ export interface paths {
         put?: never;
         post?: never;
         /** 댓글 삭제 — 본인만 */
-        delete: operations["delete_7"];
+        delete: operations["delete_9"];
         options?: never;
         head?: never;
         patch?: never;
@@ -2800,7 +3061,7 @@ export interface paths {
         put?: never;
         post?: never;
         /** 댓글 삭제 — 본인만, 답글도 함께 지워진다 */
-        delete: operations["delete_8"];
+        delete: operations["delete_10"];
         options?: never;
         head?: never;
         patch?: never;
@@ -2817,7 +3078,7 @@ export interface paths {
         put?: never;
         post?: never;
         /** 엽서 삭제 — 보낸 사람 또는 받은 사람만 */
-        delete: operations["delete_9"];
+        delete: operations["delete_11"];
         options?: never;
         head?: never;
         patch?: never;
@@ -2834,7 +3095,7 @@ export interface paths {
         put?: never;
         post?: never;
         /** 내 알림 삭제 */
-        delete: operations["delete_10"];
+        delete: operations["delete_12"];
         options?: never;
         head?: never;
         patch?: never;
@@ -2868,7 +3129,24 @@ export interface paths {
         put?: never;
         post?: never;
         /** 채팅방 삭제 — 참가자만, 메시지도 함께 삭제된다 */
-        delete: operations["delete_11"];
+        delete: operations["delete_13"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/social/link/{provider}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** 소셜 계정 연동 해제 — 비밀번호 없는 계정의 마지막 연동은 해제할 수 없다 */
+        delete: operations["unlinkSocial"];
         options?: never;
         head?: never;
         patch?: never;
@@ -2911,6 +3189,26 @@ export interface components {
             mapUrl?: string;
             /** Format: date-time */
             responseDeadline?: string;
+            /** Format: int64 */
+            bookId?: number;
+            /** Format: int32 */
+            maxAttendees?: number;
+        };
+        BookSummary: {
+            /** Format: int64 */
+            id: number;
+            isbn13?: string;
+            title: string;
+            author?: string;
+            publisher?: string;
+            /** Format: date */
+            publishedAt?: string;
+            /** Format: int32 */
+            totalPages?: number;
+            coverUrl?: string;
+            category?: string;
+            source: string;
+            needsPageInput: boolean;
         };
         MeetingAttendeeView: {
             /** Format: int64 */
@@ -2945,6 +3243,75 @@ export interface components {
             host: boolean;
             attendeeNicknames: string[];
             attendees: components["schemas"]["MeetingAttendeeView"][];
+            book?: components["schemas"]["BookSummary"];
+            /** Format: int32 */
+            maxAttendees?: number;
+        };
+        InquiryAnswerRequest: {
+            answer: string;
+        };
+        InquiryAdminView: {
+            /** Format: int64 */
+            id: number;
+            /** @enum {string} */
+            category: "USAGE" | "ACCOUNT" | "BUG" | "PAYMENT" | "SUGGESTION" | "ETC";
+            /** @enum {string} */
+            status: "WAITING" | "ANSWERED";
+            body: string;
+            images: components["schemas"]["InquiryImageView"][];
+            appVersion?: string;
+            platform?: string;
+            osVersion?: string;
+            deviceModel?: string;
+            /** Format: int64 */
+            userId: number;
+            userNickname: string;
+            userHandle: string;
+            maskedEmail?: string;
+            /** @enum {string} */
+            userStatus?: "ACTIVE" | "WRITE_BANNED" | "SUSPENDED" | "TERMINATED";
+            answer?: string;
+            answeredByName?: string;
+            /** Format: date-time */
+            answeredAt?: string;
+            /** Format: date-time */
+            answerUpdatedAt?: string;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        InquiryImageView: {
+            /** Format: int64 */
+            id: number;
+            url: string;
+            /** Format: int32 */
+            width?: number;
+            /** Format: int32 */
+            height?: number;
+        };
+        FaqUpsertRequest: {
+            /** @enum {string} */
+            category: "USAGE" | "ACCOUNT" | "BUG" | "PAYMENT" | "SUGGESTION" | "ETC";
+            question: string;
+            answer: string;
+            visible: boolean;
+        };
+        FaqAdminView: {
+            /** Format: int64 */
+            id: number;
+            /** @enum {string} */
+            category: "USAGE" | "ACCOUNT" | "BUG" | "PAYMENT" | "SUGGESTION" | "ETC";
+            question: string;
+            answer: string;
+            /** Format: int32 */
+            sortOrder: number;
+            visible: boolean;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt?: string;
+        };
+        FaqOrderRequest: {
+            ids: number[];
         };
         BannerUpsertRequest: {
             /** @enum {string} */
@@ -3352,6 +3719,8 @@ export interface components {
             allowNudge: boolean;
             status: string;
             preferredCategories: string[];
+            linkedProviders: ("APPLE" | "GOOGLE" | "KAKAO")[];
+            hasPassword: boolean;
         };
         AddBookRequest: {
             /** Format: int64 */
@@ -3364,22 +3733,6 @@ export interface components {
             totalPagesOverride?: number;
             reread?: boolean;
             commitment?: string;
-        };
-        BookSummary: {
-            /** Format: int64 */
-            id: number;
-            isbn13?: string;
-            title: string;
-            author?: string;
-            publisher?: string;
-            /** Format: date */
-            publishedAt?: string;
-            /** Format: int32 */
-            totalPages?: number;
-            coverUrl?: string;
-            category?: string;
-            source: string;
-            needsPageInput: boolean;
         };
         ProgressView: {
             /** Format: int32 */
@@ -3434,6 +3787,34 @@ export interface components {
             /** @enum {string} */
             reason: "BORING" | "DIFFICULT" | "NO_TIME" | "NOT_MY_TASTE" | "OTHER";
         };
+        CreateInquiryRequest: {
+            /** @enum {string} */
+            category: "USAGE" | "ACCOUNT" | "BUG" | "PAYMENT" | "SUGGESTION" | "ETC";
+            body: string;
+            imageIds?: number[];
+            appVersion?: string;
+            platform?: string;
+            osVersion?: string;
+            deviceModel?: string;
+        };
+        InquiryView: {
+            /** Format: int64 */
+            id: number;
+            /** @enum {string} */
+            category: "USAGE" | "ACCOUNT" | "BUG" | "PAYMENT" | "SUGGESTION" | "ETC";
+            categoryLabel: string;
+            body: string;
+            /** @enum {string} */
+            status: "WAITING" | "ANSWERED";
+            images: components["schemas"]["InquiryImageView"][];
+            answer?: string;
+            /** Format: date-time */
+            answeredAt?: string;
+            /** Format: date-time */
+            answerUpdatedAt?: string;
+            /** Format: date-time */
+            createdAt: string;
+        };
         FollowUserView: {
             /** Format: int64 */
             userId: number;
@@ -3454,17 +3835,25 @@ export interface components {
             name: string;
             description?: string;
             /** Format: int64 */
-            bookId: number;
-            /** Format: date */
-            startsAt: string;
-            /** Format: date */
-            endsAt: string;
+            bookId?: number;
+            /**
+             * Format: date
+             * @deprecated
+             */
+            startsAt?: string;
+            /**
+             * Format: date
+             * @deprecated
+             */
+            endsAt?: string;
             /** @enum {string} */
             visibility?: "CODE_ONLY" | "LINK" | "PUBLIC";
             /** Format: int32 */
             memberLimit?: number;
             allowNudge?: boolean;
+            /** @deprecated */
             autoCheckpoints?: boolean;
+            /** @deprecated */
             checkpoints: components["schemas"]["CheckpointRequest"][];
         };
         CheckpointView: {
@@ -3499,8 +3888,11 @@ export interface components {
             /** Format: date */
             startsAt: string;
             /** Format: date */
-            endsAt: string;
-            /** Format: int64 */
+            endsAt?: string;
+            /**
+             * Format: int64
+             * @deprecated
+             */
             daysLeft: number;
             /** Format: int32 */
             memberCount: number;
@@ -3515,10 +3907,15 @@ export interface components {
             /** Format: double */
             averageCompletionRate?: number;
             members: components["schemas"]["MemberProgressView"][];
+            /** @deprecated */
             checkpoints: components["schemas"]["CheckpointView"][];
+            /** @deprecated */
             nextCheckpoint?: components["schemas"]["CheckpointView"];
             seatPolicy: components["schemas"]["ClubSeatPolicy"];
             allowNudge: boolean;
+            /** Format: date-time */
+            nextMeetingAt?: string;
+            backgroundUrl?: string;
         };
         ClubSeatPolicy: {
             /** Format: int32 */
@@ -3643,12 +4040,46 @@ export interface components {
             /** Format: int32 */
             height?: number;
         };
+        /** @description 모임 공유 노트 — 모임 하나에 대형노트 한 권. 아직 아무도 쓰지 않았으면 id 는 null, version 0, 빈 문서 */
+        MeetingNoteView: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: int64 */
+            clubId: number;
+            /** Format: int64 */
+            meetingId: number;
+            meetingTitle?: string;
+            /** Format: date-time */
+            meetingStartsAt?: string;
+            /** @description 대형노트 문서 {v, paper, kind:'large', elements[]} — 앱이 소유한 JSON */
+            document: {
+                [key: string]: unknown;
+            };
+            /** Format: int32 */
+            version: number;
+            /** Format: int32 */
+            elementCount: number;
+            /** @description 노트에 손댄 멤버 — 처음 손댄 순 */
+            contributors: components["schemas"]["MeetingAttendeeView"][];
+            /** Format: date-time */
+            updatedAt?: string;
+            /** @description 끝난 클럽·취소된 모임·마무리한 노트면 true — 읽기만 된다 */
+            readOnly: boolean;
+            /**
+             * Format: date-time
+             * @description 마무리한 시각 — 아직 마무리하지 않았으면 null
+             */
+            closedAt?: string;
+            /** @description 보는 사람이 이 노트를 마무리할 수 있는지 — 모임을 연 사람(또는 호스트)이고 아직 쓸 수 있는 노트일 때 */
+            canClose: boolean;
+        };
         KickRequest: {
             /** Format: int64 */
             userId: number;
             reason: string;
         };
         JoinPublicRequest: {
+            /** @deprecated */
             adoptTargetDate?: boolean;
             shareProgress?: boolean;
         };
@@ -3702,6 +4133,7 @@ export interface components {
         };
         JoinRequest: {
             code: string;
+            /** @deprecated */
             adoptTargetDate?: boolean;
             shareProgress?: boolean;
         };
@@ -3827,10 +4259,11 @@ export interface components {
         RefreshRequest: {
             refreshToken: string;
         };
-        EmailLoginRequest: {
+        PasswordResetRequest: {
             /** Format: email */
             email: string;
-            password: string;
+            code: string;
+            newPassword: string;
         };
         EmailCodeRequest: {
             /** Format: email */
@@ -3840,6 +4273,11 @@ export interface components {
             /** Format: int64 */
             expiresInSec: number;
             devCode?: string;
+        };
+        EmailLoginRequest: {
+            /** Format: email */
+            email: string;
+            password: string;
         };
         AttendanceView: {
             checkedInToday: boolean;
@@ -4002,7 +4440,10 @@ export interface components {
             description?: string;
             /** @enum {string} */
             visibility?: "CODE_ONLY" | "LINK" | "PUBLIC";
-            /** Format: date */
+            /**
+             * Format: date
+             * @deprecated
+             */
             endsAt?: string;
             allowNudge?: boolean;
         };
@@ -4248,7 +4689,7 @@ export interface components {
             /** Format: int64 */
             id: number;
             /** @enum {string} */
-            type: "HABIT" | "LAG" | "MICRO_MISSION" | "STREAK" | "ALMOST_DONE" | "ACHIEVEMENT" | "CLEANUP" | "POSTCARD_RECEIVED" | "POSTCARD_REPLIED" | "FOLLOWED" | "FOLLOW_CONNECTED" | "CHAT_MESSAGE" | "POST_LIKED" | "POST_COMMENTED" | "CLUB_CHECKPOINT_DUE" | "CLUB_CHECKPOINT_RESULT" | "CLUB_OVERTAKEN" | "CLUB_FALLBEHIND" | "CLUB_NEW_POST" | "CLUB_NUDGE" | "CLUB_ENDED" | "CLUB_NOTE_PAGE" | "CLUB_WEEKLY_LOG";
+            type: "HABIT" | "LAG" | "MICRO_MISSION" | "STREAK" | "ALMOST_DONE" | "ACHIEVEMENT" | "CLEANUP" | "POSTCARD_RECEIVED" | "POSTCARD_REPLIED" | "FOLLOWED" | "FOLLOW_CONNECTED" | "CHAT_MESSAGE" | "POST_LIKED" | "POST_COMMENTED" | "INQUIRY_ANSWERED" | "CLUB_CHECKPOINT_DUE" | "CLUB_CHECKPOINT_RESULT" | "CLUB_OVERTAKEN" | "CLUB_FALLBEHIND" | "CLUB_NEW_POST" | "CLUB_NUDGE" | "CLUB_ENDED" | "CLUB_NOTE_PAGE" | "CLUB_WEEKLY_LOG";
             /** Format: int32 */
             lagLevel?: number;
             /** Format: int64 */
@@ -4299,6 +4740,37 @@ export interface components {
             /** Format: date-time */
             visitedAt: string;
         };
+        InquirySummaryView: {
+            /** Format: int64 */
+            id: number;
+            /** @enum {string} */
+            category: "USAGE" | "ACCOUNT" | "BUG" | "PAYMENT" | "SUGGESTION" | "ETC";
+            categoryLabel: string;
+            preview: string;
+            /** @enum {string} */
+            status: "WAITING" | "ANSWERED";
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            answeredAt?: string;
+        };
+        PageResponseInquirySummaryView: {
+            content?: components["schemas"]["InquirySummaryView"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasNext?: boolean;
+        };
+        InquiryCategoryView: {
+            /** @enum {string} */
+            code: "USAGE" | "ACCOUNT" | "BUG" | "PAYMENT" | "SUGGESTION" | "ETC";
+            label: string;
+        };
         PageResponseFollowUserView: {
             content?: components["schemas"]["FollowUserView"][];
             /** Format: int32 */
@@ -4313,6 +4785,15 @@ export interface components {
         };
         FollowingIdsView: {
             ids: number[];
+        };
+        FaqView: {
+            /** Format: int64 */
+            id: number;
+            /** @enum {string} */
+            category: "USAGE" | "ACCOUNT" | "BUG" | "PAYMENT" | "SUGGESTION" | "ETC";
+            categoryLabel: string;
+            question: string;
+            answer: string;
         };
         ClubMemberBrief: {
             /** Format: int64 */
@@ -4336,7 +4817,10 @@ export interface components {
             status: "RECRUITING" | "ACTIVE" | "ENDED" | "ARCHIVED";
             /** Format: int32 */
             memberCount: number;
-            /** Format: int64 */
+            /**
+             * Format: int64
+             * @deprecated
+             */
             daysLeft: number;
             /** Format: double */
             myCompletionRate?: number;
@@ -4347,6 +4831,11 @@ export interface components {
             /** @enum {string} */
             myRole: "HOST" | "MODERATOR" | "MEMBER";
             members: components["schemas"]["ClubMemberBrief"][];
+            /** Format: date-time */
+            nextMeetingAt?: string;
+            nextMeetingTitle?: string;
+            description?: string;
+            backgroundUrl?: string;
         };
         PageResponseClubSummaryView: {
             content?: components["schemas"]["ClubSummaryView"][];
@@ -4399,12 +4888,13 @@ export interface components {
             /** Format: date */
             startsAt: string;
             /** Format: date */
-            endsAt: string;
+            endsAt?: string;
             /** @enum {string} */
             status: "RECRUITING" | "ACTIVE" | "ENDED" | "ARCHIVED";
             alreadyMember: boolean;
             joinable: boolean;
             joinBlockedReason?: string;
+            backgroundUrl?: string;
         };
         PageResponseClubPostView: {
             content?: components["schemas"]["ClubPostView"][];
@@ -4445,32 +4935,6 @@ export interface components {
             latitude: number;
             /** Format: double */
             longitude: number;
-        };
-        /** @description 모임 공유 노트 — 모임 하나에 대형노트 한 권. 아직 아무도 쓰지 않았으면 id 는 null, version 0, 빈 문서 */
-        MeetingNoteView: {
-            /** Format: int64 */
-            id?: number;
-            /** Format: int64 */
-            clubId: number;
-            /** Format: int64 */
-            meetingId: number;
-            meetingTitle?: string;
-            /** Format: date-time */
-            meetingStartsAt?: string;
-            /** @description 대형노트 문서 {v, paper, kind:'large', elements[]} — 앱이 소유한 JSON */
-            document: {
-                [key: string]: unknown;
-            };
-            /** Format: int32 */
-            version: number;
-            /** Format: int32 */
-            elementCount: number;
-            /** @description 노트에 손댄 멤버 — 처음 손댄 순 */
-            contributors: components["schemas"]["MeetingAttendeeView"][];
-            /** Format: date-time */
-            updatedAt?: string;
-            /** @description 끝난 클럽·취소된 모임이면 true — 읽기만 된다 */
-            readOnly: boolean;
         };
         PageResponseMeetingNoteView: {
             content?: components["schemas"]["MeetingNoteView"][];
@@ -4738,6 +5202,37 @@ export interface components {
             totalPages?: number;
             hasNext?: boolean;
         };
+        InquiryRow: {
+            /** Format: int64 */
+            id: number;
+            /** @enum {string} */
+            category: "USAGE" | "ACCOUNT" | "BUG" | "PAYMENT" | "SUGGESTION" | "ETC";
+            /** @enum {string} */
+            status: "WAITING" | "ANSWERED";
+            preview: string;
+            /** Format: int32 */
+            imageCount: number;
+            /** Format: int64 */
+            userId: number;
+            userNickname: string;
+            userHandle: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            answeredAt?: string;
+        };
+        PageResponseInquiryRow: {
+            content?: components["schemas"]["InquiryRow"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasNext?: boolean;
+        };
         DashboardView: {
             /** Format: int64 */
             totalUsers: number;
@@ -4757,6 +5252,8 @@ export interface components {
             activeClubs: number;
             /** Format: double */
             notificationConversionRate7d: number;
+            /** Format: int64 */
+            waitingInquiries: number;
         };
         ClubRow: {
             /** Format: int64 */
@@ -4772,7 +5269,7 @@ export interface components {
             /** Format: date */
             startsAt: string;
             /** Format: date */
-            endsAt: string;
+            endsAt?: string;
             /** Format: int64 */
             ownerId: number;
             ownerNickname?: string;
@@ -4853,8 +5350,15 @@ export interface components {
     pathItems: never;
 }
 export type SchemaUpsertMeetingRequest = components['schemas']['UpsertMeetingRequest'];
+export type SchemaBookSummary = components['schemas']['BookSummary'];
 export type SchemaMeetingAttendeeView = components['schemas']['MeetingAttendeeView'];
 export type SchemaMeetingView = components['schemas']['MeetingView'];
+export type SchemaInquiryAnswerRequest = components['schemas']['InquiryAnswerRequest'];
+export type SchemaInquiryAdminView = components['schemas']['InquiryAdminView'];
+export type SchemaInquiryImageView = components['schemas']['InquiryImageView'];
+export type SchemaFaqUpsertRequest = components['schemas']['FaqUpsertRequest'];
+export type SchemaFaqAdminView = components['schemas']['FaqAdminView'];
+export type SchemaFaqOrderRequest = components['schemas']['FaqOrderRequest'];
 export type SchemaBannerUpsertRequest = components['schemas']['BannerUpsertRequest'];
 export type SchemaBannerAdminView = components['schemas']['BannerAdminView'];
 export type SchemaExchangeRequest = components['schemas']['ExchangeRequest'];
@@ -4886,11 +5390,12 @@ export type SchemaReplyPostcardRequest = components['schemas']['ReplyPostcardReq
 export type SchemaDeviceRegisterRequest = components['schemas']['DeviceRegisterRequest'];
 export type SchemaMeResponse = components['schemas']['MeResponse'];
 export type SchemaAddBookRequest = components['schemas']['AddBookRequest'];
-export type SchemaBookSummary = components['schemas']['BookSummary'];
 export type SchemaProgressView = components['schemas']['ProgressView'];
 export type SchemaReadingRecordView = components['schemas']['ReadingRecordView'];
 export type SchemaFinishRequest = components['schemas']['FinishRequest'];
 export type SchemaAbandonRequest = components['schemas']['AbandonRequest'];
+export type SchemaCreateInquiryRequest = components['schemas']['CreateInquiryRequest'];
+export type SchemaInquiryView = components['schemas']['InquiryView'];
 export type SchemaFollowUserView = components['schemas']['FollowUserView'];
 export type SchemaCheckpointRequest = components['schemas']['CheckpointRequest'];
 export type SchemaCreateClubRequest = components['schemas']['CreateClubRequest'];
@@ -4908,6 +5413,7 @@ export type SchemaNudgeRequest = components['schemas']['NudgeRequest'];
 export type SchemaApplyMeetingNoteOpsRequest = components['schemas']['ApplyMeetingNoteOpsRequest'];
 export type SchemaMeetingNoteOpsResult = components['schemas']['MeetingNoteOpsResult'];
 export type SchemaMeetingNoteImageView = components['schemas']['MeetingNoteImageView'];
+export type SchemaMeetingNoteView = components['schemas']['MeetingNoteView'];
 export type SchemaKickRequest = components['schemas']['KickRequest'];
 export type SchemaJoinPublicRequest = components['schemas']['JoinPublicRequest'];
 export type SchemaUnlockResult = components['schemas']['UnlockResult'];
@@ -4931,9 +5437,10 @@ export type SchemaSocialLoginRequest = components['schemas']['SocialLoginRequest
 export type SchemaTokenResponse = components['schemas']['TokenResponse'];
 export type SchemaEmailSignupRequest = components['schemas']['EmailSignupRequest'];
 export type SchemaRefreshRequest = components['schemas']['RefreshRequest'];
-export type SchemaEmailLoginRequest = components['schemas']['EmailLoginRequest'];
+export type SchemaPasswordResetRequest = components['schemas']['PasswordResetRequest'];
 export type SchemaEmailCodeRequest = components['schemas']['EmailCodeRequest'];
 export type SchemaEmailCodeResponse = components['schemas']['EmailCodeResponse'];
+export type SchemaEmailLoginRequest = components['schemas']['EmailLoginRequest'];
 export type SchemaAttendanceView = components['schemas']['AttendanceView'];
 export type SchemaWalletAdjustRequest = components['schemas']['WalletAdjustRequest'];
 export type SchemaSubscriptionGrantRequest = components['schemas']['SubscriptionGrantRequest'];
@@ -4980,8 +5487,12 @@ export type SchemaNotificationView = components['schemas']['NotificationView'];
 export type SchemaPageResponseNotificationView = components['schemas']['PageResponseNotificationView'];
 export type SchemaPageResponseVisitorView = components['schemas']['PageResponseVisitorView'];
 export type SchemaVisitorView = components['schemas']['VisitorView'];
+export type SchemaInquirySummaryView = components['schemas']['InquirySummaryView'];
+export type SchemaPageResponseInquirySummaryView = components['schemas']['PageResponseInquirySummaryView'];
+export type SchemaInquiryCategoryView = components['schemas']['InquiryCategoryView'];
 export type SchemaPageResponseFollowUserView = components['schemas']['PageResponseFollowUserView'];
 export type SchemaFollowingIdsView = components['schemas']['FollowingIdsView'];
+export type SchemaFaqView = components['schemas']['FaqView'];
 export type SchemaClubMemberBrief = components['schemas']['ClubMemberBrief'];
 export type SchemaClubSummaryView = components['schemas']['ClubSummaryView'];
 export type SchemaPageResponseClubSummaryView = components['schemas']['PageResponseClubSummaryView'];
@@ -4992,7 +5503,6 @@ export type SchemaPageResponseClubPostView = components['schemas']['PageResponse
 export type SchemaPlaceView = components['schemas']['PlaceView'];
 export type SchemaCoordinates = components['schemas']['Coordinates'];
 export type SchemaAddressView = components['schemas']['AddressView'];
-export type SchemaMeetingNoteView = components['schemas']['MeetingNoteView'];
 export type SchemaPageResponseMeetingNoteView = components['schemas']['PageResponseMeetingNoteView'];
 export type SchemaClubLogDayView = components['schemas']['ClubLogDayView'];
 export type SchemaClubLogSummary = components['schemas']['ClubLogSummary'];
@@ -5016,6 +5526,8 @@ export type SchemaOpsFlagRow = components['schemas']['OpsFlagRow'];
 export type SchemaNotificationStats = components['schemas']['NotificationStats'];
 export type SchemaModerationRow = components['schemas']['ModerationRow'];
 export type SchemaPageResponseModerationRow = components['schemas']['PageResponseModerationRow'];
+export type SchemaInquiryRow = components['schemas']['InquiryRow'];
+export type SchemaPageResponseInquiryRow = components['schemas']['PageResponseInquiryRow'];
 export type SchemaDashboardView = components['schemas']['DashboardView'];
 export type SchemaClubRow = components['schemas']['ClubRow'];
 export type SchemaPageResponseClubRow = components['schemas']['PageResponseClubRow'];
@@ -5096,7 +5608,129 @@ export interface operations {
             };
         };
     };
+    editAnswer: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                inquiryId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InquiryAnswerRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["InquiryAdminView"];
+                };
+            };
+        };
+    };
+    answer: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                inquiryId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InquiryAnswerRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["InquiryAdminView"];
+                };
+            };
+        };
+    };
     update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FaqUpsertRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["FaqAdminView"];
+                };
+            };
+        };
+    };
+    delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    reorder: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FaqOrderRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["FaqAdminView"][];
+                };
+            };
+        };
+    };
+    update_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -5122,7 +5756,7 @@ export interface operations {
             };
         };
     };
-    delete: {
+    delete_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -5817,6 +6451,80 @@ export interface operations {
             };
         };
     };
+    listMine_1: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponseInquirySummaryView"];
+                };
+            };
+        };
+    };
+    create_4: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateInquiryRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["InquiryView"];
+                };
+            };
+        };
+    };
+    upload_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["InquiryImageView"];
+                };
+            };
+        };
+    };
     follow: {
         parameters: {
             query?: never;
@@ -5882,7 +6590,7 @@ export interface operations {
             };
         };
     };
-    create_4: {
+    create_5: {
         parameters: {
             query?: never;
             header?: never;
@@ -6006,7 +6714,7 @@ export interface operations {
             };
         };
     };
-    create_5: {
+    create_6: {
         parameters: {
             query?: never;
             header?: never;
@@ -6261,6 +6969,29 @@ export interface operations {
             };
         };
     };
+    closeMeetingNote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: number;
+                meetingId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MeetingNoteView"];
+                };
+            };
+        };
+    };
     attend: {
         parameters: {
             query?: never;
@@ -6331,7 +7062,7 @@ export interface operations {
             };
         };
     };
-    create_6: {
+    create_7: {
         parameters: {
             query?: {
                 body?: string;
@@ -6529,6 +7260,57 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["UnlockResult"];
+                };
+            };
+        };
+    };
+    uploadBackground: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ClubHomeView"];
+                };
+            };
+        };
+    };
+    removeBackground: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ClubHomeView"];
                 };
             };
         };
@@ -6939,6 +7721,54 @@ export interface operations {
             };
         };
     };
+    resetPassword: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PasswordResetRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["TokenResponse"];
+                };
+            };
+        };
+    };
+    requestPasswordResetCode: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmailCodeRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["EmailCodeResponse"];
+                };
+            };
+        };
+    };
     logout: {
         parameters: {
             query?: never;
@@ -7222,12 +8052,56 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
+                    "*/*": components["schemas"]["FaqAdminView"][];
+                };
+            };
+        };
+    };
+    create_8: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FaqUpsertRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["FaqAdminView"];
+                };
+            };
+        };
+    };
+    list_5: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
                     "*/*": components["schemas"]["EditorPickView"][];
                 };
             };
         };
     };
-    create_7: {
+    create_9: {
         parameters: {
             query?: never;
             header?: never;
@@ -7329,7 +8203,7 @@ export interface operations {
             };
         };
     };
-    list_5: {
+    list_6: {
         parameters: {
             query?: {
                 kind?: "AD" | "NOTICE";
@@ -7351,7 +8225,7 @@ export interface operations {
             };
         };
     };
-    create_8: {
+    create_10: {
         parameters: {
             query?: never;
             header?: never;
@@ -7421,7 +8295,7 @@ export interface operations {
             };
         };
     };
-    create_9: {
+    create_11: {
         parameters: {
             query?: never;
             header?: never;
@@ -7467,7 +8341,7 @@ export interface operations {
             };
         };
     };
-    delete_1: {
+    delete_2: {
         parameters: {
             query?: never;
             header?: never;
@@ -7487,7 +8361,7 @@ export interface operations {
             };
         };
     };
-    update_1: {
+    update_2: {
         parameters: {
             query?: never;
             header?: never;
@@ -7535,7 +8409,7 @@ export interface operations {
             };
         };
     };
-    delete_2: {
+    delete_3: {
         parameters: {
             query?: never;
             header?: never;
@@ -7555,7 +8429,7 @@ export interface operations {
             };
         };
     };
-    update_2: {
+    update_3: {
         parameters: {
             query?: never;
             header?: never;
@@ -7641,7 +8515,7 @@ export interface operations {
             };
         };
     };
-    update_3: {
+    update_4: {
         parameters: {
             query?: never;
             header?: never;
@@ -7739,7 +8613,7 @@ export interface operations {
             };
         };
     };
-    update_4: {
+    update_5: {
         parameters: {
             query?: never;
             header?: never;
@@ -7812,7 +8686,7 @@ export interface operations {
             };
         };
     };
-    delete_3: {
+    delete_4: {
         parameters: {
             query?: never;
             header?: never;
@@ -7833,7 +8707,7 @@ export interface operations {
             };
         };
     };
-    update_5: {
+    update_6: {
         parameters: {
             query?: never;
             header?: never;
@@ -7884,7 +8758,7 @@ export interface operations {
             };
         };
     };
-    delete_4: {
+    delete_5: {
         parameters: {
             query?: never;
             header?: never;
@@ -7904,7 +8778,7 @@ export interface operations {
             };
         };
     };
-    update_6: {
+    update_7: {
         parameters: {
             query?: never;
             header?: never;
@@ -8137,7 +9011,7 @@ export interface operations {
             };
         };
     };
-    list_6: {
+    list_7: {
         parameters: {
             query?: {
                 readingRecordId?: number;
@@ -8229,7 +9103,7 @@ export interface operations {
             };
         };
     };
-    listMine_1: {
+    listMine_2: {
         parameters: {
             query?: {
                 page?: number;
@@ -8560,7 +9434,7 @@ export interface operations {
             };
         };
     };
-    list_7: {
+    list_8: {
         parameters: {
             query?: {
                 page?: number;
@@ -8628,7 +9502,7 @@ export interface operations {
             };
         };
     };
-    delete_5: {
+    delete_6: {
         parameters: {
             query?: never;
             header?: never;
@@ -8664,6 +9538,68 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["LibrarySummary"];
+                };
+            };
+        };
+    };
+    get_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                inquiryId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["InquiryView"];
+                };
+            };
+        };
+    };
+    delete_7: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                inquiryId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    categories: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["InquiryCategoryView"][];
                 };
             };
         };
@@ -8730,6 +9666,26 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["PageResponseFollowUserView"];
+                };
+            };
+        };
+    };
+    list_9: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["FaqView"][];
                 };
             };
         };
@@ -9262,7 +10218,7 @@ export interface operations {
             };
         };
     };
-    list_8: {
+    list_10: {
         parameters: {
             query?: {
                 kind?: "AD" | "NOTICE";
@@ -9442,6 +10398,53 @@ export interface operations {
             };
         };
     };
+    list_11: {
+        parameters: {
+            query?: {
+                status?: "WAITING" | "ANSWERED";
+                category?: "USAGE" | "ACCOUNT" | "BUG" | "PAYMENT" | "SUGGESTION" | "ETC";
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponseInquiryRow"];
+                };
+            };
+        };
+    };
+    detail_4: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                inquiryId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["InquiryAdminView"];
+                };
+            };
+        };
+    };
     dashboard: {
         parameters: {
             query?: never;
@@ -9556,7 +10559,7 @@ export interface operations {
             };
         };
     };
-    delete_6: {
+    delete_8: {
         parameters: {
             query?: never;
             header?: never;
@@ -9576,7 +10579,7 @@ export interface operations {
             };
         };
     };
-    delete_7: {
+    delete_9: {
         parameters: {
             query?: never;
             header?: never;
@@ -9597,7 +10600,7 @@ export interface operations {
             };
         };
     };
-    delete_8: {
+    delete_10: {
         parameters: {
             query?: never;
             header?: never;
@@ -9618,7 +10621,7 @@ export interface operations {
             };
         };
     };
-    delete_9: {
+    delete_11: {
         parameters: {
             query?: never;
             header?: never;
@@ -9638,7 +10641,7 @@ export interface operations {
             };
         };
     };
-    delete_10: {
+    delete_12: {
         parameters: {
             query?: never;
             header?: never;
@@ -9678,7 +10681,7 @@ export interface operations {
             };
         };
     };
-    delete_11: {
+    delete_13: {
         parameters: {
             query?: never;
             header?: never;
@@ -9695,6 +10698,28 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    unlinkSocial: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                provider: "APPLE" | "GOOGLE" | "KAKAO";
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MeResponse"];
+                };
             };
         };
     };

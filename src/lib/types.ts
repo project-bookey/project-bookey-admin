@@ -62,6 +62,17 @@ export type VerificationLevel = NonNullable<ReviewRow['verificationLevel']>;
 export type ClubRow = Schemas['ClubRow'];
 export type ClubStatus = NonNullable<ClubRow['status']>;
 
+// ── 고객문의 ────────────────────────────────────────────
+export type InquiryRow = Schemas['InquiryRow'];
+export type InquiryAdminView = Schemas['InquiryAdminView'];
+export type InquiryImageView = Schemas['InquiryImageView'];
+export type InquiryStatus = NonNullable<InquiryRow['status']>;
+export type InquiryCategory = NonNullable<InquiryRow['category']>;
+
+// ── FAQ ─────────────────────────────────────────────────
+export type FaqAdminView = Schemas['FaqAdminView'];
+export type FaqUpsertRequest = Schemas['FaqUpsertRequest'];
+
 // ── 운영 ────────────────────────────────────────────────
 export type NotificationStats = Schemas['NotificationStats'];
 export type OpsFlagRow = Schemas['OpsFlagRow'];

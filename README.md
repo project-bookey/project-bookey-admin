@@ -16,8 +16,11 @@ project-bookey-admin/
 ├─ src/app/
 │   ├─ page.tsx        대시보드 — KPI · 처리 대기 큐
 │   ├─ moderation/     신고 큐 (SLA 48h)
+│   ├─ inquiries/      고객문의 (1:1) 답변 · 수정
 │   ├─ users/          회원 · 제재 · PII 열람
 │   ├─ books/          도서 메타 보정
+│   ├─ ads/            광고 · 공지 배너
+│   ├─ faqs/           FAQ 작성 · 노출 · 순서
 │   ├─ reviews/        검증 등급 심사
 │   ├─ clubs/          모임 운영 · 코드 회전 · 강제 해산
 │   ├─ notifications/  발송 통계 · 운영 스위치(킬스위치)
