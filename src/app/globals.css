@@ -1,9 +1,25 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Gowun Batang";
+  src: url("/fonts/GowunBatang-Regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Gowun Batang";
+  src: url("/fonts/GowunBatang-Bold.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
 /*
  * 관리자 백오피스 테마.
  * 사용자 앱과 같은 잉크/종이 계열을 쓰되, 운영 도구답게 정보 밀도를 높였다.
- * 본문은 세리프, 숫자·라벨은 타자기 등폭.
+ * 모든 텍스트는 고운바탕으로 통일한다.
  */
 @theme {
   --color-paper: #FBFAF7;
@@ -20,8 +36,9 @@
   --color-danger: #8C3323;
   --color-danger-soft: #F5E3DF;
 
-  --font-serif: "Iowan Old Style", Palatino, "Palatino Linotype", Georgia, serif;
-  --font-mono: "Courier New", Courier, ui-monospace, monospace;
+  --font-sans: "Gowun Batang", serif;
+  --font-serif: "Gowun Batang", serif;
+  --font-mono: "Gowun Batang", serif;
 }
 
 html,
@@ -30,6 +47,13 @@ body {
   color: var(--color-ink);
   font-family: var(--font-serif);
   -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
 }
 
 /* 숫자·코드·라벨은 타자기체로 고정해 줄이 흔들리지 않게 한다. */
