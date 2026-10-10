@@ -207,6 +207,9 @@ function AdDialog({ kind, banner, onClose }: { kind?: BannerKind; banner?: Banne
   });
 
   const invalid = !draft.title.trim() || !draft.startsAt || !draft.endsAt || new Date(draft.startsAt) >= new Date(draft.endsAt);
+  // 공지는 앱 홈 팝업의 4:5 사진 칸에 뜨고, 사진이 있으면 사진만 보인다(제목·부제는 사진이 없을 때만).
+  const isNotice = (banner?.kind ?? kind) === 'NOTICE';
+  const photoOnly = isNotice && !!draft.imageUrl.trim();
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/35 px-6">
@@ -235,6 +238,11 @@ function AdDialog({ kind, banner, onClose }: { kind?: BannerKind; banner?: Banne
               value={draft.imageUrl}
               onChange={(e) => setDraft({ ...draft, imageUrl: e.target.value })}
               placeholder="https://..."
+              hint={
+                isNotice
+                  ? '홈 팝업에 4:5 비율로 꽉 채워 보입니다(권장 1080×1350). 비율이 다르면 가운데를 기준으로 잘립니다. 사진이 있으면 제목·부제는 보이지 않으니 필요한 글자는 사진 안에 넣어 주세요.'
+                  : undefined
+              }
             />
             <div className="grid grid-cols-2 gap-3">
               <Input
@@ -281,7 +289,7 @@ function AdDialog({ kind, banner, onClose }: { kind?: BannerKind; banner?: Banne
           </div>
 
           <div>
-            <p className="eyebrow mb-2">미리보기</p>
+            <p className="eyebrow mb-2">{isNotice ? '미리보기 · 4:5' : '미리보기'}</p>
             <div
               className="aspect-[4/5] rounded-lg border border-[var(--color-line)] p-4"
               style={{
@@ -291,7 +299,7 @@ function AdDialog({ kind, banner, onClose }: { kind?: BannerKind; banner?: Banne
                 backgroundPosition: 'center',
               }}
             >
-              <div className="flex h-full flex-col justify-end">
+              <div className={`flex h-full flex-col justify-end ${photoOnly ? 'invisible' : ''}`}>
                 <p className="text-[18px] font-bold leading-tight">
                   <InlineBoldText text={draft.title || '광고 제목'} />
                 </p>
