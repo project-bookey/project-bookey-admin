@@ -1583,6 +1583,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/v1/contents/{type}/{id}/actions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 콘텐츠 조치 — 숨김·복구·삭제. 사유 필수, 열린 신고도 함께 처리한다 */
+        post: operations["act"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/v1/clubs/{clubId}/transfer-host": {
         parameters: {
             query?: never;
@@ -3145,7 +3162,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 리뷰 목록 — 검증 등급 필터 */
+        /** 리뷰 목록 — 숨김·삭제 포함, 최근 순. 도서·회원·상태·검증 등급·신고 여부로 거른다 */
         get: operations["reviews_1"];
         put?: never;
         post?: never;
@@ -3206,6 +3223,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/v1/moderation/{ticketId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 신고 상세 — 신고자·사유·원문·작성자 제재 이력. 열람 기록이 남는다 */
+        get: operations["moderationDetail"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/v1/inquiries": {
         parameters: {
             query?: never;
@@ -3249,6 +3283,40 @@ export interface paths {
         };
         /** 대시보드 KPI */
         get: operations["dashboard"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/v1/contents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 콘텐츠 목록 — 종류(type)는 POST·REVIEW·CLUB_POST·POST_COMMENT·REVIEW_COMMENT·BOOK_REMARK, 최근 순 */
+        get: operations["contents"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/v1/contents/{type}/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 콘텐츠 원문 — 열람 기록이 남는다. 비공개 독후감은 신고 처리 권한 필요 */
+        get: operations["content"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3334,6 +3402,23 @@ export interface paths {
         };
         /** 감사 로그 — 모든 관리자 행위 기록. from 이상 to 미만, 최신순 */
         get: operations["auditLogs"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/v1/abuse-reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 한 회원이 신고한 내역 — 신고 남발 확인용 */
+        get: operations["reportsBy"];
         put?: never;
         post?: never;
         delete?: never;
@@ -4770,6 +4855,11 @@ export interface components {
             sortOrder: number;
             note?: string;
         };
+        ContentActionRequest: {
+            /** @enum {string} */
+            action: "HIDE" | "RESTORE" | "DELETE";
+            reason: string;
+        };
         ClubActionRequest: {
             reason: string;
         };
@@ -5759,7 +5849,7 @@ export interface components {
             /** Format: int64 */
             id: number;
             /** @enum {string} */
-            sourceType: "REVIEW" | "POST" | "CLUB_POST" | "CLUB" | "USER";
+            sourceType: "REVIEW" | "POST" | "CLUB_POST" | "CLUB" | "USER" | "POST_COMMENT" | "REVIEW_COMMENT" | "BOOK_REMARK";
             /** Format: int64 */
             sourceId: number;
             reason: string;
@@ -5778,6 +5868,14 @@ export interface components {
             /** Format: int64 */
             authorId?: number;
             authorNickname?: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** @enum {string} */
+            resolution?: "KEEP" | "HIDE" | "DELETE" | "SANCTION";
+            resolutionNote?: string;
+            /** Format: date-time */
+            resolvedAt?: string;
+            assignedAdminName?: string;
         };
         PageResponseModerationRow: {
             content?: components["schemas"]["ModerationRow"][];
@@ -5790,6 +5888,61 @@ export interface components {
             /** Format: int32 */
             totalPages?: number;
             hasNext?: boolean;
+        };
+        AbuseReportRow: {
+            /** Format: int64 */
+            id: number;
+            targetType: string;
+            /** Format: int64 */
+            targetId: number;
+            /** Format: int64 */
+            reporterId: number;
+            reporterNickname?: string;
+            reason: string;
+            detail?: string;
+            status: string;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        AdminContentDetail: {
+            content: components["schemas"]["AdminContentRow"];
+            body: string;
+            imageUrl?: string;
+            /** Format: int64 */
+            ticketId?: number;
+        };
+        AdminContentRow: {
+            /** @enum {string} */
+            type: "REVIEW" | "POST" | "CLUB_POST" | "CLUB" | "USER" | "POST_COMMENT" | "REVIEW_COMMENT" | "BOOK_REMARK";
+            /** Format: int64 */
+            id: number;
+            /** Format: int64 */
+            authorId?: number;
+            authorNickname?: string;
+            /** @enum {string} */
+            authorStatus?: "ACTIVE" | "WRITE_BANNED" | "SUSPENDED" | "TERMINATED";
+            title?: string;
+            preview: string;
+            status: string;
+            visibility?: string;
+            /** Format: int64 */
+            reportCount: number;
+            contextLabel?: string;
+            /** Format: int64 */
+            bookId?: number;
+            /** Format: int64 */
+            clubId?: number;
+            /** Format: int64 */
+            parentId?: number;
+            /** Format: date-time */
+            createdAt: string;
+            supportedActions: ("HIDE" | "RESTORE" | "DELETE")[];
+        };
+        ModerationDetailView: {
+            ticket: components["schemas"]["ModerationRow"];
+            content?: components["schemas"]["AdminContentDetail"];
+            reports: components["schemas"]["AbuseReportRow"][];
+            authorSanctions: components["schemas"]["SanctionRow"][];
         };
         InquiryRow: {
             /** Format: int64 */
@@ -5843,6 +5996,18 @@ export interface components {
             notificationConversionRate7d: number;
             /** Format: int64 */
             waitingInquiries: number;
+        };
+        PageResponseAdminContentRow: {
+            content?: components["schemas"]["AdminContentRow"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasNext?: boolean;
         };
         ClubRow: {
             /** Format: int64 */
@@ -5945,6 +6110,18 @@ export interface components {
         };
         PageResponseAuditRow: {
             content?: components["schemas"]["AuditRow"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasNext?: boolean;
+        };
+        PageResponseAbuseReportRow: {
+            content?: components["schemas"]["AbuseReportRow"][];
             /** Format: int32 */
             page?: number;
             /** Format: int32 */
@@ -6073,6 +6250,7 @@ export type SchemaOverrideVerificationRequest = components['schemas']['OverrideV
 export type SchemaResolveRequest = components['schemas']['ResolveRequest'];
 export type SchemaEditorPickCreateRequest = components['schemas']['EditorPickCreateRequest'];
 export type SchemaEditorPickView = components['schemas']['EditorPickView'];
+export type SchemaContentActionRequest = components['schemas']['ContentActionRequest'];
 export type SchemaClubActionRequest = components['schemas']['ClubActionRequest'];
 export type SchemaTotpSecretView = components['schemas']['TotpSecretView'];
 export type SchemaTotpConfirmRequest = components['schemas']['TotpConfirmRequest'];
@@ -6165,9 +6343,14 @@ export type SchemaOpsFlagRow = components['schemas']['OpsFlagRow'];
 export type SchemaNotificationStats = components['schemas']['NotificationStats'];
 export type SchemaModerationRow = components['schemas']['ModerationRow'];
 export type SchemaPageResponseModerationRow = components['schemas']['PageResponseModerationRow'];
+export type SchemaAbuseReportRow = components['schemas']['AbuseReportRow'];
+export type SchemaAdminContentDetail = components['schemas']['AdminContentDetail'];
+export type SchemaAdminContentRow = components['schemas']['AdminContentRow'];
+export type SchemaModerationDetailView = components['schemas']['ModerationDetailView'];
 export type SchemaInquiryRow = components['schemas']['InquiryRow'];
 export type SchemaPageResponseInquiryRow = components['schemas']['PageResponseInquiryRow'];
 export type SchemaDashboardView = components['schemas']['DashboardView'];
+export type SchemaPageResponseAdminContentRow = components['schemas']['PageResponseAdminContentRow'];
 export type SchemaClubRow = components['schemas']['ClubRow'];
 export type SchemaPageResponseClubRow = components['schemas']['PageResponseClubRow'];
 export type SchemaBookRow = components['schemas']['BookRow'];
@@ -6175,6 +6358,7 @@ export type SchemaPageResponseBookRow = components['schemas']['PageResponseBookR
 export type SchemaAdminRow = components['schemas']['AdminRow'];
 export type SchemaAuditRow = components['schemas']['AuditRow'];
 export type SchemaPageResponseAuditRow = components['schemas']['PageResponseAuditRow'];
+export type SchemaPageResponseAbuseReportRow = components['schemas']['PageResponseAbuseReportRow'];
 export type $defs = Record<string, never>;
 export interface operations {
     setConsent: {
@@ -9039,6 +9223,31 @@ export interface operations {
             };
         };
     };
+    act: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                type: "REVIEW" | "POST" | "CLUB_POST" | "CLUB" | "USER" | "POST_COMMENT" | "REVIEW_COMMENT" | "BOOK_REMARK";
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ContentActionRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     transferHost_1: {
         parameters: {
             query: {
@@ -11456,6 +11665,10 @@ export interface operations {
         parameters: {
             query?: {
                 bookId?: number;
+                userId?: number;
+                status?: string;
+                verificationLevel?: "VERIFIED_FULL" | "VERIFIED_PARTIAL" | "UNVERIFIED" | "FLAGGED";
+                reportedOnly?: boolean;
                 page?: number;
                 size?: number;
             };
@@ -11520,7 +11733,7 @@ export interface operations {
         parameters: {
             query?: {
                 status?: "PENDING" | "IN_REVIEW" | "RESOLVED";
-                sourceType?: "REVIEW" | "POST" | "CLUB_POST" | "CLUB" | "USER";
+                sourceType?: "REVIEW" | "POST" | "CLUB_POST" | "CLUB" | "USER" | "POST_COMMENT" | "REVIEW_COMMENT" | "BOOK_REMARK";
                 page?: number;
                 size?: number;
             };
@@ -11537,6 +11750,28 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["PageResponseModerationRow"];
+                };
+            };
+        };
+    };
+    moderationDetail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ticketId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ModerationDetailView"];
                 };
             };
         };
@@ -11604,6 +11839,59 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["DashboardView"];
+                };
+            };
+        };
+    };
+    contents: {
+        parameters: {
+            query: {
+                type: "REVIEW" | "POST" | "CLUB_POST" | "CLUB" | "USER" | "POST_COMMENT" | "REVIEW_COMMENT" | "BOOK_REMARK";
+                userId?: number;
+                bookId?: number;
+                clubId?: number;
+                status?: string;
+                keyword?: string;
+                reportedOnly?: boolean;
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponseAdminContentRow"];
+                };
+            };
+        };
+    };
+    content: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                type: "REVIEW" | "POST" | "CLUB_POST" | "CLUB" | "USER" | "POST_COMMENT" | "REVIEW_COMMENT" | "BOOK_REMARK";
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["AdminContentDetail"];
                 };
             };
         };
@@ -11728,6 +12016,30 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["PageResponseAuditRow"];
+                };
+            };
+        };
+    };
+    reportsBy: {
+        parameters: {
+            query: {
+                reporterId: number;
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponseAbuseReportRow"];
                 };
             };
         };

@@ -5,7 +5,7 @@
  * 화면마다 따로 들고 있던 표·색을 여기로 모았다 — 같은 상태가 화면마다 다르게 보이지 않게.
  */
 import type {
-  AdminRole, AdminStatus, BannerKind, BookmarkPurchaseStatus, ClubStatus, ConsentKind, DeviceRow, IdentityRow,
+  AdminRole, AdminStatus, BannerKind, ContentAction, ContentType, BookmarkPurchaseStatus, ClubStatus, ConsentKind, DeviceRow, IdentityRow,
   InquiryCategory, InquiryStatus, ModerationResolution, ModerationSource, ModerationStatus, SanctionType,
   SubscriptionStatus, SubscriptionStore, UserStatus, VerificationLevel, WalletTransactionKind,
 } from './types';
@@ -153,7 +153,9 @@ export const CONSENT_KIND_LABEL: Record<ConsentKind, string> = {
 };
 
 // ── 신고 큐 ─────────────────────────────────────────────
-export const MODERATION_SOURCES: ModerationSource[] = ['REVIEW', 'POST', 'CLUB_POST', 'CLUB', 'USER'];
+export const MODERATION_SOURCES: ModerationSource[] = [
+  'REVIEW', 'POST', 'CLUB_POST', 'POST_COMMENT', 'REVIEW_COMMENT', 'BOOK_REMARK', 'CLUB', 'USER',
+];
 
 export const MODERATION_SOURCE_LABEL: Record<ModerationSource, string> = {
   REVIEW: '리뷰',
@@ -161,6 +163,65 @@ export const MODERATION_SOURCE_LABEL: Record<ModerationSource, string> = {
   CLUB_POST: '모임 글',
   CLUB: '모임',
   USER: '회원',
+  POST_COMMENT: '독후감 댓글',
+  REVIEW_COMMENT: '리뷰 댓글',
+  BOOK_REMARK: '한줄평',
+};
+
+export const MODERATION_RESOLUTION_LABEL: Record<ModerationResolution, string> = {
+  KEEP: '유지',
+  HIDE: '숨김',
+  DELETE: '삭제',
+  SANCTION: '숨김 + 제재',
+};
+
+export const REPORT_STATUS_LABEL: Partial<Record<string, string>> = {
+  PENDING: '처리 전',
+  RESOLVED: '처리됨',
+  REJECTED: '기각',
+};
+
+// ── 콘텐츠 검수 ─────────────────────────────────────────
+/** 콘텐츠 검수 탭 순서. */
+export const CONTENT_TYPES: ContentType[] = [
+  'POST', 'REVIEW', 'CLUB_POST', 'POST_COMMENT', 'REVIEW_COMMENT', 'BOOK_REMARK',
+];
+
+/** 숨김·복구가 되는(상태가 있는) 종류 — 나머지는 삭제만 된다. */
+export const STATUSFUL_CONTENT_TYPES: ContentType[] = ['POST', 'REVIEW', 'CLUB_POST'];
+
+export const CONTENT_STATUSES = ['VISIBLE', 'HIDDEN', 'DELETED'] as const;
+
+export const CONTENT_STATUS_LABEL: Partial<Record<string, string>> = {
+  VISIBLE: '노출',
+  HIDDEN: '숨김',
+  DELETED: '삭제',
+};
+
+export const CONTENT_STATUS_TONE: Partial<Record<string, Tone>> = {
+  VISIBLE: 'neutral',
+  HIDDEN: 'warn',
+  DELETED: 'danger',
+};
+
+export const CONTENT_ACTION_LABEL: Record<ContentAction, string> = {
+  HIDE: '숨김',
+  RESTORE: '복구',
+  DELETE: '삭제',
+};
+
+/** 확인창·토스트 문구 — '숨김할까요' 가 아니라 '숨길까요'. */
+export const CONTENT_ACTION_VERB: Record<ContentAction, { ask: string; done: string }> = {
+  HIDE: { ask: '숨길까요', done: '숨겼습니다' },
+  RESTORE: { ask: '복구할까요', done: '복구했습니다' },
+  DELETE: { ask: '삭제할까요', done: '삭제했습니다' },
+};
+
+export const POST_VISIBILITY_LABEL: Partial<Record<string, string>> = {
+  PUBLIC: '공개',
+  LINK: '링크 공개',
+  PRIVATE: '비공개',
+  CLUB: '모임 공개',
 };
 
 export const MODERATION_STATUSES: ModerationStatus[] = ['PENDING', 'IN_REVIEW', 'RESOLVED'];
@@ -321,6 +382,11 @@ export const AUDIT_ACTION_LABEL: Partial<Record<string, string>> = {
   RESET_ADMIN_PASSWORD: '관리자 비밀번호 재설정',
   RESET_ADMIN_TOTP: '관리자 2FA 초기화',
   CHANGE_OWN_PASSWORD: '내 비밀번호 변경',
+  VIEW_MODERATION: '신고 상세 열람',
+  VIEW_CONTENT: '콘텐츠 원문 열람',
+  HIDE_CONTENT: '콘텐츠 숨김',
+  RESTORE_CONTENT: '콘텐츠 복구',
+  DELETE_CONTENT: '콘텐츠 삭제',
   CREATE_EDITOR_PICK: '에디터 픽 추가',
   UPDATE_EDITOR_PICK: '에디터 픽 수정',
   DELETE_EDITOR_PICK: '에디터 픽 삭제',

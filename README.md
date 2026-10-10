@@ -16,13 +16,14 @@ project-bookey-admin/
 ├─ src/app/
 │   ├─ (admin)/          로그인 뒤 화면 — 공통 셸(layout.tsx)
 │   │   ├─ page.tsx        대시보드 — KPI · 처리 대기 큐
-│   │   ├─ moderation/     신고 큐 (SLA 48h) · 담당 지정
+│   │   ├─ moderation/     신고 큐 (SLA 48h) — 티켓 상세(신고자·원문·작성자 이력)에서 판정
+│   │   ├─ contents/       콘텐츠 검수 — 독후감·리뷰·모임 글·댓글·한줄평 숨김/복구/삭제
 │   │   ├─ inquiries/      고객문의 (1:1) 답변 · 수정
 │   │   ├─ users/          회원 상세(서랍) — 개요 · 지갑/결제 · 제재 · 기기/동의, 로그인 끊기
 │   │   ├─ payments/       결제 조회 — 주문번호로 책갈피 구매 찾기
 │   │   ├─ books/          도서 메타 보정
 │   │   ├─ editor-picks/   홈 '추천' 줄(에디터 픽)
-│   │   ├─ reviews/        검증 등급 심사
+│   │   ├─ reviews/        검증 등급 심사 — 상태·등급·신고·회원·도서로 거르기
 │   │   ├─ clubs/          모임 운영 · 코드 회전 · 강제 해산
 │   │   ├─ faqs/           FAQ 작성 · 노출 · 순서
 │   │   ├─ ads/            광고 · 공지 배너

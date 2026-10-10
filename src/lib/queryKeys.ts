@@ -26,6 +26,12 @@ export const qk = {
   moderation: {
     all: ['moderation'] as const,
     list: (filter: object) => ['moderation', 'list', filter] as const,
+    detail: (id: number) => ['moderation', 'detail', id] as const,
+  },
+  contents: {
+    all: ['contents'] as const,
+    list: (filter: object) => ['contents', 'list', filter] as const,
+    detail: (type: string, id: number) => ['contents', 'detail', type, id] as const,
   },
   books: {
     all: ['books'] as const,

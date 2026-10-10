@@ -69,6 +69,15 @@ export type ModerationRow = Schemas['ModerationRow'];
 export type ModerationSource = NonNullable<ModerationRow['sourceType']>;
 export type ModerationStatus = NonNullable<ModerationRow['status']>;
 export type ModerationResolution = NonNullable<Schemas['ResolveRequest']['resolution']>;
+export type ModerationDetail = Schemas['ModerationDetailView'];
+export type AbuseReportRow = Schemas['AbuseReportRow'];
+
+// ── 콘텐츠 검수 ─────────────────────────────────────────
+export type ContentRow = Schemas['AdminContentRow'];
+export type ContentDetail = Schemas['AdminContentDetail'];
+export type ContentAction = ContentRow['supportedActions'][number];
+/** 콘텐츠 검수에서 다루는 종류 — 신고 대상 중 모임·회원을 뺀 것. */
+export type ContentType = Exclude<ModerationSource, 'CLUB' | 'USER'>;
 
 // ── 검증 심사 ───────────────────────────────────────────
 export type ReviewRow = Schemas['ReviewRow'];

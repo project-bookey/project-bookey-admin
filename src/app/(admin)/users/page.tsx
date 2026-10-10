@@ -1,6 +1,7 @@
 'use client';
 
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import Link from 'next/link';
 import { useState } from 'react';
 
 import { errorMessage } from '@/lib/api';
@@ -247,6 +248,15 @@ function OverviewTab({ user }: { user: UserDetail }) {
         <Metric label="리뷰" value={user.reviewCount} />
         <Metric label="모임" value={user.clubCount} />
       </div>
+
+      <p className="mt-3 flex flex-wrap gap-x-3 gap-y-1 font-mono text-[11.5px]">
+        <span className="text-[var(--color-faint)]">쓴 글</span>
+        <Link href={`/contents?type=POST&userId=${user.id}`} className="underline">독후감</Link>
+        <Link href={`/reviews?userId=${user.id}`} className="underline">리뷰</Link>
+        <Link href={`/contents?type=POST_COMMENT&userId=${user.id}`} className="underline">댓글</Link>
+        <Link href={`/contents?type=BOOK_REMARK&userId=${user.id}`} className="underline">한줄평</Link>
+        <Link href={`/contents?type=CLUB_POST&userId=${user.id}`} className="underline">모임 글</Link>
+      </p>
 
       <dl className="mt-5 grid grid-cols-[120px_1fr] gap-y-2 rounded-lg border border-[var(--color-line)] px-4 py-3 text-[13px]">
         <dt className="text-[var(--color-muted)]">마지막 접속</dt>

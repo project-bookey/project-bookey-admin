@@ -6,7 +6,10 @@ import { useState } from 'react';
 import { errorMessage } from '@/lib/api';
 import { reviewsApi } from '@/lib/endpoints';
 import { formatDateTime } from '@/lib/format';
-import { VERIFICATION_LEVELS, VERIFICATION_LEVEL_LABEL, VERIFICATION_LEVEL_TONE } from '@/lib/labels';
+import {
+  CONTENT_STATUSES, CONTENT_STATUS_LABEL, CONTENT_STATUS_TONE, VERIFICATION_LEVELS, VERIFICATION_LEVEL_LABEL,
+  VERIFICATION_LEVEL_TONE,
+} from '@/lib/labels';
 import { qk } from '@/lib/queryKeys';
 import { toast } from '@/lib/toast';
 import type { ReviewRow, VerificationLevel } from '@/lib/types';
@@ -16,21 +19,31 @@ import { BookPicker } from '@/components/BookPicker';
 import { Modal } from '@/components/Modal';
 import { QueryState } from '@/components/QueryState';
 import { PageHeader } from '@/components/Shell';
-import { Button, Card, ErrorText, Input, Pager, ResultCount, Select, Tag } from '@/components/ui';
+import { Button, Card, Checkbox, ErrorText, Input, Pager, ResultCount, Select, Tag } from '@/components/ui';
 
-const FILTERS = { bookId: param.int() };
+const FILTERS = {
+  bookId: param.int(),
+  userId: param.int(),
+  status: param.oneOf(CONTENT_STATUSES),
+  level: param.oneOf(VERIFICATION_LEVELS),
+  reported: param.bool(),
+};
 
 /** 검증 심사 — 등급 산정 근거(스냅샷)를 보고 수동 조정한다 (§8.2 · §F13). */
 export default function ReviewsPage() {
   const canModerate = useCan('MODERATE');
   const { params, setFilter, setPage } = useListParams(FILTERS);
-  const { bookId, page } = params;
+  const { bookId, userId, status, level, reported, page } = params;
   const [selected, setSelected] = useState<ReviewRow | null>(null);
   const [picking, setPicking] = useState(false);
 
   const reviews = useQuery({
-    queryKey: qk.reviews.list({ bookId, page }),
-    queryFn: () => reviewsApi.list(bookId, page),
+    queryKey: qk.reviews.list({ bookId, userId, status, level, reported, page }),
+    queryFn: () =>
+      reviewsApi.list(
+        { bookId, userId, status: status || undefined, verificationLevel: level || undefined, reportedOnly: reported },
+        page,
+      ),
     placeholderData: keepPreviousData,
   });
 
@@ -63,6 +76,38 @@ export default function ReviewsPage() {
       />
 
       <div className="px-7 py-6">
+        <div className="mb-4 flex flex-wrap items-end gap-3">
+          <div className="w-32">
+            <Select label="상태" value={status} onChange={(e) => setFilter({ status: e.target.value as typeof status })}>
+              <option value="">전체</option>
+              {CONTENT_STATUSES.map((value) => (
+                <option key={value} value={value}>
+                  {CONTENT_STATUS_LABEL[value]}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <div className="w-36">
+            <Select label="검증 등급" value={level} onChange={(e) => setFilter({ level: e.target.value as typeof level })}>
+              <option value="">전체</option>
+              {VERIFICATION_LEVELS.map((value) => (
+                <option key={value} value={value}>
+                  {VERIFICATION_LEVEL_LABEL[value]}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <Checkbox label="신고된 것만" checked={reported} onChange={(checked) => setFilter({ reported: checked })} />
+          {userId !== undefined ? (
+            <span className="inline-flex items-center gap-2 rounded-lg border border-[var(--color-line)] bg-[var(--color-surface)] px-3 py-2 font-mono text-[12px]">
+              회원 #{userId}
+              <button type="button" aria-label="회원 필터 지우기" onClick={() => setFilter({ userId: undefined })}
+                className="text-[var(--color-faint)] hover:text-[var(--color-ink)]">
+                ×
+              </button>
+            </span>
+          ) : null}
+        </div>
         <ResultCount total={reviews.data?.totalElements} />
         <Card>
           <QueryState
@@ -93,7 +138,11 @@ export default function ReviewsPage() {
                             {review.authorNickname ?? '—'} · {review.rating ? `★${review.rating}` : '별점 없음'} ·{' '}
                             {formatDateTime(review.createdAt)}
                           </span>
-                          {review.status !== 'VISIBLE' ? <Tag tone="warn">{review.status === 'HIDDEN' ? '숨김' : '삭제'}</Tag> : null}
+                          {review.status !== 'VISIBLE' ? (
+                            <Tag tone={CONTENT_STATUS_TONE[review.status] ?? 'warn'}>
+                              {CONTENT_STATUS_LABEL[review.status] ?? review.status}
+                            </Tag>
+                          ) : null}
                           {review.reportCount > 0 ? <Tag tone="danger">신고 {review.reportCount}</Tag> : null}
                         </div>
                         <p className="mt-2 line-clamp-2 text-[13.5px] leading-relaxed">{review.body}</p>
