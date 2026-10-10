@@ -1,6 +1,7 @@
 import { adminApi } from './api';
 import type {
   AdminProfile, AuditRow, BannerAdminView, BannerKind, BannerUpsertRequest, BookRow, ClubRow, ClubStatus, Dashboard,
+  EditorPickCreateRequest, EditorPickUpdateRequest, EditorPickView, TotpSecretView,
   FaqAdminView, FaqUpsertRequest, InquiryAdminView, InquiryCategory, InquiryRow, InquiryStatus, LoginResponse,
   ModerationResolution, ModerationRow, ModerationSource, ModerationStatus, NotificationStats,
   OpsFlagRow, Page, ReviewRow, SanctionType, SubscriptionGrantRequest, UpdateBookRequest, UserDetail, UserRow,
@@ -17,6 +18,11 @@ export const authApi = {
       body: { email, password, totpCode: totpCode || undefined },
     }),
   me: () => adminApi<AdminProfile>('/admin/v1/auth/me'),
+  /** 2FA 등록 1단계 — 시크릿만 발급한다. 확인 전에는 켜지지 않는다. 이미 켜져 있으면 409. */
+  prepareTotp: () => adminApi<TotpSecretView>('/admin/v1/auth/totp', { method: 'POST' }),
+  /** 2FA 등록 2단계 — 인증 앱 코드가 맞아야 켜진다. */
+  confirmTotp: (code: string) =>
+    adminApi<AdminProfile>('/admin/v1/auth/totp/confirm', { method: 'POST', body: { code } }),
 };
 
 export const dashboardApi = {
@@ -65,6 +71,16 @@ export const adsApi = {
     adminApi<BannerAdminView>(`/admin/v1/banners/${bannerId}`, { method: 'PUT', body }),
   remove: (bannerId: number) =>
     adminApi<void>(`/admin/v1/banners/${bannerId}`, { method: 'DELETE' }),
+};
+
+/** 홈 '추천' 줄(에디터 픽). 비어 있으면 앱은 YES24 베스트셀러를 대신 보여 준다. */
+export const editorPicksApi = {
+  list: () => adminApi<EditorPickView[]>('/admin/v1/editor-picks'),
+  create: (body: EditorPickCreateRequest) =>
+    adminApi<EditorPickView>('/admin/v1/editor-picks', { method: 'POST', body }),
+  update: (pickId: number, body: EditorPickUpdateRequest) =>
+    adminApi<EditorPickView>(`/admin/v1/editor-picks/${pickId}`, { method: 'PATCH', body }),
+  remove: (pickId: number) => adminApi<void>(`/admin/v1/editor-picks/${pickId}`, { method: 'DELETE' }),
 };
 
 export const moderationApi = {

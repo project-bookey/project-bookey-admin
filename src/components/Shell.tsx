@@ -1,16 +1,25 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Suspense, useEffect, useSyncExternalStore } from 'react';
 
 import { clearToken, getToken } from '@/lib/api';
+import { dashboardApi } from '@/lib/endpoints';
 import { ADMIN_ROLE_LABEL } from '@/lib/labels';
-import type { AdminCapability } from '@/lib/types';
+import { qk } from '@/lib/queryKeys';
+import type { AdminCapability, Dashboard } from '@/lib/types';
 import { useMe } from '@/lib/useMe';
 import { Empty } from './ui';
 
-type NavItem = { href: string; label: string; cap?: AdminCapability };
+/** badge — 대시보드 숫자 중 메뉴 옆에 띄울 처리 대기 건수. */
+type NavItem = {
+  href: string;
+  label: string;
+  cap?: AdminCapability;
+  badge?: keyof Pick<Dashboard, 'pendingModeration' | 'waitingInquiries'>;
+};
 
 /** 메뉴. cap 이 있으면 그 권한이 있는 관리자에게만 보인다(서버도 같은 권한으로 막는다). */
 const NAV: { group: string; items: NavItem[] }[] = [
@@ -18,8 +27,8 @@ const NAV: { group: string; items: NavItem[] }[] = [
   {
     group: '처리 대기',
     items: [
-      { href: '/moderation', label: '신고 큐' },
-      { href: '/inquiries', label: '고객문의' },
+      { href: '/moderation', label: '신고 큐', badge: 'pendingModeration' },
+      { href: '/inquiries', label: '고객문의', badge: 'waitingInquiries' },
     ],
   },
   { group: '회원', items: [{ href: '/users', label: '회원' }] },
@@ -27,6 +36,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
     group: '콘텐츠',
     items: [
       { href: '/books', label: '도서' },
+      { href: '/editor-picks', label: '에디터 픽', cap: 'MANAGE_CONTENT' },
       { href: '/reviews', label: '검증 심사' },
       { href: '/clubs', label: '모임' },
       { href: '/faqs', label: 'FAQ' },
@@ -51,6 +61,14 @@ export function Shell({ children }: { children: React.ReactNode }) {
   // 토큰은 sessionStorage 에 있어 서버 렌더에선 알 수 없다 — 클라이언트에서 확인한 뒤에 그린다.
   const signedIn = useSyncExternalStore(noopSubscribe, () => getToken() !== null, () => false);
   const me = useMe();
+  // 메뉴 배지 — 대시보드와 같은 캐시를 쓴다. 1분마다 다시 센다.
+  const dashboard = useQuery({
+    queryKey: qk.dashboard,
+    queryFn: dashboardApi.get,
+    enabled: signedIn,
+    staleTime: 60_000,
+    refetchInterval: 60_000,
+  });
 
   useEffect(() => {
     if (!getToken()) router.replace('/login');
@@ -79,17 +97,27 @@ export function Shell({ children }: { children: React.ReactNode }) {
                 </p>
                 {items.map((item) => {
                   const active = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
+                  const count = item.badge ? dashboard.data?.[item.badge] : undefined;
                   return (
                     <Link
                       key={item.href}
                       href={item.href}
-                      className={`block rounded-lg px-3 py-2 font-mono text-[12.5px] font-bold transition ${
+                      className={`flex items-center justify-between rounded-lg px-3 py-2 font-mono text-[12.5px] font-bold transition ${
                         active
                           ? 'bg-[var(--color-ink)] text-white'
                           : 'text-[var(--color-muted)] hover:bg-[var(--color-surface-alt)]'
                       }`}
                     >
                       {item.label}
+                      {count ? (
+                        <span
+                          className={`rounded-full px-1.5 text-[10.5px] ${
+                            active ? 'bg-white text-[var(--color-ink)]' : 'bg-[var(--color-danger)] text-white'
+                          }`}
+                        >
+                          {count > 99 ? '99+' : count}
+                        </span>
+                      ) : null}
                     </Link>
                   );
                 })}
@@ -99,9 +127,16 @@ export function Shell({ children }: { children: React.ReactNode }) {
         </nav>
 
         <div className="border-t border-[var(--color-line)] px-5 py-4">
-          <p className="text-[13px] font-bold">{me.data?.name ?? '—'}</p>
+          <Link href="/account" className="block text-[13px] font-bold underline-offset-2 hover:underline">
+            {me.data?.name ?? '—'}
+          </Link>
           <p className="font-mono text-[11px] text-[var(--color-faint)]">
             {me.data ? ADMIN_ROLE_LABEL[me.data.role] : ''}
+            {me.data && !me.data.totpEnabled ? (
+              <Link href="/account" className="ml-1 text-[var(--color-warn)] underline">
+                2FA 꺼짐
+              </Link>
+            ) : null}
           </p>
           <button
             onClick={() => {

@@ -14,20 +14,23 @@ bookey 관리자 백오피스 (Next.js).
 ```
 project-bookey-admin/
 ├─ src/app/
-│   ├─ page.tsx        대시보드 — KPI · 처리 대기 큐
-│   ├─ moderation/     신고 큐 (SLA 48h)
-│   ├─ inquiries/      고객문의 (1:1) 답변 · 수정
-│   ├─ users/          회원 · 제재 · PII 열람
-│   ├─ books/          도서 메타 보정
-│   ├─ ads/            광고 · 공지 배너
-│   ├─ faqs/           FAQ 작성 · 노출 · 순서
-│   ├─ reviews/        검증 등급 심사
-│   ├─ clubs/          모임 운영 · 코드 회전 · 강제 해산
-│   ├─ notifications/  발송 통계 · 운영 스위치(킬스위치)
-│   ├─ audit/          감사 로그
+│   ├─ (admin)/          로그인 뒤 화면 — 공통 셸(layout.tsx)
+│   │   ├─ page.tsx        대시보드 — KPI · 처리 대기 큐
+│   │   ├─ moderation/     신고 큐 (SLA 48h) · 담당 지정
+│   │   ├─ inquiries/      고객문의 (1:1) 답변 · 수정
+│   │   ├─ users/          회원 · 제재/해제 · 지갑/구독 조정 · PII 열람
+│   │   ├─ books/          도서 메타 보정
+│   │   ├─ editor-picks/   홈 '추천' 줄(에디터 픽)
+│   │   ├─ reviews/        검증 등급 심사
+│   │   ├─ clubs/          모임 운영 · 코드 회전 · 강제 해산
+│   │   ├─ faqs/           FAQ 작성 · 노출 · 순서
+│   │   ├─ ads/            광고 · 공지 배너
+│   │   ├─ notifications/  발송 통계 · 운영 스위치(킬스위치)
+│   │   ├─ audit/          감사 로그
+│   │   └─ account/        내 계정 · 2단계 인증 등록
 │   └─ login/
-├─ src/lib/            API 클라이언트 · 타입
-├─ src/components/     셸 · 공용 UI
+├─ src/lib/            API 클라이언트 · 타입 별칭 · 라벨 · 쿼리 키 · URL 상태(useListParams) · 권한(useMe)
+├─ src/components/     셸 · 공용 UI · Modal · Confirm · 토스트 · QueryState · BookPicker
 └─ scripts/            OpenAPI → TS 타입 생성기
 ```
 
@@ -53,6 +56,13 @@ BOOKEY_API_URL=https://api.bookey.app npm run types
 서버 API 가 바뀌면 무엇이 달라졌는지 변경 이력에 그대로 드러나기 때문입니다.
 
 앱 코드는 생성 타입을 직접 쓰지 않고, 얇은 별칭 층을 거쳐 씁니다. 필드를 손으로 적는 곳은 없습니다.
+
+## 화면 규칙
+
+- 목록의 필터·쪽·열린 상세는 URL 에 둔다(`useListParams`) — 새로고침·뒤로가기·링크 공유가 된다.
+- 메뉴·버튼은 서버가 내 정보(`/auth/me`)에 실어 주는 `capabilities` 로 가린다(`useCan`, `<Can>`). 역할표를 웹에 두지 않는다.
+- 확인이 필요한 조치는 `useConfirm()` 을 쓴다(사유 입력·확인 문구 입력 지원). `window.confirm` 은 쓰지 않는다.
+- 변경 실패는 기본으로 토스트가 뜬다. 화면 안에 오류를 직접 그리면 mutation 에 `meta: { inlineError: true }` 를 단다.
 
 ## 운영 주의
 
