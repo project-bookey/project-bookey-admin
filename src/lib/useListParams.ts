@@ -7,7 +7,8 @@ import { useMemo, useRef } from 'react';
  * 목록 화면의 필터·쪽·상세 id 를 URL 에 둔다 — 새로고침·뒤로가기·링크 공유가 그대로 된다.
  *
  *  - 필터를 바꾸면 쪽은 처음으로 돌아간다(replace — 기록을 쌓지 않는다).
- *  - 상세를 열면 기록을 하나 쌓아(push) 뒤로가기로 닫힌다. 링크로 바로 들어왔으면 닫을 때 id 만 지운다.
+ *  - 상세를 열면 기록을 하나 쌓아(push) 뒤로가기로 닫힌다. 링크로 바로 들어왔으면 닫을 때 id·tab 만 지운다.
+ *    상세 안의 탭은 spec 에 tab 으로 두고 setParams 로 바꾼다(쪽을 건드리지 않는다).
  *  - 기본값과 같은 필터는 URL 에 적지 않는다. 기본값이 '전체' 가 아닌 필터의 '전체' 는 ALL 로 적는다.
  *
  * spec 은 모듈 최상단에 상수로 두어 렌더마다 새로 만들지 않는다.
@@ -93,6 +94,19 @@ export function useListParams<S extends Spec>(spec: S) {
         { scroll: false },
       );
     },
+    /** 쪽은 그대로 두고 값만 바꾼다 — 열린 상세의 탭처럼 목록과 상관없는 값. */
+    setParams: (patch: Partial<Parsed<S>>) => {
+      router.replace(
+        href((query) => {
+          for (const key of Object.keys(patch)) {
+            const serialized = spec[key].serialize(patch[key]);
+            if (serialized === null) query.delete(key);
+            else query.set(key, serialized);
+          }
+        }),
+        { scroll: false },
+      );
+    },
     setPage: (page: number) => {
       router.replace(
         href((query) => {
@@ -104,7 +118,13 @@ export function useListParams<S extends Spec>(spec: S) {
     },
     open: (id: number) => {
       openedHere.current = true;
-      router.push(href((query) => query.set('id', String(id))), { scroll: false });
+      router.push(
+        href((query) => {
+          query.set('id', String(id));
+          query.delete('tab');
+        }),
+        { scroll: false },
+      );
     },
     close: () => {
       if (openedHere.current) {
@@ -112,7 +132,13 @@ export function useListParams<S extends Spec>(spec: S) {
         router.back();
         return;
       }
-      router.replace(href((query) => query.delete('id')), { scroll: false });
+      router.replace(
+        href((query) => {
+          query.delete('id');
+          query.delete('tab');
+        }),
+        { scroll: false },
+      );
     },
   };
 }

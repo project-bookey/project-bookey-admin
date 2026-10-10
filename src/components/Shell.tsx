@@ -31,7 +31,13 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { href: '/inquiries', label: '고객문의', badge: 'waitingInquiries' },
     ],
   },
-  { group: '회원', items: [{ href: '/users', label: '회원' }] },
+  {
+    group: '회원',
+    items: [
+      { href: '/users', label: '회원' },
+      { href: '/payments', label: '결제 조회', cap: 'VIEW_PAYMENTS' },
+    ],
+  },
   {
     group: '콘텐츠',
     items: [
@@ -49,7 +55,13 @@ const NAV: { group: string; items: NavItem[] }[] = [
       { href: '/notifications', label: '알림 운영' },
     ],
   },
-  { group: '관리', items: [{ href: '/audit', label: '감사 로그' }] },
+  {
+    group: '관리',
+    items: [
+      { href: '/audit', label: '감사 로그' },
+      { href: '/admins', label: '관리자', cap: 'MANAGE_ADMINS' },
+    ],
+  },
 ];
 
 const noopSubscribe = () => () => {};

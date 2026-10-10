@@ -29,6 +29,7 @@ function targetHref(row: AuditRow): string | null {
   if (row.targetId === undefined || row.targetId === null) return null;
   if (row.targetType === 'USER') return `/users?id=${row.targetId}`;
   if (row.targetType === 'INQUIRY') return `/inquiries?id=${row.targetId}`;
+  if (row.targetType === 'ADMIN') return '/admins';
   return null;
 }
 

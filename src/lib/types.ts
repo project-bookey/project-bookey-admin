@@ -20,6 +20,8 @@ export type AdminRole = NonNullable<AdminProfile['role']>;
 export type AdminCapability = AdminProfile['capabilities'][number];
 export type TotpSecretView = Schemas['TotpSecretView'];
 export type CreateAdminRequest = Schemas['CreateAdminRequest'];
+export type AdminRow = Schemas['AdminRow'];
+export type AdminStatus = AdminRow['status'];
 
 // ── 대시보드 ─────────────────────────────────────────────
 export type Dashboard = Schemas['DashboardView'];
@@ -32,6 +34,20 @@ export type UserStatus = NonNullable<UserRow['status']>;
 export type SanctionType = NonNullable<SanctionRow['type']>;
 export type WalletAdjustRequest = Schemas['WalletAdjustRequest'];
 export type SubscriptionGrantRequest = Schemas['SubscriptionGrantRequest'];
+
+// ── 회원 CS (지갑 · 결제 · 기기 · 동의) ───────────────────
+export type WalletSummary = Schemas['AdminWalletSummary'];
+export type WalletTransactionRow = Schemas['AdminWalletTransactionRow'];
+export type WalletTransactionKind = WalletTransactionRow['kind'];
+export type SubscriptionRow = Schemas['AdminSubscriptionRow'];
+export type SubscriptionStore = SubscriptionRow['store'];
+export type SubscriptionStatus = SubscriptionRow['status'];
+export type BookmarkPurchaseRow = Schemas['AdminBookmarkPurchaseRow'];
+export type BookmarkPurchaseStatus = BookmarkPurchaseRow['status'];
+export type DeviceRow = Schemas['AdminDeviceRow'];
+export type IdentityRow = Schemas['AdminIdentityRow'];
+export type ConsentRow = Schemas['AdminConsentRow'];
+export type ConsentKind = ConsentRow['kind'];
 
 // ── 도서 ────────────────────────────────────────────────
 export type BookRow = Schemas['BookRow'];

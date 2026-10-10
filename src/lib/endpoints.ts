@@ -2,6 +2,8 @@ import { adminApi } from './api';
 import type {
   AdminProfile, AuditRow, BannerAdminView, BannerKind, BannerUpsertRequest, BookRow, ClubRow, ClubStatus, Dashboard,
   EditorPickCreateRequest, EditorPickUpdateRequest, EditorPickView, TotpSecretView,
+  AdminRole, AdminRow, AdminStatus, BookmarkPurchaseRow, BookmarkPurchaseStatus, CreateAdminRequest,
+  SubscriptionRow, SubscriptionStore, WalletTransactionRow,
   FaqAdminView, FaqUpsertRequest, InquiryAdminView, InquiryCategory, InquiryRow, InquiryStatus, LoginResponse,
   ModerationResolution, ModerationRow, ModerationSource, ModerationStatus, NotificationStats,
   OpsFlagRow, Page, ReviewRow, SanctionType, SubscriptionGrantRequest, UpdateBookRequest, UserDetail, UserRow,
@@ -23,6 +25,26 @@ export const authApi = {
   /** 2FA 등록 2단계 — 인증 앱 코드가 맞아야 켜진다. */
   confirmTotp: (code: string) =>
     adminApi<AdminProfile>('/admin/v1/auth/totp/confirm', { method: 'POST', body: { code } }),
+  /** 바꾸면 지금 로그인도 끊긴다 — 새 비밀번호로 다시 로그인해야 한다. */
+  changeOwnPassword: (currentPassword: string, newPassword: string) =>
+    adminApi<void>('/admin/v1/auth/me/password', { method: 'PATCH', body: { currentPassword, newPassword } }),
+};
+
+/** 관리자 계정 관리 — 최고 관리자 전용. */
+export const adminsApi = {
+  list: () => adminApi<AdminRow[]>('/admin/v1/auth/admins'),
+  create: (body: CreateAdminRequest) =>
+    adminApi<AdminProfile>('/admin/v1/auth/admins', { method: 'POST', body }),
+  changeRole: (adminId: number, role: AdminRole) =>
+    adminApi<void>(`/admin/v1/auth/admins/${adminId}/role`, { method: 'PATCH', query: { role } }),
+  /** 정지하면 다음 요청부터 막힌다. */
+  changeStatus: (adminId: number, status: AdminStatus, reason: string) =>
+    adminApi<void>(`/admin/v1/auth/admins/${adminId}/status`, { method: 'PATCH', body: { status, reason } }),
+  /** 그 관리자의 기존 로그인이 끊긴다. */
+  resetPassword: (adminId: number, newPassword: string, reason: string) =>
+    adminApi<void>(`/admin/v1/auth/admins/${adminId}/password`, { method: 'PUT', body: { newPassword, reason } }),
+  resetTotp: (adminId: number, reason: string) =>
+    adminApi<void>(`/admin/v1/auth/admins/${adminId}/totp`, { method: 'DELETE', query: { reason } }),
 };
 
 export const dashboardApi = {
@@ -54,6 +76,27 @@ export const usersApi = {
     adminApi<void>(`/admin/v1/users/${userId}/subscription`, { method: 'POST', body }),
   revokeSubscription: (userId: number, reason: string) =>
     adminApi<void>(`/admin/v1/users/${userId}/subscription`, { method: 'DELETE', query: { reason } }),
+  /** 결제 열람 권한 필요. 첫 쪽 조회는 열람 기록(VIEW_USER_PAYMENTS)이 남는다. */
+  walletTransactions: (userId: number, page = 0) =>
+    adminApi<Page<WalletTransactionRow>>(`/admin/v1/users/${userId}/wallet-transactions`, {
+      query: { page, size: PAGE_SIZE },
+    }),
+  subscriptions: (userId: number) => adminApi<SubscriptionRow[]>(`/admin/v1/users/${userId}/subscriptions`),
+  purchases: (userId: number, page = 0) =>
+    adminApi<Page<BookmarkPurchaseRow>>(`/admin/v1/users/${userId}/bookmark-purchases`, {
+      query: { page, size: PAGE_SIZE },
+    }),
+  /** 회원의 로그인을 모두 끊는다 — 다음 요청부터 다시 로그인해야 한다. */
+  revokeSessions: (userId: number, reason: string) =>
+    adminApi<void>(`/admin/v1/users/${userId}/sessions/revoke`, { method: 'POST', body: { reason } }),
+};
+
+export const paymentsApi = {
+  /** 주문번호는 앞부분만 넣어도 찾는다. */
+  search: (filter: { orderId?: string; status?: BookmarkPurchaseStatus; provider?: SubscriptionStore }, page = 0) =>
+    adminApi<Page<BookmarkPurchaseRow>>('/admin/v1/bookmark-purchases', {
+      query: { ...filter, page, size: PAGE_SIZE },
+    }),
 };
 
 export const booksApi = {
