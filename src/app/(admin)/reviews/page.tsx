@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 import { reviewsApi } from '@/lib/endpoints';
 import type { ReviewRow, VerificationLevel } from '@/lib/types';
-import { PageHeader, Shell } from '@/components/Shell';
+import { PageHeader } from '@/components/Shell';
 import { Button, Card, Empty, Input, Select, Tag, formatDateTime } from '@/components/ui';
 
 const LEVEL_LABEL: Record<VerificationLevel, string> = {
@@ -28,7 +28,7 @@ export default function ReviewsPage() {
   const reviews = useQuery({ queryKey: ['reviews'], queryFn: () => reviewsApi.list() });
 
   return (
-    <Shell>
+    <>
       <PageHeader
         title="검증 심사"
         description="등급은 리뷰 작성 시점에 고정됩니다. 조정하면 사유가 감사 로그에 남습니다."
@@ -81,7 +81,7 @@ export default function ReviewsPage() {
       </div>
 
       {selected ? <OverrideDialog review={selected} onClose={() => setSelected(null)} /> : null}
-    </Shell>
+    </>
   );
 }
 

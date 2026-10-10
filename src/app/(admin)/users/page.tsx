@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 import { usersApi } from '@/lib/endpoints';
 import type { SanctionType, UserRow, UserStatus } from '@/lib/types';
-import { PageHeader, Shell } from '@/components/Shell';
+import { PageHeader } from '@/components/Shell';
 import {
   Button, Card, Empty, Input, Select, Table, Tag, formatDateTime, formatDuration,
 } from '@/components/ui';
@@ -30,7 +30,7 @@ export default function UsersPage() {
   });
 
   return (
-    <Shell>
+    <>
       <PageHeader title="회원" description="닉네임 · 핸들 · 이메일로 검색합니다." />
 
       <div className="px-7 py-6">
@@ -100,7 +100,7 @@ export default function UsersPage() {
       </div>
 
       {selected ? <UserDialog user={selected} onClose={() => setSelected(null)} /> : null}
-    </Shell>
+    </>
   );
 }
 

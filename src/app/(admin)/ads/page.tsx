@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
 
-import { PageHeader, Shell } from '@/components/Shell';
+import { PageHeader } from '@/components/Shell';
 import { Button, Card, Empty, Input, Table, Tag, formatDateTime } from '@/components/ui';
 import { adsApi } from '@/lib/endpoints';
 import type { BannerAdminView, BannerKind, BannerUpsertRequest } from '@/lib/types';
@@ -62,7 +62,7 @@ export default function AdsPage() {
   const activeCount = (banners.data ?? []).filter((banner) => isActiveNow(banner)).length;
 
   return (
-    <Shell>
+    <>
       <PageHeader
         title="광고센터"
         description="광고와 공지 소재를 분리해서 운영합니다."
@@ -184,7 +184,7 @@ export default function AdsPage() {
 
       {creating ? <AdDialog kind={kind} onClose={() => setCreating(false)} /> : null}
       {editing ? <AdDialog banner={editing} onClose={() => setEditing(null)} /> : null}
-    </Shell>
+    </>
   );
 }
 

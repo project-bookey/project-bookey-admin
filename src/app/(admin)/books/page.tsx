@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 import { booksApi } from '@/lib/endpoints';
 import type { BookRow } from '@/lib/types';
-import { PageHeader, Shell } from '@/components/Shell';
+import { PageHeader } from '@/components/Shell';
 import { Button, Card, Empty, Input, Table, Tag } from '@/components/ui';
 
 /** 도서 관리 — 페이지 수 보정이 핵심 (진척도 계산의 기준값). */
@@ -20,7 +20,7 @@ export default function BooksPage() {
   });
 
   return (
-    <Shell>
+    <>
       <PageHeader
         title="도서"
         description="총 페이지 수는 진척도와 검증 등급의 기준값입니다. 빠진 값을 채워주세요."
@@ -86,7 +86,7 @@ export default function BooksPage() {
       </div>
 
       {editing ? <EditDialog book={editing} onClose={() => setEditing(null)} /> : null}
-    </Shell>
+    </>
   );
 }
 

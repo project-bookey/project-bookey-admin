@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 
 import { dashboardApi, moderationApi, opsApi } from '@/lib/endpoints';
-import { PageHeader, Shell } from '@/components/Shell';
+import { PageHeader } from '@/components/Shell';
 import { Card, Eyebrow, Empty, Tag, remainingSla } from '@/components/ui';
 
 /** 대시보드 — KPI 카드 + 처리 대기 큐 요약 (§F13). */
@@ -19,7 +19,7 @@ export default function DashboardPage() {
   const data = dashboard.data;
 
   return (
-    <Shell>
+    <>
       <PageHeader title="대시보드" description="오늘의 지표와 처리해야 할 일" />
 
       <div className="px-7 py-6">
@@ -133,7 +133,7 @@ export default function DashboardPage() {
           </Card>
         </section>
       </div>
-    </Shell>
+    </>
   );
 }
 

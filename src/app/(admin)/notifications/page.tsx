@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 
 import { opsApi } from '@/lib/endpoints';
-import { PageHeader, Shell } from '@/components/Shell';
+import { PageHeader } from '@/components/Shell';
 import { Button, Card, Eyebrow, Tag, formatDateTime } from '@/components/ui';
 
 const FLAG_LABEL: Record<string, { title: string; description: string }> = {
@@ -39,7 +39,7 @@ export default function NotificationsPage() {
   });
 
   return (
-    <Shell>
+    <>
       <PageHeader title="알림 운영" description="발송 성과를 보고, 필요하면 즉시 멈춥니다." />
 
       <div className="px-7 py-6">
@@ -105,6 +105,6 @@ export default function NotificationsPage() {
           </Card>
         </section>
       </div>
-    </Shell>
+    </>
   );
 }

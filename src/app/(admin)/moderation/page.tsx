@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 import { moderationApi } from '@/lib/endpoints';
 import type { ModerationResolution, ModerationRow, ModerationStatus, SanctionType } from '@/lib/types';
-import { PageHeader, Shell } from '@/components/Shell';
+import { PageHeader } from '@/components/Shell';
 import { Button, Card, Empty, Input, Select, Table, Tag, formatDateTime, remainingSla } from '@/components/ui';
 
 const RESOLUTIONS: { value: ModerationResolution; label: string; description: string }[] = [
@@ -27,7 +27,7 @@ export default function ModerationPage() {
   });
 
   return (
-    <Shell>
+    <>
       <PageHeader
         title="신고 큐"
         description="접수 48시간 안에 1차 판정합니다. 우선순위가 높은 건이 위에 옵니다."
@@ -104,7 +104,7 @@ export default function ModerationPage() {
           }}
         />
       ) : null}
-    </Shell>
+    </>
   );
 }
 

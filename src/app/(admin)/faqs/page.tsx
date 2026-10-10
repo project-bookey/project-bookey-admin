@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { faqsApi } from '@/lib/endpoints';
 import { INQUIRY_CATEGORIES, INQUIRY_CATEGORY_LABEL } from '@/lib/labels';
 import type { FaqAdminView, FaqUpsertRequest, InquiryCategory } from '@/lib/types';
-import { PageHeader, Shell } from '@/components/Shell';
+import { PageHeader } from '@/components/Shell';
 import {
   Button, Card, Empty, Input, Select, Table, Tag, Textarea, formatDateTime,
 } from '@/components/ui';
@@ -86,7 +86,7 @@ export default function FaqsPage() {
   };
 
   return (
-    <Shell>
+    <>
       <PageHeader
         title="FAQ"
         description="앱에는 노출 중인 항목만 이 순서대로 보입니다."
@@ -214,7 +214,7 @@ export default function FaqsPage() {
         <FaqDialog defaultCategory={category || 'USAGE'} onClose={() => setCreating(false)} />
       ) : null}
       {editing ? <FaqDialog faq={editing} onClose={() => setEditing(null)} /> : null}
-    </Shell>
+    </>
   );
 }
 

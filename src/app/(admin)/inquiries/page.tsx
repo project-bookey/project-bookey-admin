@@ -9,7 +9,7 @@ import {
   INQUIRY_CATEGORIES, INQUIRY_CATEGORY_LABEL, INQUIRY_STATUS_LABEL, USER_STATUS_LABEL,
 } from '@/lib/labels';
 import type { InquiryAdminView, InquiryCategory, InquiryStatus, UserStatus } from '@/lib/types';
-import { PageHeader, Shell } from '@/components/Shell';
+import { PageHeader } from '@/components/Shell';
 import {
   Button, Card, Empty, Pager, Select, Table, Tag, Textarea, formatDateTime,
 } from '@/components/ui';
@@ -44,7 +44,7 @@ export default function InquiriesPage() {
   const rows = inquiries.data?.content ?? [];
 
   return (
-    <Shell>
+    <>
       <PageHeader
         title="고객문의"
         description="답변 대기는 오래 기다린 순서로 위에 옵니다."
@@ -153,7 +153,7 @@ export default function InquiriesPage() {
       {selectedId !== null ? (
         <InquiryDialog inquiryId={selectedId} onClose={() => setSelectedId(null)} />
       ) : null}
-    </Shell>
+    </>
   );
 }
 

@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 import { clubsApi } from '@/lib/endpoints';
 import type { ClubRow, ClubStatus } from '@/lib/types';
-import { PageHeader, Shell } from '@/components/Shell';
+import { PageHeader } from '@/components/Shell';
 import { Button, Card, Empty, Input, Select, Table, Tag, formatDateTime } from '@/components/ui';
 
 const STATUS_TONE: Record<ClubStatus, 'neutral' | 'accent'> = {
@@ -28,7 +28,7 @@ export default function ClubsPage() {
   });
 
   return (
-    <Shell>
+    <>
       <PageHeader title="모임" description="운영 중인 독서 모임과 초대 코드를 관리합니다." />
 
       <div className="px-7 py-6">
@@ -116,7 +116,7 @@ export default function ClubsPage() {
           onClose={() => setAction(null)}
         />
       ) : null}
-    </Shell>
+    </>
   );
 }
 

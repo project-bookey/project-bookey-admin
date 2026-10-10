@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
 import { auditApi } from '@/lib/endpoints';
-import { PageHeader, Shell } from '@/components/Shell';
+import { PageHeader } from '@/components/Shell';
 import { Button, Card, Empty, Input, Table, Tag, formatDateTime } from '@/components/ui';
 
 /** 감사 로그 — 누가 · 언제 · 무엇을 · 왜 (§F13). */
@@ -18,7 +18,7 @@ export default function AuditPage() {
   });
 
   return (
-    <Shell>
+    <>
       <PageHeader
         title="감사 로그"
         description="변경뿐 아니라 개인정보 열람도 기록됩니다."
@@ -72,6 +72,6 @@ export default function AuditPage() {
           )}
         </Card>
       </div>
-    </Shell>
+    </>
   );
 }
