@@ -62,7 +62,7 @@ export const usersApi = {
     adminApi<Page<UserRow>>('/admin/v1/users', { query: { keyword, status, page, size: PAGE_SIZE } }),
   /** 상세 — 이메일은 가려서 온다. 열 때마다 서버가 열람 기록(VIEW_USER)을 남긴다. */
   detail: (userId: number) => adminApi<UserDetail>(`/admin/v1/users/${userId}`),
-  /** 이메일 전체 보기 — 사유가 개인정보 열람 기록(VIEW_USER_PII)으로 남는다. 한 번만 부르고 결과는 화면에 들고 있는다. */
+  /** 이메일 전체 보기(VIEW_PII, 보기 전용은 403) — 사유가 개인정보 열람 기록(VIEW_USER_PII)으로 남는다. 한 번만 부르고 결과는 화면에 들고 있는다. */
   revealEmail: (userId: number, reason: string) =>
     adminApi<UserDetail>(`/admin/v1/users/${userId}`, { query: { revealReason: reason } }),
   /** 사유와 기간은 회원에게 알림으로 전달된다. */

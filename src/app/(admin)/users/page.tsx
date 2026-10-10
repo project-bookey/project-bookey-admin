@@ -217,6 +217,7 @@ function UserDialog({ userId, tab, onTab, onClose }: {
 function OverviewTab({ user }: { user: UserDetail }) {
   const confirm = useConfirm();
   const canSanction = useCan('SANCTION');
+  const canViewPii = useCan('VIEW_PII');
   const [reason, setReason] = useState('');
   const [revealed, setRevealed] = useState<{ email: string; reason: string } | null>(null);
 
@@ -276,7 +277,11 @@ function OverviewTab({ user }: { user: UserDetail }) {
       <div className="mt-5 rounded-lg border border-[var(--color-line)] px-4 py-3">
         <p className="eyebrow">이메일</p>
         <p className="mt-1 font-mono text-[13px]">{revealed?.email ?? user.email ?? '—'}</p>
-        {!revealed ? (
+        {!canViewPii ? (
+          <p className="mt-2 font-mono text-[11px] text-[var(--color-faint)]">
+            보기 전용 관리자는 이메일 전체를 볼 수 없습니다.
+          </p>
+        ) : !revealed ? (
           <form
             className="mt-3 flex items-end gap-2"
             onSubmit={(e) => {
