@@ -1,9 +1,10 @@
 'use client';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-import { errorMessage } from '@/lib/api';
+import { clearToken, errorMessage } from '@/lib/api';
 import { authApi } from '@/lib/endpoints';
 import { formatDateTime } from '@/lib/format';
 import { ADMIN_ROLE_LABEL } from '@/lib/labels';
@@ -49,6 +50,8 @@ export default function AccountPage() {
                 </dl>
               </Card>
 
+              <PasswordCard />
+
               <Card className="mt-4 px-5 py-4">
                 <div className="flex items-start justify-between gap-4">
                   <div>
@@ -80,6 +83,71 @@ export default function AccountPage() {
 
       {setup ? <TotpSetupDialog setup={setup} onClose={() => setSetup(null)} /> : null}
     </>
+  );
+}
+
+const PASSWORD_MIN = 12;
+
+/** 내 비밀번호 변경. 바꾸면 지금 로그인도 끊기므로 로그인 화면으로 보낸다. */
+function PasswordCard() {
+  const router = useRouter();
+  const [current, setCurrent] = useState('');
+  const [next, setNext] = useState('');
+  const [again, setAgain] = useState('');
+
+  const change = useMutation({
+    meta: { inlineError: true },
+    mutationFn: () => authApi.changeOwnPassword(current, next),
+    onSuccess: () => {
+      toast.success('비밀번호를 바꿨습니다. 새 비밀번호로 다시 로그인하세요.');
+      clearToken();
+      router.replace('/login');
+    },
+  });
+
+  const mismatch = again.length > 0 && next !== again;
+  const tooShort = next.length > 0 && next.length < PASSWORD_MIN;
+
+  return (
+    <Card className="mt-4 px-5 py-4">
+      <p className="eyebrow">비밀번호 변경</p>
+      <form
+        className="mt-3 flex flex-col gap-3"
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (current && next.length >= PASSWORD_MIN && next === again) change.mutate();
+        }}
+      >
+        <Input label="현재 비밀번호" type="password" autoComplete="current-password" value={current}
+          onChange={(e) => setCurrent(e.target.value)} />
+        <div className="grid grid-cols-2 gap-3">
+          <Input label={`새 비밀번호 (${PASSWORD_MIN}자 이상)`} type="password" autoComplete="new-password" value={next}
+            onChange={(e) => setNext(e.target.value)} />
+          <Input label="새 비밀번호 확인" type="password" autoComplete="new-password" value={again}
+            onChange={(e) => setAgain(e.target.value)} />
+        </div>
+        <ErrorText
+          error={
+            tooShort
+              ? `${PASSWORD_MIN}자 이상으로 정해 주세요.`
+              : mismatch
+                ? '새 비밀번호가 서로 다릅니다.'
+                : change.isError
+                  ? errorMessage(change.error)
+                  : null
+          }
+        />
+        <div className="flex items-center justify-between">
+          <p className="font-mono text-[11px] text-[var(--color-faint)]">바꾸면 지금 로그인이 끊기고 다시 로그인해야 합니다.</p>
+          <Button
+            type="submit"
+            disabled={!current || next.length < PASSWORD_MIN || next !== again || change.isPending}
+          >
+            {change.isPending ? '바꾸는 중…' : '바꾸기'}
+          </Button>
+        </div>
+      </form>
+    </Card>
   );
 }
 

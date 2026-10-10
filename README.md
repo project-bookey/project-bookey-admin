@@ -18,7 +18,8 @@ project-bookey-admin/
 │   │   ├─ page.tsx        대시보드 — KPI · 처리 대기 큐
 │   │   ├─ moderation/     신고 큐 (SLA 48h) · 담당 지정
 │   │   ├─ inquiries/      고객문의 (1:1) 답변 · 수정
-│   │   ├─ users/          회원 · 제재/해제 · 지갑/구독 조정 · PII 열람
+│   │   ├─ users/          회원 상세(서랍) — 개요 · 지갑/결제 · 제재 · 기기/동의, 로그인 끊기
+│   │   ├─ payments/       결제 조회 — 주문번호로 책갈피 구매 찾기
 │   │   ├─ books/          도서 메타 보정
 │   │   ├─ editor-picks/   홈 '추천' 줄(에디터 픽)
 │   │   ├─ reviews/        검증 등급 심사
@@ -27,7 +28,8 @@ project-bookey-admin/
 │   │   ├─ ads/            광고 · 공지 배너
 │   │   ├─ notifications/  발송 통계 · 운영 스위치(킬스위치)
 │   │   ├─ audit/          감사 로그
-│   │   └─ account/        내 계정 · 2단계 인증 등록
+│   │   ├─ admins/         관리자 계정 — 추가 · 역할 · 정지 · 비밀번호/2FA 초기화 (최고 관리자)
+│   │   └─ account/        내 계정 · 비밀번호 변경 · 2단계 인증 등록
 │   └─ login/
 ├─ src/lib/            API 클라이언트 · 타입 별칭 · 라벨 · 쿼리 키 · URL 상태(useListParams) · 권한(useMe)
 ├─ src/components/     셸 · 공용 UI · Modal · Confirm · 토스트 · QueryState · BookPicker

@@ -5,13 +5,15 @@ import { useState } from 'react';
 
 import { errorMessage } from '@/lib/api';
 import { usersApi } from '@/lib/endpoints';
-import { formatDateTime, formatDuration } from '@/lib/format';
+import { formatDateTime, formatDuration, formatKrw } from '@/lib/format';
 import {
-  SANCTION_TYPES, SANCTION_TYPE_HINT, SANCTION_TYPE_LABEL, USER_STATUSES, USER_STATUS_LABEL, USER_STATUS_TONE,
+  AUTH_PROVIDER_LABEL, CONSENT_KIND_LABEL, DEVICE_PLATFORM_LABEL, PAYMENT_STORE_LABEL, PURCHASE_STATUS_LABEL,
+  PURCHASE_STATUS_TONE, SANCTION_TYPES, SANCTION_TYPE_HINT, SANCTION_TYPE_LABEL, SUBSCRIPTION_STATUS_LABEL,
+  SUBSCRIPTION_STATUS_TONE, USER_STATUSES, USER_STATUS_LABEL, USER_STATUS_TONE, WALLET_TRANSACTION_KIND_LABEL,
 } from '@/lib/labels';
 import { qk } from '@/lib/queryKeys';
 import { toast } from '@/lib/toast';
-import type { SanctionRow, SanctionType, UserDetail } from '@/lib/types';
+import type { SanctionRow, SanctionType, UserDetail, WalletSummary } from '@/lib/types';
 import { param, useListParams } from '@/lib/useListParams';
 import { useCan } from '@/lib/useMe';
 import { useConfirm } from '@/components/Confirm';
@@ -19,18 +21,24 @@ import { Modal } from '@/components/Modal';
 import { QueryState } from '@/components/QueryState';
 import { PageHeader } from '@/components/Shell';
 import {
-  Button, Card, ErrorText, Input, Metric, Pager, ResultCount, Select, Table, Tabs, Tag,
+  Button, Card, Empty, ErrorText, Input, Metric, Pager, ResultCount, Select, Table, Tabs, Tag,
 } from '@/components/ui';
+
+const TABS = ['overview', 'payments', 'sanctions', 'devices'] as const;
+type DialogTab = (typeof TABS)[number];
 
 const FILTERS = {
   q: param.str(),
   status: param.oneOf(USER_STATUSES),
+  /** 열린 회원 상세의 탭 — 링크로 바로 지갑 탭을 열 수 있게 URL 에 둔다. */
+  tab: param.oneOf(TABS, 'overview'),
 };
 
 /** 회원 관리 — 조회는 마스킹이 기본, 전체 열람은 사유를 남겨야 한다 (§F13). */
 export default function UsersPage() {
-  const { params, setFilter, setPage, open, close } = useListParams(FILTERS);
+  const { params, setFilter, setParams, setPage, open, close } = useListParams(FILTERS);
   const { q, status, page, id } = params;
+  const tab: DialogTab = params.tab || 'overview';
 
   const users = useQuery({
     queryKey: qk.users.list({ q, status, page }),
@@ -88,7 +96,9 @@ export default function UsersPage() {
         <Pager page={page} totalPages={users.data?.totalPages ?? 0} onChange={setPage} />
       </div>
 
-      {id !== undefined ? <UserDialog key={id} userId={id} onClose={close} /> : null}
+      {id !== undefined ? (
+        <UserDialog key={id} userId={id} tab={tab} onTab={(next) => setParams({ tab: next })} onClose={close} />
+      ) : null}
     </>
   );
 }
@@ -135,11 +145,13 @@ function SearchForm({ initial, status, onSubmit }: {
   );
 }
 
-type DialogTab = 'overview' | 'sanctions' | 'wallet';
-
-function UserDialog({ userId, onClose }: { userId: number; onClose: () => void }) {
-  const [tab, setTab] = useState<DialogTab>('overview');
-  const canSanction = useCan('SANCTION');
+function UserDialog({ userId, tab, onTab, onClose }: {
+  userId: number;
+  tab: DialogTab;
+  onTab: (tab: DialogTab) => void;
+  onClose: () => void;
+}) {
+  const canViewPayments = useCan('VIEW_PAYMENTS');
 
   // 상세는 사유 없이 부른다 — 사유를 붙여 다시 부르면 개인정보 열람 기록이 그만큼 더 쌓인다.
   const detail = useQuery({
@@ -147,10 +159,11 @@ function UserDialog({ userId, onClose }: { userId: number; onClose: () => void }
     queryFn: () => usersApi.detail(userId),
   });
   const data = detail.data;
+  const current = tab === 'payments' && !canViewPayments ? 'overview' : tab;
 
   return (
     <Modal
-      size="lg"
+      variant="side"
       eyebrow={`회원 상세 · ID ${userId}`}
       title={
         data ? (
@@ -170,22 +183,29 @@ function UserDialog({ userId, onClose }: { userId: number; onClose: () => void }
             <p className="-mt-2 font-mono text-[12px] text-[var(--color-faint)]">
               @{user.handle} · 가입 {formatDateTime(user.createdAt)}
             </p>
+            {user.deletionRequestedAt ? (
+              <p className="mt-3 rounded-lg bg-[var(--color-danger-soft)] px-4 py-2.5 font-mono text-[12px] font-bold text-[var(--color-danger)]">
+                {formatDateTime(user.deletionRequestedAt)} 탈퇴를 신청했습니다 — 30일 뒤 계정이 지워집니다. 제재를 걸거나 풀 수 없습니다.
+              </p>
+            ) : null}
 
             <div className="mt-5">
               <Tabs<DialogTab>
-                value={tab}
-                onChange={setTab}
+                value={current}
+                onChange={onTab}
                 options={[
                   { value: 'overview', label: '개요' },
+                  ...(canViewPayments ? [{ value: 'payments' as const, label: '지갑 · 결제' }] : []),
                   { value: 'sanctions', label: `제재 ${user.sanctions.length || ''}`.trim() },
-                  ...(canSanction ? [{ value: 'wallet' as const, label: '지갑 · 구독' }] : []),
+                  { value: 'devices', label: '기기 · 동의' },
                 ]}
               />
             </div>
 
-            {tab === 'overview' ? <OverviewTab user={user} /> : null}
-            {tab === 'sanctions' ? <SanctionsTab user={user} /> : null}
-            {tab === 'wallet' && canSanction ? <WalletTab user={user} /> : null}
+            {current === 'overview' ? <OverviewTab user={user} /> : null}
+            {current === 'payments' ? <PaymentsTab user={user} /> : null}
+            {current === 'sanctions' ? <SanctionsTab user={user} /> : null}
+            {current === 'devices' ? <DevicesTab user={user} /> : null}
           </>
         )}
       </QueryState>
@@ -194,6 +214,8 @@ function UserDialog({ userId, onClose }: { userId: number; onClose: () => void }
 }
 
 function OverviewTab({ user }: { user: UserDetail }) {
+  const confirm = useConfirm();
+  const canSanction = useCan('SANCTION');
   const [reason, setReason] = useState('');
   const [revealed, setRevealed] = useState<{ email: string; reason: string } | null>(null);
 
@@ -203,6 +225,20 @@ function OverviewTab({ user }: { user: UserDetail }) {
     onSuccess: (view, why) => setRevealed({ email: view.email ?? '—', reason: why }),
   });
 
+  const revokeSessions = async () => {
+    await confirm({
+      title: '이 회원의 로그인을 모두 끊을까요?',
+      body: '모든 기기에서 로그아웃되고 다시 로그인해야 합니다. 기기 분실·계정 도용 신고 때 씁니다. 계정 상태는 바뀌지 않습니다.',
+      confirmLabel: '끊기',
+      tone: 'danger',
+      reason: { label: '사유 (필수)', placeholder: '예: 휴대폰 분실 신고' },
+      action: async ({ reason: why }) => {
+        await usersApi.revokeSessions(user.id, why);
+        toast.success('로그인을 모두 끊었습니다.');
+      },
+    });
+  };
+
   return (
     <>
       <div className="mt-5 grid grid-cols-4 gap-3">
@@ -211,6 +247,21 @@ function OverviewTab({ user }: { user: UserDetail }) {
         <Metric label="리뷰" value={user.reviewCount} />
         <Metric label="모임" value={user.clubCount} />
       </div>
+
+      <dl className="mt-5 grid grid-cols-[120px_1fr] gap-y-2 rounded-lg border border-[var(--color-line)] px-4 py-3 text-[13px]">
+        <dt className="text-[var(--color-muted)]">마지막 접속</dt>
+        <dd className="font-mono text-[12.5px]">{formatDateTime(user.lastSeenAt)}</dd>
+        <dt className="text-[var(--color-muted)]">로그인 수단</dt>
+        <dd>
+          {[user.hasPassword ? '이메일·비밀번호' : null, ...user.identities.map((i) => AUTH_PROVIDER_LABEL[i.provider])]
+            .filter(Boolean)
+            .join(' · ') || '—'}
+        </dd>
+        <dt className="text-[var(--color-muted)]">이메일 인증</dt>
+        <dd className="font-mono text-[12.5px]">{user.emailVerifiedAt ? formatDateTime(user.emailVerifiedAt) : '안 함'}</dd>
+        <dt className="text-[var(--color-muted)]">본인 인증</dt>
+        <dd className="font-mono text-[12.5px]">{user.identityVerifiedAt ? formatDateTime(user.identityVerifiedAt) : '안 함'}</dd>
+      </dl>
 
       <div className="mt-5 rounded-lg border border-[var(--color-line)] px-4 py-3">
         <p className="eyebrow">이메일</p>
@@ -243,6 +294,18 @@ function OverviewTab({ user }: { user: UserDetail }) {
         )}
         <ErrorText error={reveal.isError ? errorMessage(reveal.error) : null} />
       </div>
+
+      {canSanction ? (
+        <div className="mt-5 flex items-center justify-between rounded-lg border border-[var(--color-line)] px-4 py-3">
+          <div>
+            <p className="eyebrow">로그인 끊기</p>
+            <p className="mt-1 text-[12.5px] text-[var(--color-muted)]">기기 분실·도용 신고 때 모든 기기에서 로그아웃시킵니다.</p>
+          </div>
+          <Button variant="danger" onClick={revokeSessions}>
+            모두 끊기
+          </Button>
+        </div>
+      ) : null}
     </>
   );
 }
@@ -400,29 +463,63 @@ function SanctionsTab({ user }: { user: UserDetail }) {
 
 const SIGNED_INT = /^-?\d+$/;
 
-function WalletTab({ user }: { user: UserDetail }) {
+function PaymentsTab({ user }: { user: UserDetail }) {
+  const canSanction = useCan('SANCTION');
+  const wallet = user.wallet ?? { bookmarks: 0, postcards: 0, stamps: 0 };
+  const subscription = user.subscription;
+  const subscribed = isCurrentSubscription(subscription);
+
+  return (
+    <>
+      <div className="mt-5 grid grid-cols-4 gap-3">
+        <Metric label="책갈피" value={wallet.bookmarks} />
+        <Metric label="엽서" value={wallet.postcards} />
+        <Metric label="우표" value={wallet.stamps} />
+        <div className="rounded-lg bg-[var(--color-surface-alt)] px-3 py-2.5">
+          <p className="eyebrow">구독</p>
+          <p className="mt-1 text-[13px] font-bold">{subscribed ? 'Bookey Plus' : '없음'}</p>
+          {subscription ? (
+            <p className="font-mono text-[10.5px] text-[var(--color-faint)]">~ {formatDateTime(subscription.currentPeriodEnd)}</p>
+          ) : null}
+        </div>
+      </div>
+
+      {canSanction ? <WalletAdjust user={user} wallet={wallet} /> : null}
+      {canSanction ? <SubscriptionActions user={user} /> : null}
+
+      <WalletLedger userId={user.id} />
+      <SubscriptionHistory userId={user.id} />
+      <PurchaseHistory userId={user.id} />
+    </>
+  );
+}
+
+function WalletAdjust({ user, wallet }: { user: UserDetail; wallet: WalletSummary }) {
   const queryClient = useQueryClient();
   const confirm = useConfirm();
   const [bookmarks, setBookmarks] = useState('');
   const [postcards, setPostcards] = useState('');
   const [stamps, setStamps] = useState('');
   const [reason, setReason] = useState('');
-  const [months, setMonths] = useState('1');
-  const [grantReason, setGrantReason] = useState('');
 
-  const deltas = { bookmarks, postcards, stamps };
-  const invalid = Object.values(deltas).some((value) => value !== '' && !SIGNED_INT.test(value));
-  const parsed = {
+  const invalid = [bookmarks, postcards, stamps].some((value) => value !== '' && !SIGNED_INT.test(value));
+  const delta = {
     bookmarks: Number(bookmarks || 0),
     postcards: Number(postcards || 0),
     stamps: Number(stamps || 0),
   };
-  const nothing = parsed.bookmarks === 0 && parsed.postcards === 0 && parsed.stamps === 0;
+  const after = {
+    bookmarks: wallet.bookmarks + delta.bookmarks,
+    postcards: wallet.postcards + delta.postcards,
+    stamps: wallet.stamps + delta.stamps,
+  };
+  const negative = after.bookmarks < 0 || after.postcards < 0 || after.stamps < 0;
+  const nothing = delta.bookmarks === 0 && delta.postcards === 0 && delta.stamps === 0;
 
   const summary = [
-    parsed.bookmarks ? `책갈피 ${signed(parsed.bookmarks)}` : null,
-    parsed.postcards ? `엽서 ${signed(parsed.postcards)}` : null,
-    parsed.stamps ? `우표 ${signed(parsed.stamps)}` : null,
+    delta.bookmarks ? `책갈피 ${signed(delta.bookmarks)}` : null,
+    delta.postcards ? `엽서 ${signed(delta.postcards)}` : null,
+    delta.stamps ? `우표 ${signed(delta.stamps)}` : null,
   ]
     .filter(Boolean)
     .join(', ');
@@ -430,18 +527,63 @@ function WalletTab({ user }: { user: UserDetail }) {
   const adjust = async () => {
     await confirm({
       title: '지갑을 조정할까요?',
-      body: `${user.nickname} 님: ${summary}`,
+      body: `${user.nickname} 님: ${summary} → 책갈피 ${after.bookmarks} · 엽서 ${after.postcards} · 우표 ${after.stamps}`,
       confirmLabel: '조정',
       action: async () => {
-        await usersApi.adjustWallet(user.id, { ...parsed, reason: reason.trim() });
+        await usersApi.adjustWallet(user.id, { ...delta, reason: reason.trim() });
         toast.success('지갑을 조정했습니다.');
         setBookmarks('');
         setPostcards('');
         setStamps('');
         setReason('');
-        queryClient.invalidateQueries({ queryKey: qk.audit.all });
+        queryClient.invalidateQueries({ queryKey: qk.users.detail(user.id) });
+        queryClient.invalidateQueries({ queryKey: ['users', 'wallet', user.id] });
       },
     });
+  };
+
+  const field = (label: string, value: string, set: (v: string) => void, current: number, next: number) => (
+    <div>
+      <Input label={label} inputMode="numeric" value={value} placeholder="0"
+        onChange={(e) => set(e.target.value.replace(/[^\d-]/g, ''))} />
+      <p className={`mt-1 font-mono text-[11px] ${next < 0 ? 'text-[var(--color-danger)]' : 'text-[var(--color-faint)]'}`}>
+        {current} → {next}
+      </p>
+    </div>
+  );
+
+  return (
+    <section className="mt-5 rounded-lg border border-[var(--color-line)] p-4">
+      <p className="eyebrow">지갑 조정 (±)</p>
+      <div className="mt-3 grid grid-cols-3 gap-3">
+        {field('책갈피', bookmarks, setBookmarks, wallet.bookmarks, after.bookmarks)}
+        {field('엽서', postcards, setPostcards, wallet.postcards, after.postcards)}
+        {field('우표', stamps, setStamps, wallet.stamps, after.stamps)}
+      </div>
+      <div className="mt-3">
+        <Input label="사유 (필수)" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="예: 결제 오류 보상" />
+      </div>
+      <ErrorText
+        error={invalid ? '숫자만 입력하세요. 빼려면 앞에 - 를 붙입니다.' : negative ? '잔액보다 많이 뺄 수 없습니다.' : null}
+      />
+      <div className="mt-4 flex justify-end">
+        <Button disabled={invalid || negative || nothing || !reason.trim()} onClick={adjust}>
+          조정
+        </Button>
+      </div>
+    </section>
+  );
+}
+
+function SubscriptionActions({ user }: { user: UserDetail }) {
+  const queryClient = useQueryClient();
+  const confirm = useConfirm();
+  const [months, setMonths] = useState('1');
+  const [reason, setReason] = useState('');
+
+  const refresh = () => {
+    queryClient.invalidateQueries({ queryKey: qk.users.detail(user.id) });
+    queryClient.invalidateQueries({ queryKey: qk.users.subscriptions(user.id) });
   };
 
   const grant = async () => {
@@ -450,9 +592,10 @@ function WalletTab({ user }: { user: UserDetail }) {
       body: '남은 구독 기간 뒤에 이어 붙습니다.',
       confirmLabel: '지급',
       action: async () => {
-        await usersApi.grantSubscription(user.id, { months: Number(months), reason: grantReason.trim() });
+        await usersApi.grantSubscription(user.id, { months: Number(months), reason: reason.trim() });
         toast.success('구독을 지급했습니다.');
-        setGrantReason('');
+        setReason('');
+        refresh();
       },
     });
   };
@@ -467,65 +610,201 @@ function WalletTab({ user }: { user: UserDetail }) {
       action: async ({ reason: why }) => {
         await usersApi.revokeSubscription(user.id, why);
         toast.success('구독을 회수했습니다.');
+        refresh();
       },
     });
   };
 
   return (
-    <>
-      <p className="mt-5 rounded-lg bg-[var(--color-surface-alt)] px-4 py-3 font-mono text-[11.5px] text-[var(--color-muted)]">
-        현재 잔액과 구독 상태 조회는 결제 내역 화면이 나오면 함께 보입니다. 지금은 조정 결과를 감사 로그에서 확인하세요.
-      </p>
+    <section className="mt-5 rounded-lg border border-[var(--color-line)] p-4">
+      <p className="eyebrow">구독 (Bookey Plus)</p>
+      <div className="mt-3 grid grid-cols-[140px_1fr] gap-3">
+        <Select label="지급 기간" value={months} onChange={(e) => setMonths(e.target.value)}>
+          {Array.from({ length: 24 }, (_, i) => i + 1).map((n) => (
+            <option key={n} value={n}>
+              {n}개월
+            </option>
+          ))}
+        </Select>
+        <Input label="지급 사유 (필수)" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="예: 이벤트 당첨" />
+      </div>
+      <div className="mt-4 flex justify-between">
+        <Button variant="danger" disabled={!user.subscription} onClick={revoke}>
+          구독 회수
+        </Button>
+        <Button disabled={!reason.trim()} onClick={grant}>
+          구독 지급
+        </Button>
+      </div>
+    </section>
+  );
+}
 
-      <section className="mt-5 rounded-lg border border-[var(--color-line)] p-4">
-        <p className="eyebrow">지갑 조정 (±)</p>
-        <div className="mt-3 grid grid-cols-3 gap-3">
-          <Input label="책갈피" inputMode="numeric" value={bookmarks} placeholder="0"
-            onChange={(e) => setBookmarks(e.target.value.replace(/[^\d-]/g, ''))} />
-          <Input label="엽서" inputMode="numeric" value={postcards} placeholder="0"
-            onChange={(e) => setPostcards(e.target.value.replace(/[^\d-]/g, ''))} />
-          <Input label="우표" inputMode="numeric" value={stamps} placeholder="0"
-            onChange={(e) => setStamps(e.target.value.replace(/[^\d-]/g, ''))} />
-        </div>
-        <p className="mt-2 font-mono text-[11px] text-[var(--color-muted)]">
-          더하려면 양수, 빼려면 음수(예: -3). 잔액보다 많이 뺄 수 없습니다.
-        </p>
-        <div className="mt-3">
-          <Input label="사유 (필수)" value={reason} onChange={(e) => setReason(e.target.value)}
-            placeholder="예: 결제 오류 보상" />
-        </div>
-        <ErrorText error={invalid ? '숫자만 입력하세요. 빼려면 앞에 - 를 붙입니다.' : null} />
-        <div className="mt-4 flex justify-end">
-          <Button disabled={invalid || nothing || !reason.trim()} onClick={adjust}>
-            조정
-          </Button>
-        </div>
+/** 결제 내역 목록들 — 탭을 열 때 불러오고, 쪽은 각 목록이 따로 들고 있는다. */
+function WalletLedger({ userId }: { userId: number }) {
+  const [page, setPage] = useState(0);
+  const ledger = useQuery({
+    queryKey: qk.users.walletTransactions(userId, page),
+    queryFn: () => usersApi.walletTransactions(userId, page),
+    placeholderData: keepPreviousData,
+  });
+  return (
+    <section className="mt-6">
+      <p className="eyebrow">지갑 원장</p>
+      <Card className="mt-2">
+        <QueryState query={ledger} isEmpty={(d) => d.content.length === 0} empty="원장 기록이 없습니다.">
+          {(data) => (
+            <ul className="divide-y divide-[var(--color-line)]">
+              {data.content.map((row) => (
+                <li key={row.id} className="flex items-center gap-3 px-4 py-2.5 text-[13px]">
+                  <span className="w-36 shrink-0 font-bold">{WALLET_TRANSACTION_KIND_LABEL[row.kind]}</span>
+                  <span className="flex-1 font-mono text-[12px]">
+                    {[
+                      row.bookmarkDelta ? `책갈피 ${signed(row.bookmarkDelta)}` : null,
+                      row.postcardDelta ? `엽서 ${signed(row.postcardDelta)}` : null,
+                      row.stampDelta ? `우표 ${signed(row.stampDelta)}` : null,
+                    ]
+                      .filter(Boolean)
+                      .join(' · ') || '변화 없음'}
+                  </span>
+                  <span className="font-mono text-[11px] text-[var(--color-faint)]">{formatDateTime(row.createdAt)}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </QueryState>
+      </Card>
+      <Pager page={page} totalPages={ledger.data?.totalPages ?? 0} onChange={setPage} />
+    </section>
+  );
+}
+
+function SubscriptionHistory({ userId }: { userId: number }) {
+  const history = useQuery({
+    queryKey: qk.users.subscriptions(userId),
+    queryFn: () => usersApi.subscriptions(userId),
+  });
+  return (
+    <section className="mt-6">
+      <p className="eyebrow">구독 이력</p>
+      <Card className="mt-2">
+        <QueryState query={history} isEmpty={(d) => d.length === 0} empty="구독한 적이 없습니다.">
+          {(rows) => (
+            <ul className="divide-y divide-[var(--color-line)]">
+              {rows.map((row) => (
+                <li key={row.id} className="flex items-center gap-3 px-4 py-2.5 text-[13px]">
+                  <Tag tone={SUBSCRIPTION_STATUS_TONE[row.status]}>{SUBSCRIPTION_STATUS_LABEL[row.status]}</Tag>
+                  <span className="w-28 shrink-0">{PAYMENT_STORE_LABEL[row.store]}</span>
+                  <span className="flex-1 font-mono text-[12px]">
+                    {formatDateTime(row.currentPeriodStart)} → {formatDateTime(row.currentPeriodEnd)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </QueryState>
+      </Card>
+    </section>
+  );
+}
+
+function PurchaseHistory({ userId }: { userId: number }) {
+  const [page, setPage] = useState(0);
+  const purchases = useQuery({
+    queryKey: qk.users.purchases(userId, page),
+    queryFn: () => usersApi.purchases(userId, page),
+    placeholderData: keepPreviousData,
+  });
+  return (
+    <section className="mt-6">
+      <p className="eyebrow">책갈피 구매</p>
+      <Card className="mt-2">
+        <QueryState query={purchases} isEmpty={(d) => d.content.length === 0} empty="구매 내역이 없습니다.">
+          {(data) => (
+            <ul className="divide-y divide-[var(--color-line)]">
+              {data.content.map((row) => (
+                <li key={row.id} className="flex items-center gap-3 px-4 py-2.5 text-[13px]">
+                  <Tag tone={PURCHASE_STATUS_TONE[row.status]}>{PURCHASE_STATUS_LABEL[row.status]}</Tag>
+                  <span className="w-24 shrink-0">{PAYMENT_STORE_LABEL[row.provider]}</span>
+                  <span className="flex-1">
+                    {row.quantity}개{row.bonusQuantity ? ` (+${row.bonusQuantity})` : ''} · {formatKrw(row.amountKrw)}
+                    <span className="ml-2 font-mono text-[11px] text-[var(--color-faint)]">{row.orderId}</span>
+                  </span>
+                  <span className="font-mono text-[11px] text-[var(--color-faint)]">{formatDateTime(row.createdAt)}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </QueryState>
+      </Card>
+      <Pager page={page} totalPages={purchases.data?.totalPages ?? 0} onChange={setPage} />
+    </section>
+  );
+}
+
+function DevicesTab({ user }: { user: UserDetail }) {
+  return (
+    <>
+      <section className="mt-5">
+        <p className="eyebrow">기기</p>
+        {user.devices.length === 0 ? (
+          <Empty>등록된 기기가 없습니다 — 앱에서 푸시를 허용하지 않았거나 웹으로만 썼습니다.</Empty>
+        ) : (
+          <ul className="mt-2 divide-y divide-[var(--color-line)] rounded-lg border border-[var(--color-line)]">
+            {user.devices.map((device, index) => (
+              <li key={`${device.tokenTail}-${index}`} className="flex items-center gap-3 px-4 py-2.5 text-[13px]">
+                <span className="w-20 shrink-0 font-bold">{DEVICE_PLATFORM_LABEL[device.platform]}</span>
+                {device.pushEnabled ? <Tag tone="accent">푸시 켜짐</Tag> : <Tag>푸시 꺼짐</Tag>}
+                <span className="flex-1 font-mono text-[11px] text-[var(--color-faint)]">
+                  토큰 …{device.tokenTail ?? '—'}
+                </span>
+                <span className="font-mono text-[11px] text-[var(--color-faint)]">최근 {formatDateTime(device.lastSeenAt)}</span>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
-      <section className="mt-5 rounded-lg border border-[var(--color-line)] p-4">
-        <p className="eyebrow">구독 (Bookey Plus)</p>
-        <div className="mt-3 grid grid-cols-[140px_1fr] gap-3">
-          <Select label="지급 기간" value={months} onChange={(e) => setMonths(e.target.value)}>
-            {Array.from({ length: 24 }, (_, i) => i + 1).map((n) => (
-              <option key={n} value={n}>
-                {n}개월
-              </option>
+      <section className="mt-6">
+        <p className="eyebrow">소셜 연동</p>
+        {user.identities.length === 0 ? (
+          <p className="mt-2 text-[13px] text-[var(--color-muted)]">연동한 소셜 계정이 없습니다.</p>
+        ) : (
+          <ul className="mt-2 flex flex-wrap gap-2">
+            {user.identities.map((identity) => (
+              <li key={identity.provider} className="rounded-lg border border-[var(--color-line)] px-3 py-2 text-[13px]">
+                <span className="font-bold">{AUTH_PROVIDER_LABEL[identity.provider]}</span>
+                <span className="ml-2 font-mono text-[11px] text-[var(--color-faint)]">{formatDateTime(identity.linkedAt)}</span>
+              </li>
             ))}
-          </Select>
-          <Input label="지급 사유 (필수)" value={grantReason} onChange={(e) => setGrantReason(e.target.value)}
-            placeholder="예: 이벤트 당첨" />
-        </div>
-        <div className="mt-4 flex justify-between">
-          <Button variant="danger" onClick={revoke}>
-            구독 회수
-          </Button>
-          <Button disabled={!grantReason.trim()} onClick={grant}>
-            구독 지급
-          </Button>
-        </div>
+          </ul>
+        )}
+      </section>
+
+      <section className="mt-6">
+        <p className="eyebrow">동의</p>
+        {user.consents.length === 0 ? (
+          <p className="mt-2 text-[13px] text-[var(--color-muted)]">동의 기록이 없습니다.</p>
+        ) : (
+          <ul className="mt-2 divide-y divide-[var(--color-line)] rounded-lg border border-[var(--color-line)]">
+            {user.consents.map((consent) => (
+              <li key={consent.kind} className="flex items-center gap-3 px-4 py-2.5 text-[13px]">
+                <span className="flex-1">{CONSENT_KIND_LABEL[consent.kind]}</span>
+                {consent.agreed ? <Tag tone="accent">동의</Tag> : <Tag tone="warn">철회</Tag>}
+                <span className="w-24 font-mono text-[11px] text-[var(--color-faint)]">{consent.version ?? '—'}</span>
+                <span className="font-mono text-[11px] text-[var(--color-faint)]">{formatDateTime(consent.decidedAt)}</span>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </>
   );
+}
+
+/** 상태가 ACTIVE 여도 기간이 지났으면 끝난 구독이다(만료 처리 잡이 돌기 전일 수 있다). */
+function isCurrentSubscription(subscription: UserDetail['subscription']): boolean {
+  return subscription?.status === 'ACTIVE' && new Date(subscription.currentPeriodEnd).getTime() > Date.now();
 }
 
 function signed(value: number): string {

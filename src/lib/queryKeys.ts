@@ -9,7 +9,15 @@ export const qk = {
     all: ['users'] as const,
     list: (filter: object) => ['users', 'list', filter] as const,
     detail: (id: number) => ['users', 'detail', id] as const,
+    walletTransactions: (id: number, page: number) => ['users', 'wallet', id, page] as const,
+    subscriptions: (id: number) => ['users', 'subscriptions', id] as const,
+    purchases: (id: number, page: number) => ['users', 'purchases', id, page] as const,
   },
+  payments: {
+    all: ['payments'] as const,
+    list: (filter: object) => ['payments', 'list', filter] as const,
+  },
+  admins: ['admins'] as const,
   inquiries: {
     all: ['inquiries'] as const,
     list: (filter: object) => ['inquiries', 'list', filter] as const,

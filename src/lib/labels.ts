@@ -5,8 +5,9 @@
  * 화면마다 따로 들고 있던 표·색을 여기로 모았다 — 같은 상태가 화면마다 다르게 보이지 않게.
  */
 import type {
-  AdminRole, BannerKind, ClubStatus, InquiryCategory, InquiryStatus, ModerationResolution,
-  ModerationSource, ModerationStatus, SanctionType, UserStatus, VerificationLevel,
+  AdminRole, AdminStatus, BannerKind, BookmarkPurchaseStatus, ClubStatus, ConsentKind, DeviceRow, IdentityRow,
+  InquiryCategory, InquiryStatus, ModerationResolution, ModerationSource, ModerationStatus, SanctionType,
+  SubscriptionStatus, SubscriptionStore, UserStatus, VerificationLevel, WalletTransactionKind,
 } from './types';
 
 /** Tag 색. */
@@ -76,6 +77,79 @@ export const SANCTION_TYPE_HINT: Record<SanctionType, string> = {
   WRITE_BAN: '글·리뷰·댓글·채팅·엽서·닉네임/사진 변경이 막힙니다. 읽기와 문의는 됩니다.',
   SUSPEND: '로그인이 막히고, 지금 쓰고 있는 세션도 바로 끊깁니다.',
   TERMINATE: '로그인이 막히고 모임에서 모두 나가며 푸시가 꺼집니다. 계정과 기록은 남아 풀 수 있습니다.',
+};
+
+// ── 지갑 · 결제 ─────────────────────────────────────────
+export const WALLET_TRANSACTION_KIND_LABEL: Record<WalletTransactionKind, string> = {
+  PURCHASE: '책갈피 구매',
+  SUBSCRIPTION_GRANT: '구독 월 지급',
+  AFFILIATE: '제휴 적립',
+  EXCHANGE_POSTCARD: '엽서로 교환',
+  EXCHANGE_STAMP: '우표로 교환',
+  SEND_POSTCARD_FREE: '엽서 발송(무료분)',
+  SEND_POSTCARD: '엽서 발송',
+  ATTACH_STAMP: '우표 동봉',
+  REPLY_STAMP: '답장 우표',
+  CLUB_SEAT: '모임 자리 늘리기',
+  CLUB_CHAT_UNLOCK: '모임 채팅 열기',
+  ATTENDANCE: '출석 보상',
+  ADMIN_ADJUST: '관리자 조정',
+};
+
+export const PAYMENT_STORE_LABEL: Record<SubscriptionStore, string> = {
+  APPLE: 'App Store',
+  GOOGLE: 'Google Play',
+  TOSS: '토스(웹)',
+  ADMIN: '관리자 지급',
+};
+
+export const PAYMENT_STORES: SubscriptionStore[] = ['APPLE', 'GOOGLE', 'TOSS', 'ADMIN'];
+
+export const SUBSCRIPTION_STATUS_LABEL: Record<SubscriptionStatus, string> = {
+  ACTIVE: '이용 중',
+  EXPIRED: '만료',
+  CANCELLED: '해지',
+};
+
+export const SUBSCRIPTION_STATUS_TONE: Record<SubscriptionStatus, Tone> = {
+  ACTIVE: 'accent',
+  EXPIRED: 'neutral',
+  CANCELLED: 'warn',
+};
+
+export const PURCHASE_STATUSES: BookmarkPurchaseStatus[] = ['PAID', 'PENDING', 'CANCELLED'];
+
+export const PURCHASE_STATUS_LABEL: Record<BookmarkPurchaseStatus, string> = {
+  PENDING: '결제 대기',
+  PAID: '결제 완료',
+  CANCELLED: '취소',
+};
+
+export const PURCHASE_STATUS_TONE: Record<BookmarkPurchaseStatus, Tone> = {
+  PENDING: 'warn',
+  PAID: 'accent',
+  CANCELLED: 'neutral',
+};
+
+// ── 기기 · 연동 · 동의 ───────────────────────────────────
+export const DEVICE_PLATFORM_LABEL: Record<DeviceRow['platform'], string> = {
+  IOS: 'iOS',
+  ANDROID: 'Android',
+};
+
+export const AUTH_PROVIDER_LABEL: Record<IdentityRow['provider'], string> = {
+  APPLE: 'Apple',
+  GOOGLE: 'Google',
+  KAKAO: '카카오',
+};
+
+export const CONSENT_KIND_LABEL: Record<ConsentKind, string> = {
+  TERMS: '[필수] 이용약관',
+  PRIVACY: '[필수] 개인정보 수집·이용',
+  AGE_14: '[필수] 만 14세 이상',
+  PROFILE_OPTIONAL: '[선택] 성별·생년월일',
+  MARKETING: '[선택] 광고성 정보 수신',
+  THIRD_PARTY_YES24: '[선택] YES24 제3자 제공',
 };
 
 // ── 신고 큐 ─────────────────────────────────────────────
@@ -168,11 +242,26 @@ export const BANNER_KIND_LABEL: Record<BannerKind, string> = {
 };
 
 // ── 관리자 ──────────────────────────────────────────────
+export const ADMIN_ROLES: AdminRole[] = ['SUPER_ADMIN', 'OPERATOR', 'SUPPORT', 'VIEWER'];
+
 export const ADMIN_ROLE_LABEL: Record<AdminRole, string> = {
   SUPER_ADMIN: '최고 관리자',
   OPERATOR: '운영자',
   SUPPORT: 'CS 담당',
   VIEWER: '보기 전용',
+};
+
+/** 역할마다 할 수 있는 일 — 관리자를 만들거나 역할을 바꿀 때 보여 준다(서버 AdminRole 과 같은 내용). */
+export const ADMIN_ROLE_HINT: Record<AdminRole, string> = {
+  SUPER_ADMIN: '모든 기능 · 관리자 계정 · 운영 스위치',
+  OPERATOR: '신고 처리 · 제재 · 지갑/구독 조정 · 도서 · 광고/공지 · 에디터 픽',
+  SUPPORT: '고객문의 · FAQ · 경고 · 결제 내역 열람',
+  VIEWER: '보기만 — 결제 내역은 볼 수 없음',
+};
+
+export const ADMIN_STATUS_LABEL: Record<AdminStatus, string> = {
+  ACTIVE: '사용 중',
+  SUSPENDED: '정지',
 };
 
 /** 운영 스위치 설명. 서버가 모르는 키를 더해도 화면은 키 이름과 메모로 그린다. */
@@ -225,6 +314,13 @@ export const AUDIT_ACTION_LABEL: Partial<Record<string, string>> = {
   UPDATE_FAQ: 'FAQ 수정',
   REORDER_FAQ: 'FAQ 순서 변경',
   DELETE_FAQ: 'FAQ 삭제',
+  VIEW_USER_PAYMENTS: '회원 결제 내역 열람',
+  REVOKE_USER_SESSIONS: '회원 로그인 끊기',
+  SUSPEND_ADMIN: '관리자 정지',
+  ACTIVATE_ADMIN: '관리자 재활성화',
+  RESET_ADMIN_PASSWORD: '관리자 비밀번호 재설정',
+  RESET_ADMIN_TOTP: '관리자 2FA 초기화',
+  CHANGE_OWN_PASSWORD: '내 비밀번호 변경',
   CREATE_EDITOR_PICK: '에디터 픽 추가',
   UPDATE_EDITOR_PICK: '에디터 픽 수정',
   DELETE_EDITOR_PICK: '에디터 픽 삭제',

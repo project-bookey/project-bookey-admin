@@ -128,6 +128,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/v1/auth/admins/{adminId}/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** 관리자 비밀번호 재설정 (SUPER_ADMIN) — 그 관리자의 기존 로그인은 끊긴다 */
+        put: operations["resetPassword"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/webhooks/google": {
         parameters: {
             query?: never;
@@ -1300,7 +1317,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** 비밀번호 재설정 — 코드가 맞으면 새 비밀번호로 바꾸고 다른 기기는 로그아웃한 뒤 로그인시킨다 */
-        post: operations["resetPassword"];
+        post: operations["resetPassword_1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1440,6 +1457,23 @@ export interface paths {
         post: operations["grantSubscription"];
         /** 구독 회수 */
         delete: operations["revokeSubscription"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/v1/users/{userId}/sessions/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 회원 로그인 모두 끊기 — 기기 분실·도용 신고 대응. 사유 필수 */
+        post: operations["revokeSessions"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -1676,7 +1710,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** 관리자 목록 (SUPER_ADMIN) */
+        get: operations["admins"];
         put?: never;
         /** 관리자 계정 생성 (SUPER_ADMIN) */
         post: operations["create_11"];
@@ -1898,6 +1933,40 @@ export interface paths {
         head?: never;
         /** 도서 메타 수정 — 페이지 수 보정 등 */
         patch: operations["updateBook"];
+        trace?: never;
+    };
+    "/admin/v1/auth/me/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** 내 비밀번호 변경 — 바꾸면 지금 로그인도 끊겨 다시 로그인한다 */
+        patch: operations["changeOwnPassword"];
+        trace?: never;
+    };
+    "/admin/v1/auth/admins/{adminId}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** 관리자 정지 · 재활성화 (SUPER_ADMIN) — 자기 자신·마지막 최고 관리자는 불가 */
+        patch: operations["changeStatus"];
         trace?: never;
     };
     "/admin/v1/auth/admins/{adminId}/role": {
@@ -3018,6 +3087,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/v1/users/{userId}/wallet-transactions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 지갑 원장 — 최근 순. 결제 열람 권한 필요, 첫 쪽 조회는 열람 기록이 남는다 */
+        get: operations["walletTransactions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/v1/users/{userId}/subscriptions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 구독 이력 — 최근 순. 결제 열람 권한 필요 */
+        get: operations["subscriptions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/v1/users/{userId}/bookmark-purchases": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 회원의 책갈피 구매 내역 — 최근 순. 결제 열람 권한 필요 */
+        get: operations["userPurchases"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/v1/reviews": {
         parameters: {
             query?: never;
@@ -3163,6 +3283,23 @@ export interface paths {
         };
         /** 도서 검색 */
         get: operations["books"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/v1/bookmark-purchases": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 책갈피 구매 검색 — 주문번호(앞부분 일치)·상태·결제 수단 */
+        get: operations["purchases"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3353,6 +3490,23 @@ export interface paths {
         post?: never;
         /** 제재 해제 */
         delete: operations["releaseSanction"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/v1/auth/admins/{adminId}/totp": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** 관리자 2FA 초기화 (SUPER_ADMIN) — 휴대폰 분실 대응 */
+        delete: operations["resetTotp"];
         options?: never;
         head?: never;
         patch?: never;
@@ -3590,6 +3744,10 @@ export interface components {
             startsAt: string;
             /** Format: date-time */
             endsAt: string;
+        };
+        AdminPasswordResetRequest: {
+            newPassword: string;
+            reason: string;
         };
         PubSubEnvelope: {
             message?: components["schemas"]["PubSubMessage"];
@@ -4576,6 +4734,9 @@ export interface components {
             months: number;
             reason: string;
         };
+        AdminReasonRequest: {
+            reason: string;
+        };
         SanctionRequest: {
             /** @enum {string} */
             type: "WARN" | "WRITE_BAN" | "SUSPEND" | "TERMINATE";
@@ -4745,6 +4906,15 @@ export interface components {
             totalPages?: number;
             coverUrl?: string;
             category?: string;
+            reason: string;
+        };
+        AdminPasswordChangeRequest: {
+            currentPassword: string;
+            newPassword: string;
+        };
+        AdminStatusRequest: {
+            /** @enum {string} */
+            status: "ACTIVE" | "SUSPENDED";
             reason: string;
         };
         DailyStat: {
@@ -5374,6 +5544,53 @@ export interface components {
             /** Format: int64 */
             booksFinished: number;
         };
+        AdminConsentRow: {
+            /** @enum {string} */
+            kind: "TERMS" | "PRIVACY" | "AGE_14" | "PROFILE_OPTIONAL" | "MARKETING" | "THIRD_PARTY_YES24";
+            agreed: boolean;
+            version?: string;
+            /** Format: date-time */
+            decidedAt?: string;
+        };
+        AdminDeviceRow: {
+            /** @enum {string} */
+            platform: "IOS" | "ANDROID";
+            pushEnabled: boolean;
+            tokenTail?: string;
+            /** Format: date-time */
+            lastSeenAt?: string;
+            /** Format: date-time */
+            createdAt?: string;
+        };
+        AdminIdentityRow: {
+            /** @enum {string} */
+            provider: "APPLE" | "GOOGLE" | "KAKAO";
+            /** Format: date-time */
+            linkedAt?: string;
+        };
+        AdminSubscriptionRow: {
+            /** Format: int64 */
+            id: number;
+            /** @enum {string} */
+            store: "APPLE" | "GOOGLE" | "TOSS" | "ADMIN";
+            productId: string;
+            /** @enum {string} */
+            status: "ACTIVE" | "EXPIRED" | "CANCELLED";
+            /** Format: date-time */
+            currentPeriodStart: string;
+            /** Format: date-time */
+            currentPeriodEnd: string;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        AdminWalletSummary: {
+            /** Format: int32 */
+            bookmarks: number;
+            /** Format: int32 */
+            postcards: number;
+            /** Format: int32 */
+            stamps: number;
+        };
         SanctionRow: {
             /** Format: int64 */
             id: number;
@@ -5408,6 +5625,84 @@ export interface components {
             /** Format: int64 */
             clubCount: number;
             sanctions: components["schemas"]["SanctionRow"][];
+            /** Format: date-time */
+            deletionRequestedAt?: string;
+            /** Format: date-time */
+            emailVerifiedAt?: string;
+            /** Format: date-time */
+            identityVerifiedAt?: string;
+            hasPassword: boolean;
+            /** Format: date-time */
+            lastSeenAt?: string;
+            wallet?: components["schemas"]["AdminWalletSummary"];
+            subscription?: components["schemas"]["AdminSubscriptionRow"];
+            devices: components["schemas"]["AdminDeviceRow"][];
+            identities: components["schemas"]["AdminIdentityRow"][];
+            consents: components["schemas"]["AdminConsentRow"][];
+        };
+        AdminWalletTransactionRow: {
+            /** Format: int64 */
+            id: number;
+            /** @enum {string} */
+            kind: "PURCHASE" | "SUBSCRIPTION_GRANT" | "AFFILIATE" | "EXCHANGE_POSTCARD" | "EXCHANGE_STAMP" | "SEND_POSTCARD_FREE" | "SEND_POSTCARD" | "ATTACH_STAMP" | "REPLY_STAMP" | "CLUB_SEAT" | "CLUB_CHAT_UNLOCK" | "ATTENDANCE" | "ADMIN_ADJUST";
+            /** Format: int32 */
+            bookmarkDelta: number;
+            /** Format: int32 */
+            postcardDelta: number;
+            /** Format: int32 */
+            stampDelta: number;
+            refType?: string;
+            /** Format: int64 */
+            refId?: number;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        PageResponseAdminWalletTransactionRow: {
+            content?: components["schemas"]["AdminWalletTransactionRow"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasNext?: boolean;
+        };
+        AdminBookmarkPurchaseRow: {
+            /** Format: int64 */
+            id: number;
+            /** Format: int64 */
+            userId: number;
+            userNickname?: string;
+            /** @enum {string} */
+            provider: "APPLE" | "GOOGLE" | "TOSS" | "ADMIN";
+            productId: string;
+            orderId: string;
+            /** Format: int32 */
+            quantity: number;
+            /** Format: int32 */
+            bonusQuantity: number;
+            /** Format: int32 */
+            amountKrw: number;
+            /** @enum {string} */
+            status: "PENDING" | "PAID" | "CANCELLED";
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt?: string;
+        };
+        PageResponseAdminBookmarkPurchaseRow: {
+            content?: components["schemas"]["AdminBookmarkPurchaseRow"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasNext?: boolean;
         };
         PageResponseReviewRow: {
             content?: components["schemas"]["ReviewRow"][];
@@ -5610,6 +5905,22 @@ export interface components {
             totalPages?: number;
             hasNext?: boolean;
         };
+        AdminRow: {
+            /** Format: int64 */
+            id: number;
+            email: string;
+            name: string;
+            /** @enum {string} */
+            role: "SUPER_ADMIN" | "OPERATOR" | "SUPPORT" | "VIEWER";
+            /** @enum {string} */
+            status: "ACTIVE" | "SUSPENDED";
+            totpEnabled: boolean;
+            /** Format: date-time */
+            lastLoginAt?: string;
+            lastLoginIp?: string;
+            /** Format: date-time */
+            createdAt: string;
+        };
         AuditRow: {
             /** Format: int64 */
             id: number;
@@ -5668,6 +5979,7 @@ export type SchemaFaqAdminView = components['schemas']['FaqAdminView'];
 export type SchemaFaqOrderRequest = components['schemas']['FaqOrderRequest'];
 export type SchemaBannerUpsertRequest = components['schemas']['BannerUpsertRequest'];
 export type SchemaBannerAdminView = components['schemas']['BannerAdminView'];
+export type SchemaAdminPasswordResetRequest = components['schemas']['AdminPasswordResetRequest'];
 export type SchemaPubSubEnvelope = components['schemas']['PubSubEnvelope'];
 export type SchemaPubSubMessage = components['schemas']['PubSubMessage'];
 export type SchemaExchangeRequest = components['schemas']['ExchangeRequest'];
@@ -5755,6 +6067,7 @@ export type SchemaEmailCodeVerifyRequest = components['schemas']['EmailCodeVerif
 export type SchemaAttendanceView = components['schemas']['AttendanceView'];
 export type SchemaWalletAdjustRequest = components['schemas']['WalletAdjustRequest'];
 export type SchemaSubscriptionGrantRequest = components['schemas']['SubscriptionGrantRequest'];
+export type SchemaAdminReasonRequest = components['schemas']['AdminReasonRequest'];
 export type SchemaSanctionRequest = components['schemas']['SanctionRequest'];
 export type SchemaOverrideVerificationRequest = components['schemas']['OverrideVerificationRequest'];
 export type SchemaResolveRequest = components['schemas']['ResolveRequest'];
@@ -5779,6 +6092,8 @@ export type SchemaUpdateClubPostRequest = components['schemas']['UpdateClubPostR
 export type SchemaOpsFlagRequest = components['schemas']['OpsFlagRequest'];
 export type SchemaEditorPickUpdateRequest = components['schemas']['EditorPickUpdateRequest'];
 export type SchemaUpdateBookRequest = components['schemas']['UpdateBookRequest'];
+export type SchemaAdminPasswordChangeRequest = components['schemas']['AdminPasswordChangeRequest'];
+export type SchemaAdminStatusRequest = components['schemas']['AdminStatusRequest'];
 export type SchemaDailyStat = components['schemas']['DailyStat'];
 export type SchemaStatsSummary = components['schemas']['StatsSummary'];
 export type SchemaUserProfileView = components['schemas']['UserProfileView'];
@@ -5833,8 +6148,17 @@ export type SchemaBannerView = components['schemas']['BannerView'];
 export type SchemaSignupConfigResponse = components['schemas']['SignupConfigResponse'];
 export type SchemaPageResponseUserRow = components['schemas']['PageResponseUserRow'];
 export type SchemaUserRow = components['schemas']['UserRow'];
+export type SchemaAdminConsentRow = components['schemas']['AdminConsentRow'];
+export type SchemaAdminDeviceRow = components['schemas']['AdminDeviceRow'];
+export type SchemaAdminIdentityRow = components['schemas']['AdminIdentityRow'];
+export type SchemaAdminSubscriptionRow = components['schemas']['AdminSubscriptionRow'];
+export type SchemaAdminWalletSummary = components['schemas']['AdminWalletSummary'];
 export type SchemaSanctionRow = components['schemas']['SanctionRow'];
 export type SchemaUserDetailView = components['schemas']['UserDetailView'];
+export type SchemaAdminWalletTransactionRow = components['schemas']['AdminWalletTransactionRow'];
+export type SchemaPageResponseAdminWalletTransactionRow = components['schemas']['PageResponseAdminWalletTransactionRow'];
+export type SchemaAdminBookmarkPurchaseRow = components['schemas']['AdminBookmarkPurchaseRow'];
+export type SchemaPageResponseAdminBookmarkPurchaseRow = components['schemas']['PageResponseAdminBookmarkPurchaseRow'];
 export type SchemaPageResponseReviewRow = components['schemas']['PageResponseReviewRow'];
 export type SchemaReviewRow = components['schemas']['ReviewRow'];
 export type SchemaOpsFlagRow = components['schemas']['OpsFlagRow'];
@@ -5848,6 +6172,7 @@ export type SchemaClubRow = components['schemas']['ClubRow'];
 export type SchemaPageResponseClubRow = components['schemas']['PageResponseClubRow'];
 export type SchemaBookRow = components['schemas']['BookRow'];
 export type SchemaPageResponseBookRow = components['schemas']['PageResponseBookRow'];
+export type SchemaAdminRow = components['schemas']['AdminRow'];
 export type SchemaAuditRow = components['schemas']['AuditRow'];
 export type SchemaPageResponseAuditRow = components['schemas']['PageResponseAuditRow'];
 export type $defs = Record<string, never>;
@@ -6175,6 +6500,30 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    resetPassword: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                adminId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminPasswordResetRequest"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
@@ -8240,7 +8589,7 @@ export interface operations {
             };
         };
     };
-    resetPassword: {
+    resetPassword_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -8476,6 +8825,30 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    revokeSessions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminReasonRequest"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
@@ -8854,6 +9227,26 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["LoginResponse"];
+                };
+            };
+        };
+    };
+    admins: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["AdminRow"][];
                 };
             };
         };
@@ -9379,6 +9772,52 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["UpdateBookRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    changeOwnPassword: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminPasswordChangeRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    changeStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                adminId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminStatusRequest"];
             };
         };
         responses: {
@@ -10941,6 +11380,78 @@ export interface operations {
             };
         };
     };
+    walletTransactions: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path: {
+                userId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponseAdminWalletTransactionRow"];
+                };
+            };
+        };
+    };
+    subscriptions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["AdminSubscriptionRow"][];
+                };
+            };
+        };
+    };
+    userPurchases: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path: {
+                userId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponseAdminBookmarkPurchaseRow"];
+                };
+            };
+        };
+    };
     reviews_1: {
         parameters: {
             query?: {
@@ -11142,6 +11653,32 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["PageResponseBookRow"];
+                };
+            };
+        };
+    };
+    purchases: {
+        parameters: {
+            query?: {
+                orderId?: string;
+                status?: "PENDING" | "PAID" | "CANCELLED";
+                provider?: "APPLE" | "GOOGLE" | "TOSS" | "ADMIN";
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponseAdminBookmarkPurchaseRow"];
                 };
             };
         };
@@ -11368,6 +11905,28 @@ export interface operations {
             path: {
                 userId: number;
                 sanctionId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    resetTotp: {
+        parameters: {
+            query: {
+                reason: string;
+            };
+            header?: never;
+            path: {
+                adminId: number;
             };
             cookie?: never;
         };
