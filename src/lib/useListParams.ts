@@ -116,15 +116,18 @@ export function useListParams<S extends Spec>(spec: S) {
         { scroll: false },
       );
     },
-    open: (id: number) => {
+    /** replace 면 기록을 쌓지 않고 열린 상세를 바꾼다 — 병합으로 지워진 원본 대신 대상을 보여 줄 때처럼. */
+    open: (id: number, options?: { replace?: boolean }) => {
+      const target = href((query) => {
+        query.set('id', String(id));
+        query.delete('tab');
+      });
+      if (options?.replace) {
+        router.replace(target, { scroll: false });
+        return;
+      }
       openedHere.current = true;
-      router.push(
-        href((query) => {
-          query.set('id', String(id));
-          query.delete('tab');
-        }),
-        { scroll: false },
-      );
+      router.push(target, { scroll: false });
     },
     close: () => {
       if (openedHere.current) {

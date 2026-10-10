@@ -1773,6 +1773,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/v1/clubs/{clubId}/members/{userId}/kick": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 모임 멤버 내보내기 — 사유 필수. 호스트는 먼저 넘긴 뒤에 */
+        post: operations["kick_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/v1/clubs/{clubId}/force-end": {
         parameters: {
             query?: never;
@@ -1784,6 +1801,41 @@ export interface paths {
         put?: never;
         /** 모임 강제 해산 */
         post: operations["forceEndClub"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/v1/books": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 도서 검색 */
+        get: operations["books"];
+        put?: never;
+        /** 도서 직접 등록 — 외부 검색에 없는 책. ISBN 이 이미 있으면 409 */
+        post: operations["createBook"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/v1/books/{bookId}/merge": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 도서 병합 (SUPER_ADMIN) — 원본을 가리키던 모든 기록을 대상으로 옮기고 원본을 지운다. 되돌릴 수 없다 */
+        post: operations["merge"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2098,7 +2150,8 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** 도서 상세 — 독서 기록·리뷰·독후감 등 이 책을 쓰는 곳의 수 */
+        get: operations["book"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2422,7 +2475,7 @@ export interface paths {
             cookie?: never;
         };
         /** 도서 공개 정보 — 검증 평점 포함 */
-        get: operations["book"];
+        get: operations["book_1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3362,6 +3415,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/v1/page-suggestions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 페이지 수 제안이 모인 책 — onlyConflicts 면 지금 값과 최다 득표가 다른 책만 */
+        get: operations["pageSuggestions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/v1/ops-flags": {
         parameters: {
             query?: never;
@@ -3532,15 +3602,67 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admin/v1/books": {
+    "/admin/v1/clubs/{clubId}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** 도서 검색 */
-        get: operations["books"];
+        /** 모임 상세 */
+        get: operations["club"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/v1/clubs/{clubId}/members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 모임 멤버 — 나간·내보내진 멤버까지. status 로 거른다 */
+        get: operations["members"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/v1/books/{bookId}/page-suggestions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 한 책의 페이지 수 제안 집계 — 많이 나온 순 */
+        get: operations["tally"];
+        put?: never;
+        post?: never;
+        /** 페이지 수 제안 비우기 — 사유 필수 */
+        delete: operations["clearSuggestions"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/v1/books/{bookId}/merge-preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 도서 병합 미리보기 (SUPER_ADMIN) — 겹침과 막는 이유 */
+        get: operations["mergePreview"];
         put?: never;
         post?: never;
         delete?: never;
@@ -5162,6 +5284,67 @@ export interface components {
         ClubActionRequest: {
             reason: string;
         };
+        ClubCodeView: {
+            joinCode: string;
+        };
+        AdminBookCreateRequest: {
+            isbn13?: string;
+            title: string;
+            author?: string;
+            publisher?: string;
+            /** Format: int32 */
+            totalPages?: number;
+            coverUrl?: string;
+            category?: string;
+            reason: string;
+        };
+        BookRow: {
+            /** Format: int64 */
+            id: number;
+            isbn13?: string;
+            title: string;
+            author?: string;
+            publisher?: string;
+            /** Format: int32 */
+            totalPages?: number;
+            source: string;
+            userCreated: boolean;
+            /** Format: date-time */
+            createdAt: string;
+            coverUrl?: string;
+            category?: string;
+        };
+        BookMergeRequest: {
+            /** Format: int64 */
+            targetId: number;
+            reason: string;
+        };
+        BookMergeResult: {
+            /** Format: int64 */
+            targetId: number;
+            moved: components["schemas"]["BookUsage"];
+        };
+        BookUsage: {
+            /** Format: int64 */
+            readingRecords: number;
+            /** Format: int64 */
+            reviews: number;
+            /** Format: int64 */
+            posts: number;
+            /** Format: int64 */
+            remarks: number;
+            /** Format: int64 */
+            likes: number;
+            /** Format: int64 */
+            clubBooks: number;
+            /** Format: int64 */
+            meetings: number;
+            /** Format: int64 */
+            pageSuggestions: number;
+            /** Format: int64 */
+            shareCards: number;
+            editorPick: boolean;
+        };
         BannerImageView: {
             url: string;
             /** Format: int32 */
@@ -5186,7 +5369,7 @@ export interface components {
             totpEnabled: boolean;
             /** Format: date-time */
             lastLoginAt?: string;
-            capabilities: ("MODERATE" | "SANCTION" | "WARN" | "HANDLE_SUPPORT" | "EDIT_BOOK" | "MANAGE_CONTENT" | "MANAGE_OPS" | "MANAGE_ADMINS" | "BROADCAST" | "VIEW_PAYMENTS")[];
+            capabilities: ("MODERATE" | "SANCTION" | "WARN" | "HANDLE_SUPPORT" | "EDIT_BOOK" | "MERGE_BOOKS" | "MANAGE_CONTENT" | "MANAGE_OPS" | "MANAGE_ADMINS" | "BROADCAST" | "VIEW_PAYMENTS")[];
         };
         LoginRequest: {
             /** Format: email */
@@ -6184,6 +6367,33 @@ export interface components {
             /** Format: int64 */
             withPushDevice: number;
         };
+        PageResponsePageSuggestionRow: {
+            content?: components["schemas"]["PageSuggestionRow"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasNext?: boolean;
+        };
+        PageSuggestionRow: {
+            /** Format: int64 */
+            bookId: number;
+            title: string;
+            /** Format: int32 */
+            currentPages?: number;
+            /** Format: int32 */
+            topPages: number;
+            /** Format: int64 */
+            topVotes: number;
+            /** Format: int64 */
+            totalVotes: number;
+            /** Format: date-time */
+            lastSuggestedAt: string;
+        };
         OpsFlagRow: {
             key: string;
             enabled: boolean;
@@ -6411,19 +6621,51 @@ export interface components {
             totalPages?: number;
             hasNext?: boolean;
         };
-        BookRow: {
+        AdminClubView: {
             /** Format: int64 */
             id: number;
-            isbn13?: string;
-            title: string;
-            author?: string;
-            publisher?: string;
+            name: string;
+            description?: string;
+            /** @enum {string} */
+            visibility: "CODE_ONLY" | "LINK" | "PUBLIC";
+            /** @enum {string} */
+            status: "RECRUITING" | "ACTIVE" | "ENDED" | "ARCHIVED";
+            joinCode: string;
             /** Format: int32 */
-            totalPages?: number;
-            source: string;
-            userCreated: boolean;
+            memberCount: number;
+            /** Format: int32 */
+            memberLimit: number;
+            /** Format: int64 */
+            ownerId: number;
+            ownerNickname?: string;
+            /** Format: date */
+            startsAt: string;
+            /** Format: date */
+            endsAt?: string;
             /** Format: date-time */
             createdAt: string;
+            /** Format: int64 */
+            postCount: number;
+            /** Format: int64 */
+            meetingCount: number;
+            bookTitles: string[];
+        };
+        AdminClubMemberRow: {
+            /** Format: int64 */
+            userId: number;
+            nickname?: string;
+            handle?: string;
+            /** @enum {string} */
+            userStatus?: "ACTIVE" | "WRITE_BANNED" | "SUSPENDED" | "TERMINATED";
+            /** @enum {string} */
+            role: "HOST" | "MODERATOR" | "MEMBER";
+            /** @enum {string} */
+            status: "ACTIVE" | "LEFT" | "KICKED";
+            /** Format: date-time */
+            joinedAt: string;
+            /** Format: date-time */
+            leftAt?: string;
+            kickReason?: string;
         };
         PageResponseBookRow: {
             content?: components["schemas"]["BookRow"][];
@@ -6436,6 +6678,42 @@ export interface components {
             /** Format: int32 */
             totalPages?: number;
             hasNext?: boolean;
+        };
+        AdminBookView: {
+            /** Format: int64 */
+            id: number;
+            isbn13?: string;
+            title: string;
+            author?: string;
+            publisher?: string;
+            /** Format: int32 */
+            totalPages?: number;
+            coverUrl?: string;
+            category?: string;
+            source: string;
+            userCreated: boolean;
+            /** Format: date-time */
+            createdAt: string;
+            usage: components["schemas"]["BookUsage"];
+        };
+        PageSuggestionTally: {
+            /** Format: int32 */
+            pages: number;
+            /** Format: int64 */
+            votes: number;
+        };
+        BookMergePreview: {
+            source: components["schemas"]["AdminBookView"];
+            target: components["schemas"]["AdminBookView"];
+            /** Format: int64 */
+            sharedReaders: number;
+            /** Format: int64 */
+            sharedLikes: number;
+            /** Format: int64 */
+            sharedSuggestions: number;
+            blockers: string[];
+            warnings: string[];
+            mergeable: boolean;
         };
         AdminRow: {
             /** Format: int64 */
@@ -6498,6 +6776,10 @@ export interface components {
             /** Format: int32 */
             totalPages?: number;
             hasNext?: boolean;
+        };
+        RemovedCountView: {
+            /** Format: int32 */
+            removed: number;
         };
     };
     responses: never;
@@ -6627,6 +6909,12 @@ export type SchemaEditorPickCreateRequest = components['schemas']['EditorPickCre
 export type SchemaEditorPickView = components['schemas']['EditorPickView'];
 export type SchemaContentActionRequest = components['schemas']['ContentActionRequest'];
 export type SchemaClubActionRequest = components['schemas']['ClubActionRequest'];
+export type SchemaClubCodeView = components['schemas']['ClubCodeView'];
+export type SchemaAdminBookCreateRequest = components['schemas']['AdminBookCreateRequest'];
+export type SchemaBookRow = components['schemas']['BookRow'];
+export type SchemaBookMergeRequest = components['schemas']['BookMergeRequest'];
+export type SchemaBookMergeResult = components['schemas']['BookMergeResult'];
+export type SchemaBookUsage = components['schemas']['BookUsage'];
 export type SchemaBannerImageView = components['schemas']['BannerImageView'];
 export type SchemaTotpSecretView = components['schemas']['TotpSecretView'];
 export type SchemaTotpConfirmRequest = components['schemas']['TotpConfirmRequest'];
@@ -6720,6 +7008,8 @@ export type SchemaReviewRow = components['schemas']['ReviewRow'];
 export type SchemaPageResponsePushCampaignRow = components['schemas']['PageResponsePushCampaignRow'];
 export type SchemaPushCampaignView = components['schemas']['PushCampaignView'];
 export type SchemaPushAudienceView = components['schemas']['PushAudienceView'];
+export type SchemaPageResponsePageSuggestionRow = components['schemas']['PageResponsePageSuggestionRow'];
+export type SchemaPageSuggestionRow = components['schemas']['PageSuggestionRow'];
 export type SchemaOpsFlagRow = components['schemas']['OpsFlagRow'];
 export type SchemaNotificationStats = components['schemas']['NotificationStats'];
 export type SchemaModerationRow = components['schemas']['ModerationRow'];
@@ -6735,12 +7025,17 @@ export type SchemaDashboardView = components['schemas']['DashboardView'];
 export type SchemaPageResponseAdminContentRow = components['schemas']['PageResponseAdminContentRow'];
 export type SchemaClubRow = components['schemas']['ClubRow'];
 export type SchemaPageResponseClubRow = components['schemas']['PageResponseClubRow'];
-export type SchemaBookRow = components['schemas']['BookRow'];
+export type SchemaAdminClubView = components['schemas']['AdminClubView'];
+export type SchemaAdminClubMemberRow = components['schemas']['AdminClubMemberRow'];
 export type SchemaPageResponseBookRow = components['schemas']['PageResponseBookRow'];
+export type SchemaAdminBookView = components['schemas']['AdminBookView'];
+export type SchemaPageSuggestionTally = components['schemas']['PageSuggestionTally'];
+export type SchemaBookMergePreview = components['schemas']['BookMergePreview'];
 export type SchemaAdminRow = components['schemas']['AdminRow'];
 export type SchemaAuditRow = components['schemas']['AuditRow'];
 export type SchemaPageResponseAuditRow = components['schemas']['PageResponseAuditRow'];
 export type SchemaPageResponseAbuseReportRow = components['schemas']['PageResponseAbuseReportRow'];
+export type SchemaRemovedCountView = components['schemas']['RemovedCountView'];
 export type $defs = Record<string, never>;
 export interface operations {
     setConsent: {
@@ -9947,10 +10242,33 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": {
-                        [key: string]: string;
-                    };
+                    "*/*": components["schemas"]["ClubCodeView"];
                 };
+            };
+        };
+    };
+    kick_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                clubId: number;
+                userId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminReasonRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -9975,6 +10293,80 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    books: {
+        parameters: {
+            query?: {
+                keyword?: string;
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponseBookRow"];
+                };
+            };
+        };
+    };
+    createBook: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminBookCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["BookRow"];
+                };
+            };
+        };
+    };
+    merge: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                bookId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BookMergeRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["BookMergeResult"];
+                };
             };
         };
     };
@@ -10648,6 +11040,28 @@ export interface operations {
             };
         };
     };
+    book: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                bookId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["AdminBookView"];
+                };
+            };
+        };
+    };
     updateBook: {
         parameters: {
             query?: never;
@@ -11081,7 +11495,7 @@ export interface operations {
             };
         };
     };
-    book: {
+    book_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -12413,6 +12827,30 @@ export interface operations {
             };
         };
     };
+    pageSuggestions: {
+        parameters: {
+            query?: {
+                onlyConflicts?: boolean;
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponsePageSuggestionRow"];
+                };
+            };
+        };
+    };
     opsFlags: {
         parameters: {
             query?: never;
@@ -12645,15 +13083,13 @@ export interface operations {
             };
         };
     };
-    books: {
+    club: {
         parameters: {
-            query?: {
-                keyword?: string;
-                page?: number;
-                size?: number;
-            };
+            query?: never;
             header?: never;
-            path?: never;
+            path: {
+                clubId: number;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -12664,7 +13100,101 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["PageResponseBookRow"];
+                    "*/*": components["schemas"]["AdminClubView"];
+                };
+            };
+        };
+    };
+    members: {
+        parameters: {
+            query?: {
+                status?: "ACTIVE" | "LEFT" | "KICKED";
+            };
+            header?: never;
+            path: {
+                clubId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["AdminClubMemberRow"][];
+                };
+            };
+        };
+    };
+    tally: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                bookId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageSuggestionTally"][];
+                };
+            };
+        };
+    };
+    clearSuggestions: {
+        parameters: {
+            query: {
+                reason: string;
+            };
+            header?: never;
+            path: {
+                bookId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["RemovedCountView"];
+                };
+            };
+        };
+    };
+    mergePreview: {
+        parameters: {
+            query: {
+                targetId: number;
+            };
+            header?: never;
+            path: {
+                bookId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["BookMergePreview"];
                 };
             };
         };

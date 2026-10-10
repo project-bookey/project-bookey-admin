@@ -43,6 +43,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
     group: '콘텐츠',
     items: [
       { href: '/books', label: '도서' },
+      { href: '/page-suggestions', label: '페이지 제안' },
       { href: '/editor-picks', label: '에디터 픽', cap: 'MANAGE_CONTENT' },
       { href: '/reviews', label: '검증 심사' },
       { href: '/clubs', label: '모임' },

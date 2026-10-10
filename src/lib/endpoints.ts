@@ -1,6 +1,8 @@
 import { adminApi, adminUpload } from './api';
 import type {
   AdminProfile, AuditRow, BannerAdminView, BannerKind, BannerUpsertRequest, BookRow, ClubRow, ClubStatus, Dashboard,
+  AdminBookCreateRequest, AdminBookView, BookMergePreview, BookMergeResult, PageSuggestionRow, PageSuggestionTally,
+  AdminClubView, ClubCodeView, ClubMemberRow, ClubMemberStatus,
   EditorPickCreateRequest, EditorPickUpdateRequest, EditorPickView, TotpSecretView,
   AdminRole, AdminRow, AdminStatus, BookmarkPurchaseRow, BookmarkPurchaseStatus, CreateAdminRequest,
   SubscriptionRow, SubscriptionStore, WalletTransactionRow,
@@ -106,8 +108,32 @@ export const paymentsApi = {
 export const booksApi = {
   list: (keyword?: string, page = 0) =>
     adminApi<Page<BookRow>>('/admin/v1/books', { query: { keyword, page, size: PAGE_SIZE } }),
+  /** 외부 검색에 없는 책을 직접 등록한다. 같은 ISBN 이 있으면 409 — 메시지가 그 책을 알려 준다. */
+  create: (body: AdminBookCreateRequest) =>
+    adminApi<BookRow>('/admin/v1/books', { method: 'POST', body }),
+  /** 상세 — 이 책을 쓰는 독서 기록·리뷰·독후감 등의 수가 함께 온다. */
+  detail: (bookId: number) => adminApi<AdminBookView>(`/admin/v1/books/${bookId}`),
   update: (bookId: number, body: UpdateBookRequest) =>
     adminApi<void>(`/admin/v1/books/${bookId}`, { method: 'PATCH', body }),
+  /** 페이지 수 제안이 모인 책. onlyConflicts 면 지금 값이 없거나 최다 득표와 다른 책만. */
+  pageSuggestions: (onlyConflicts: boolean, page = 0) =>
+    adminApi<Page<PageSuggestionRow>>('/admin/v1/page-suggestions', {
+      query: { onlyConflicts, page, size: PAGE_SIZE },
+    }),
+  /** 한 책의 제안 집계 — 많이 나온 순. */
+  suggestionTally: (bookId: number) =>
+    adminApi<PageSuggestionTally[]>(`/admin/v1/books/${bookId}/page-suggestions`),
+  clearSuggestions: (bookId: number, reason: string) =>
+    adminApi<{ removed: number }>(`/admin/v1/books/${bookId}/page-suggestions`, {
+      method: 'DELETE',
+      query: { reason },
+    }),
+  /** 병합 미리보기 — 최고 관리자만. 막는 이유(blockers)가 있으면 병합할 수 없다. */
+  mergePreview: (sourceId: number, targetId: number) =>
+    adminApi<BookMergePreview>(`/admin/v1/books/${sourceId}/merge-preview`, { query: { targetId } }),
+  /** 원본의 모든 기록을 대상으로 옮기고 원본을 지운다. 되돌릴 수 없다. */
+  merge: (sourceId: number, targetId: number, reason: string) =>
+    adminApi<BookMergeResult>(`/admin/v1/books/${sourceId}/merge`, { method: 'POST', body: { targetId, reason } }),
 };
 
 export const adsApi = {
@@ -260,10 +286,24 @@ export const reviewsApi = {
 export const clubsApi = {
   list: (keyword?: string, status?: ClubStatus, page = 0) =>
     adminApi<Page<ClubRow>>('/admin/v1/clubs', { query: { keyword, status, page, size: PAGE_SIZE } }),
+  detail: (clubId: number) => adminApi<AdminClubView>(`/admin/v1/clubs/${clubId}`),
+  /** 나간·내보내진 멤버까지 온다. status 로 거른다. */
+  members: (clubId: number, status?: ClubMemberStatus) =>
+    adminApi<ClubMemberRow[]>(`/admin/v1/clubs/${clubId}/members`, { query: { status } }),
+  /** 내보낸 멤버는 그 모임을 더 열 수 없다. 호스트는 먼저 넘긴 뒤에 내보낸다. */
+  kick: (clubId: number, userId: number, reason: string) =>
+    adminApi<void>(`/admin/v1/clubs/${clubId}/members/${userId}/kick`, { method: 'POST', body: { reason } }),
+  /** 정지·탈퇴했거나 모임에 없는 회원에게는 넘기지 않는다(서버가 막는다). */
+  transferHost: (clubId: number, newOwnerId: number, reason: string) =>
+    adminApi<void>(`/admin/v1/clubs/${clubId}/transfer-host`, {
+      method: 'POST',
+      query: { newOwnerId },
+      body: { reason },
+    }),
   forceEnd: (clubId: number, reason: string) =>
     adminApi<void>(`/admin/v1/clubs/${clubId}/force-end`, { method: 'POST', body: { reason } }),
   rotateCode: (clubId: number, reason: string) =>
-    adminApi<{ joinCode: string }>(`/admin/v1/clubs/${clubId}/rotate-code`, {
+    adminApi<ClubCodeView>(`/admin/v1/clubs/${clubId}/rotate-code`, {
       method: 'POST',
       body: { reason },
     }),
