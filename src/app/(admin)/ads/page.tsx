@@ -16,6 +16,7 @@ import { qk } from '@/lib/queryKeys';
 import { toast } from '@/lib/toast';
 import type { BannerAdminView, BannerKind, BannerUpsertRequest } from '@/lib/types';
 import { param, useListParams } from '@/lib/useListParams';
+import { useCan } from '@/lib/useMe';
 
 type Draft = {
   title: string;
@@ -54,6 +55,7 @@ const emptyDraft = (): Draft => {
 export default function AdsPage() {
   const queryClient = useQueryClient();
   const confirm = useConfirm();
+  const canManage = useCan('MANAGE_CONTENT');
   const { params, setFilter } = useListParams(FILTERS);
   const kind: BannerKind = params.kind || 'AD';
   const [editing, setEditing] = useState<BannerAdminView | null>(null);
@@ -85,7 +87,7 @@ export default function AdsPage() {
       <PageHeader
         title="광고 · 공지"
         description="홈 광고 배너와 공지 팝업을 나눠서 운영합니다."
-        action={<Button onClick={() => setCreating(true)}>새 {TAB_LABEL[kind]}</Button>}
+        action={canManage ? <Button onClick={() => setCreating(true)}>새 {TAB_LABEL[kind]}</Button> : null}
       />
 
       <div className="px-7 py-6">
