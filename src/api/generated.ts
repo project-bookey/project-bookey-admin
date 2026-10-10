@@ -5,6 +5,42 @@
  */
 
 export interface paths {
+    "/api/v1/me/consents/{kind}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** 선택 동의 켜고 끄기 — MARKETING(광고성 정보 수신)·PROFILE_OPTIONAL(성별·생년월일, 철회하면 지운다) */
+        put: operations["setConsent"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/library/{recordId}/remark": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 내 한 마디 — 이 읽기 기록에 남긴 것, 없으면 빈 응답 */
+        get: operations["mine"];
+        /** 한 마디 남기기 — 완독·하차한 기록에만, 다시 쓰면 고쳐진다 */
+        put: operations["write"];
+        post?: never;
+        /** 한 마디 지우기 */
+        delete: operations["delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/clubs/{clubId}/meetings/{meetingId}": {
         parameters: {
             query?: never;
@@ -51,7 +87,7 @@ export interface paths {
         put: operations["update"];
         post?: never;
         /** FAQ 삭제 */
-        delete: operations["delete"];
+        delete: operations["delete_1"];
         options?: never;
         head?: never;
         patch?: never;
@@ -86,7 +122,23 @@ export interface paths {
         put: operations["update_1"];
         post?: never;
         /** 배너 삭제 */
-        delete: operations["delete_1"];
+        delete: operations["delete_2"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/webhooks/google": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["google"];
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -137,6 +189,40 @@ export interface paths {
         put?: never;
         /** 구독 결제 시작 — 결제 SDK/웹 위젯에 넘길 주문 계약 */
         post: operations["checkout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/sessions/{sessionId}/resume": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 타이머 이어서 */
+        post: operations["resume"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/sessions/{sessionId}/pause": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 타이머 잠깐 쉬기 — 쉰 시간은 독서 시간에서 빠진다 */
+        post: operations["pause"];
         delete?: never;
         options?: never;
         head?: never;
@@ -410,7 +496,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** 프로필 사진 업로드 — 온보딩 필수 단계 */
+        /** 프로필 사진 업로드 */
         post: operations["uploadAvatar"];
         delete?: never;
         options?: never;
@@ -446,7 +532,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** 다시 읽기 시작 */
-        post: operations["resume"];
+        post: operations["resume_1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -463,7 +549,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** 일시정지 — 재촉 알림 중단 */
-        post: operations["pause"];
+        post: operations["pause_1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1118,6 +1204,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/blocks/{userId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 차단 — 이미 막았으면 그대로 성공. 그 사람과의 엽서·채팅방이 내 목록에서 빠진다 */
+        post: operations["block"];
+        /** 차단 풀기 — 막지 않았어도 그대로 성공 */
+        delete: operations["unblock"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/auth/social": {
         parameters: {
             query?: never;
@@ -1265,6 +1369,23 @@ export interface paths {
         put?: never;
         /** 가입 이메일 인증 코드 발급 (EMAIL_CODE 모드) */
         post: operations["requestEmailCode"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/email/code/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 가입 이메일 인증 코드 사전 확인 — 성공해도 실제 가입 전까지 소진하지 않는다 */
+        post: operations["verifyEmailCode"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1506,8 +1627,25 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** 2FA 시크릿 발급 */
-        post: operations["issueTotp"];
+        /** 2FA 등록 1단계 — 시크릿 발급(아직 켜지지 않음). 이미 켜져 있으면 409 */
+        post: operations["prepareTotp"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/v1/auth/totp/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 2FA 등록 2단계 — 인증 앱 코드를 확인하고 켠다 */
+        post: operations["confirmTotp"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1560,7 +1698,7 @@ export interface paths {
         put?: never;
         post?: never;
         /** 리뷰 삭제 */
-        delete: operations["delete_2"];
+        delete: operations["delete_3"];
         options?: never;
         head?: never;
         /** 리뷰 수정 — 등급은 재산정하지 않는다 */
@@ -1579,7 +1717,7 @@ export interface paths {
         put?: never;
         post?: never;
         /** 독후감 삭제 */
-        delete: operations["delete_3"];
+        delete: operations["delete_4"];
         options?: never;
         head?: never;
         /** 독후감 수정 · 공개 범위 변경 */
@@ -1614,7 +1752,7 @@ export interface paths {
         get: operations["me"];
         put?: never;
         post?: never;
-        /** 계정 영구 삭제 — 개인정보·로그인 수단 제거 및 계정 종료 */
+        /** 계정 탈퇴 — 즉시 로그인 차단, 30일 뒤 연관 기록 영구 삭제 */
         delete: operations["deleteAccount"];
         options?: never;
         head?: never;
@@ -1703,7 +1841,7 @@ export interface paths {
         put?: never;
         post?: never;
         /** 삭제 (작성자 또는 운영자) */
-        delete: operations["delete_4"];
+        delete: operations["delete_5"];
         options?: never;
         head?: never;
         /** 글 · 조각 수정 — 작성자만, 한 줄과 쪽을 보낸 값으로 바꾼다 */
@@ -1738,7 +1876,7 @@ export interface paths {
         put?: never;
         post?: never;
         /** 에디터 픽 삭제 */
-        delete: operations["delete_5"];
+        delete: operations["delete_6"];
         options?: never;
         head?: never;
         /** 에디터 픽 수정 — 정렬·메모 */
@@ -2017,6 +2155,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/public/legal/{key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 약관·정책 원문 — key: terms, privacy-consent, profile-optional, marketing, privacy-policy, refund */
+        get: operations["document"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/public/books/{bookId}": {
         parameters: {
             query?: never;
@@ -2250,7 +2405,7 @@ export interface paths {
         put?: never;
         post?: never;
         /** 서재에서 삭제 */
-        delete: operations["delete_6"];
+        delete: operations["delete_7"];
         options?: never;
         head?: never;
         patch?: never;
@@ -2285,7 +2440,7 @@ export interface paths {
         put?: never;
         post?: never;
         /** 문의 삭제 — 답변 전후 상관없이 지운다 */
-        delete: operations["delete_7"];
+        delete: operations["delete_8"];
         options?: never;
         head?: never;
         patch?: never;
@@ -2676,6 +2831,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/books/{bookId}/remarks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 도서별 한 마디 — 최근에 쓴 순 */
+        get: operations["listByBook_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/books/{bookId}/posts": {
         parameters: {
             query?: never;
@@ -2761,6 +2933,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/blocks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 내가 차단한 사람 — 최근에 막은 순 */
+        get: operations["list_10"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/banners": {
         parameters: {
             query?: never;
@@ -2769,7 +2958,7 @@ export interface paths {
             cookie?: never;
         };
         /** 활성 배너/공지 목록 — 기간 내, 정렬 순 */
-        get: operations["list_10"];
+        get: operations["list_11"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2905,7 +3094,7 @@ export interface paths {
             cookie?: never;
         };
         /** 고객문의 목록 — 답변 대기만 보면 오래 기다린 순, 그 밖에는 최신순 */
-        get: operations["list_11"];
+        get: operations["list_12"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3006,7 +3195,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** 감사 로그 — 모든 관리자 행위 기록 */
+        /** 감사 로그 — 모든 관리자 행위 기록. from 이상 to 미만, 최신순 */
         get: operations["auditLogs"];
         put?: never;
         post?: never;
@@ -3027,7 +3216,7 @@ export interface paths {
         put?: never;
         post?: never;
         /** 세션 삭제 */
-        delete: operations["delete_8"];
+        delete: operations["delete_9"];
         options?: never;
         head?: never;
         patch?: never;
@@ -3044,7 +3233,7 @@ export interface paths {
         put?: never;
         post?: never;
         /** 댓글 삭제 — 본인만 */
-        delete: operations["delete_9"];
+        delete: operations["delete_10"];
         options?: never;
         head?: never;
         patch?: never;
@@ -3061,7 +3250,7 @@ export interface paths {
         put?: never;
         post?: never;
         /** 댓글 삭제 — 본인만, 답글도 함께 지워진다 */
-        delete: operations["delete_10"];
+        delete: operations["delete_11"];
         options?: never;
         head?: never;
         patch?: never;
@@ -3078,7 +3267,7 @@ export interface paths {
         put?: never;
         post?: never;
         /** 엽서 삭제 — 보낸 사람 또는 받은 사람만 */
-        delete: operations["delete_11"];
+        delete: operations["delete_12"];
         options?: never;
         head?: never;
         patch?: never;
@@ -3095,7 +3284,7 @@ export interface paths {
         put?: never;
         post?: never;
         /** 내 알림 삭제 */
-        delete: operations["delete_12"];
+        delete: operations["delete_13"];
         options?: never;
         head?: never;
         patch?: never;
@@ -3129,7 +3318,7 @@ export interface paths {
         put?: never;
         post?: never;
         /** 채팅방 삭제 — 참가자만, 메시지도 함께 삭제된다 */
-        delete: operations["delete_13"];
+        delete: operations["delete_14"];
         options?: never;
         head?: never;
         patch?: never;
@@ -3173,6 +3362,61 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        ConsentUpdateRequest: {
+            agreed: boolean;
+        };
+        ConsentStateView: {
+            /** @enum {string} */
+            kind: "TERMS" | "PRIVACY" | "AGE_14" | "PROFILE_OPTIONAL" | "MARKETING" | "THIRD_PARTY_YES24";
+            agreed: boolean;
+            version?: string;
+            /** Format: date-time */
+            at: string;
+        };
+        MeResponse: {
+            /** Format: int64 */
+            id: number;
+            handle: string;
+            nickname: string;
+            email?: string;
+            avatarUrl?: string;
+            gender?: string;
+            /** Format: date */
+            birthDate?: string;
+            timezone: string;
+            notifyTone: string;
+            /** Format: int32 */
+            quietHoursStart: number;
+            /** Format: int32 */
+            quietHoursEnd: number;
+            /** Format: int32 */
+            dailyNotifyCap: number;
+            /** Format: int32 */
+            clubNotifyCap: number;
+            allowNudge: boolean;
+            status: string;
+            preferredCategories: string[];
+            linkedProviders: ("APPLE" | "GOOGLE" | "KAKAO")[];
+            hasPassword: boolean;
+            consents: components["schemas"]["ConsentStateView"][];
+        };
+        RemarkRequest: {
+            body: string;
+        };
+        RemarkView: {
+            /** Format: int64 */
+            id: number;
+            /** Format: int64 */
+            bookId: number;
+            /** Format: int64 */
+            authorId: number;
+            authorNickname: string;
+            /** @enum {string} */
+            kind: "FINISHED" | "ABANDONED";
+            body: string;
+            /** Format: date-time */
+            writtenAt: string;
+        };
         UpsertMeetingRequest: {
             title: string;
             description?: string;
@@ -3347,6 +3591,13 @@ export interface components {
             /** Format: date-time */
             endsAt: string;
         };
+        PubSubEnvelope: {
+            message?: components["schemas"]["PubSubMessage"];
+        };
+        PubSubMessage: {
+            data?: string;
+            messageId?: string;
+        };
         ExchangeRequest: {
             /** @enum {string} */
             target: "POSTCARD" | "STAMP";
@@ -3394,6 +3645,33 @@ export interface components {
             successUrl?: string;
             failUrl?: string;
         };
+        SessionView: {
+            /** Format: int64 */
+            id: number;
+            /** Format: int64 */
+            readingRecordId: number;
+            /** Format: date-time */
+            startedAt: string;
+            /** Format: date-time */
+            endedAt?: string;
+            /** Format: int32 */
+            durationSec: number;
+            /** Format: int32 */
+            startPage?: number;
+            /** Format: int32 */
+            endPage?: number;
+            /** Format: int32 */
+            readPages?: number;
+            /** @enum {string} */
+            source: "TIMER" | "MANUAL";
+            memo?: string;
+            /** Format: date-time */
+            pausedAt?: string;
+            /** Format: int32 */
+            pausedSec: number;
+            abuseFlags: string[];
+            countedForVerification: boolean;
+        };
         EndRequest: {
             /** Format: int32 */
             endPage?: number;
@@ -3423,29 +3701,6 @@ export interface components {
             lagLevel: string;
             bookFinished: boolean;
             clubs: components["schemas"]["ClubProgressEcho"][];
-        };
-        SessionView: {
-            /** Format: int64 */
-            id: number;
-            /** Format: int64 */
-            readingRecordId: number;
-            /** Format: date-time */
-            startedAt: string;
-            /** Format: date-time */
-            endedAt?: string;
-            /** Format: int32 */
-            durationSec: number;
-            /** Format: int32 */
-            startPage?: number;
-            /** Format: int32 */
-            endPage?: number;
-            /** Format: int32 */
-            readPages?: number;
-            /** @enum {string} */
-            source: "TIMER" | "MANUAL";
-            memo?: string;
-            abuseFlags: string[];
-            countedForVerification: boolean;
         };
         StartRequest: {
             /** Format: int64 */
@@ -3507,6 +3762,7 @@ export interface components {
             commentCount: number;
             /** Format: date-time */
             createdAt: string;
+            authorFinished: boolean;
         };
         ReportRequest: {
             reason: string;
@@ -3696,32 +3952,6 @@ export interface components {
             pushToken: string;
             pushEnabled?: boolean;
         };
-        MeResponse: {
-            /** Format: int64 */
-            id: number;
-            handle: string;
-            nickname: string;
-            email?: string;
-            avatarUrl?: string;
-            gender?: string;
-            /** Format: date */
-            birthDate?: string;
-            timezone: string;
-            notifyTone: string;
-            /** Format: int32 */
-            quietHoursStart: number;
-            /** Format: int32 */
-            quietHoursEnd: number;
-            /** Format: int32 */
-            dailyNotifyCap: number;
-            /** Format: int32 */
-            clubNotifyCap: number;
-            allowNudge: boolean;
-            status: string;
-            preferredCategories: string[];
-            linkedProviders: ("APPLE" | "GOOGLE" | "KAKAO")[];
-            hasPassword: boolean;
-        };
         AddBookRequest: {
             /** Format: int64 */
             bookId: number;
@@ -3848,7 +4078,10 @@ export interface components {
             endsAt?: string;
             /** @enum {string} */
             visibility?: "CODE_ONLY" | "LINK" | "PUBLIC";
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @deprecated
+             */
             memberLimit?: number;
             allowNudge?: boolean;
             /** @deprecated */
@@ -3924,6 +4157,8 @@ export interface components {
             maxLimit: number;
             /** Format: int32 */
             costPerSeat: number;
+            /** Format: int32 */
+            step: number;
         };
         MemberProgressView: {
             /** Format: int64 */
@@ -4063,7 +4298,7 @@ export interface components {
             contributors: components["schemas"]["MeetingAttendeeView"][];
             /** Format: date-time */
             updatedAt?: string;
-            /** @description 끝난 클럽·취소된 모임·마무리한 노트면 true — 읽기만 된다 */
+            /** @description 보는 사람이 쓸 수 없으면 true — 끝난 클럽·취소된 모임·마무리한 노트이거나, 보는 사람이 모임에 참여하지 않았을 때 */
             readOnly: boolean;
             /**
              * Format: date-time
@@ -4072,6 +4307,8 @@ export interface components {
             closedAt?: string;
             /** @description 보는 사람이 이 노트를 마무리할 수 있는지 — 모임을 연 사람(또는 호스트)이고 아직 쓸 수 있는 노트일 때 */
             canClose: boolean;
+            /** @description 보는 사람이 이 모임에 참여했는지 — 노트는 참여한 사람만 쓴다 */
+            attending: boolean;
         };
         KickRequest: {
             /** Format: int64 */
@@ -4231,10 +4468,28 @@ export interface components {
             successUrl?: string;
             failUrl?: string;
         };
+        BlockedUserView: {
+            /** Format: int64 */
+            userId: number;
+            nickname: string;
+            avatarUrl?: string;
+            /** Format: date-time */
+            blockedAt: string;
+        };
+        SignupConsent: {
+            termsAgreed?: boolean;
+            termsVersion?: string;
+            privacyAgreed?: boolean;
+            privacyVersion?: string;
+            ageConfirmed?: boolean;
+            marketingAgreed?: boolean;
+            marketingVersion?: string;
+        };
         SocialLoginRequest: {
             /** @enum {string} */
             provider: "APPLE" | "GOOGLE" | "KAKAO";
             token: string;
+            consent?: components["schemas"]["SignupConsent"];
         };
         TokenResponse: {
             accessToken: string;
@@ -4251,10 +4506,7 @@ export interface components {
             nickname: string;
             code?: string;
             identityVerificationId?: string;
-            termsAgreed: boolean;
-            termsVersion: string;
-            privacyAgreed: boolean;
-            privacyVersion: string;
+            consent?: components["schemas"]["SignupConsent"];
         };
         RefreshRequest: {
             refreshToken: string;
@@ -4273,11 +4525,20 @@ export interface components {
             /** Format: int64 */
             expiresInSec: number;
             devCode?: string;
+            /** Format: int32 */
+            resendsLeft?: number;
+            /** Format: int32 */
+            sendLimit: number;
         };
         EmailLoginRequest: {
             /** Format: email */
             email: string;
             password: string;
+        };
+        EmailCodeVerifyRequest: {
+            /** Format: email */
+            email: string;
+            code: string;
         };
         AttendanceView: {
             checkedInToday: boolean;
@@ -4351,11 +4612,12 @@ export interface components {
         ClubActionRequest: {
             reason: string;
         };
-        LoginRequest: {
-            /** Format: email */
-            email: string;
-            password: string;
-            totpCode?: string;
+        TotpSecretView: {
+            secret: string;
+            otpauthUri: string;
+        };
+        TotpConfirmRequest: {
+            code: string;
         };
         AdminProfile: {
             /** Format: int64 */
@@ -4367,6 +4629,13 @@ export interface components {
             totpEnabled: boolean;
             /** Format: date-time */
             lastLoginAt?: string;
+            capabilities: ("MODERATE" | "SANCTION" | "WARN" | "HANDLE_SUPPORT" | "EDIT_BOOK" | "MANAGE_CONTENT" | "MANAGE_OPS" | "MANAGE_ADMINS" | "BROADCAST" | "VIEW_PAYMENTS")[];
+        };
+        LoginRequest: {
+            /** Format: email */
+            email: string;
+            password: string;
+            totpCode?: string;
         };
         LoginResponse: {
             accessToken?: string;
@@ -4389,6 +4658,7 @@ export interface components {
             body?: string;
             tags: string[];
             hasSpoiler?: boolean;
+            removeRating?: boolean;
         };
         UpdatePostRequest: {
             /** Format: int64 */
@@ -4593,6 +4863,14 @@ export interface components {
             totalPages?: number;
             hasNext?: boolean;
         };
+        LegalDocumentView: {
+            key: string;
+            title: string;
+            version: string;
+            /** Format: date */
+            effectiveDate: string;
+            body: string;
+        };
         BookDetail: {
             book: components["schemas"]["BookSummary"];
             description?: string;
@@ -4684,12 +4962,13 @@ export interface components {
             bookCoverUrl?: string;
             /** Format: date-time */
             occurredAt: string;
+            remark?: string;
         };
         NotificationView: {
             /** Format: int64 */
             id: number;
             /** @enum {string} */
-            type: "HABIT" | "LAG" | "MICRO_MISSION" | "STREAK" | "ALMOST_DONE" | "ACHIEVEMENT" | "CLEANUP" | "POSTCARD_RECEIVED" | "POSTCARD_REPLIED" | "FOLLOWED" | "FOLLOW_CONNECTED" | "CHAT_MESSAGE" | "POST_LIKED" | "POST_COMMENTED" | "INQUIRY_ANSWERED" | "CLUB_CHECKPOINT_DUE" | "CLUB_CHECKPOINT_RESULT" | "CLUB_OVERTAKEN" | "CLUB_FALLBEHIND" | "CLUB_NEW_POST" | "CLUB_NUDGE" | "CLUB_ENDED" | "CLUB_NOTE_PAGE" | "CLUB_WEEKLY_LOG";
+            type: "HABIT" | "LAG" | "MICRO_MISSION" | "STREAK" | "ALMOST_DONE" | "ACHIEVEMENT" | "CLEANUP" | "POSTCARD_RECEIVED" | "POSTCARD_REPLIED" | "FOLLOWED" | "FOLLOW_CONNECTED" | "CHAT_MESSAGE" | "POST_LIKED" | "POST_COMMENTED" | "INQUIRY_ANSWERED" | "CONSENT_RESULT" | "SANCTION_NOTICE" | "CLUB_CHECKPOINT_DUE" | "CLUB_CHECKPOINT_RESULT" | "CLUB_OVERTAKEN" | "CLUB_FALLBEHIND" | "CLUB_NEW_POST" | "CLUB_NUDGE" | "CLUB_ENDED" | "CLUB_NOTE_PAGE" | "CLUB_WEEKLY_LOG";
             /** Format: int32 */
             lagLevel?: number;
             /** Format: int64 */
@@ -4834,6 +5113,9 @@ export interface components {
             /** Format: date-time */
             nextMeetingAt?: string;
             nextMeetingTitle?: string;
+            /** Format: date-time */
+            myNextMeetingAt?: string;
+            myNextMeetingTitle?: string;
             description?: string;
             backgroundUrl?: string;
         };
@@ -4932,9 +5214,9 @@ export interface components {
             buildingName?: string;
             zonecode?: string;
             /** Format: double */
-            latitude: number;
+            latitude?: number;
             /** Format: double */
-            longitude: number;
+            longitude?: number;
         };
         PageResponseMeetingNoteView: {
             content?: components["schemas"]["MeetingNoteView"][];
@@ -5033,6 +5315,18 @@ export interface components {
             book: components["schemas"]["BookSummary"];
             /** Format: int64 */
             savedCount: number;
+        };
+        PageResponseBlockedUserView: {
+            content?: components["schemas"]["BlockedUserView"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasNext?: boolean;
         };
         BannerView: {
             /** Format: int64 */
@@ -5329,6 +5623,14 @@ export interface components {
             ip?: string;
             /** Format: date-time */
             createdAt: string;
+            adminName?: string;
+            beforeData: {
+                [key: string]: unknown;
+            };
+            afterData: {
+                [key: string]: unknown;
+            };
+            userAgent?: string;
         };
         PageResponseAuditRow: {
             content?: components["schemas"]["AuditRow"][];
@@ -5349,6 +5651,11 @@ export interface components {
     headers: never;
     pathItems: never;
 }
+export type SchemaConsentUpdateRequest = components['schemas']['ConsentUpdateRequest'];
+export type SchemaConsentStateView = components['schemas']['ConsentStateView'];
+export type SchemaMeResponse = components['schemas']['MeResponse'];
+export type SchemaRemarkRequest = components['schemas']['RemarkRequest'];
+export type SchemaRemarkView = components['schemas']['RemarkView'];
 export type SchemaUpsertMeetingRequest = components['schemas']['UpsertMeetingRequest'];
 export type SchemaBookSummary = components['schemas']['BookSummary'];
 export type SchemaMeetingAttendeeView = components['schemas']['MeetingAttendeeView'];
@@ -5361,15 +5668,17 @@ export type SchemaFaqAdminView = components['schemas']['FaqAdminView'];
 export type SchemaFaqOrderRequest = components['schemas']['FaqOrderRequest'];
 export type SchemaBannerUpsertRequest = components['schemas']['BannerUpsertRequest'];
 export type SchemaBannerAdminView = components['schemas']['BannerAdminView'];
+export type SchemaPubSubEnvelope = components['schemas']['PubSubEnvelope'];
+export type SchemaPubSubMessage = components['schemas']['PubSubMessage'];
 export type SchemaExchangeRequest = components['schemas']['ExchangeRequest'];
 export type SchemaWalletView = components['schemas']['WalletView'];
 export type SchemaSubscriptionVerifyRequest = components['schemas']['SubscriptionVerifyRequest'];
 export type SchemaSubscriptionCheckoutRequest = components['schemas']['SubscriptionCheckoutRequest'];
 export type SchemaSubscriptionCheckoutView = components['schemas']['SubscriptionCheckoutView'];
+export type SchemaSessionView = components['schemas']['SessionView'];
 export type SchemaEndRequest = components['schemas']['EndRequest'];
 export type SchemaClubProgressEcho = components['schemas']['ClubProgressEcho'];
 export type SchemaSessionEndResult = components['schemas']['SessionEndResult'];
-export type SchemaSessionView = components['schemas']['SessionView'];
 export type SchemaStartRequest = components['schemas']['StartRequest'];
 export type SchemaManualRequest = components['schemas']['ManualRequest'];
 export type SchemaCreateReviewRequest = components['schemas']['CreateReviewRequest'];
@@ -5388,7 +5697,6 @@ export type SchemaSendPostcardRequest = components['schemas']['SendPostcardReque
 export type SchemaPostcardView = components['schemas']['PostcardView'];
 export type SchemaReplyPostcardRequest = components['schemas']['ReplyPostcardRequest'];
 export type SchemaDeviceRegisterRequest = components['schemas']['DeviceRegisterRequest'];
-export type SchemaMeResponse = components['schemas']['MeResponse'];
 export type SchemaAddBookRequest = components['schemas']['AddBookRequest'];
 export type SchemaProgressView = components['schemas']['ProgressView'];
 export type SchemaReadingRecordView = components['schemas']['ReadingRecordView'];
@@ -5433,6 +5741,8 @@ export type SchemaBookLikeView = components['schemas']['BookLikeView'];
 export type SchemaBookmarkPurchaseVerifyRequest = components['schemas']['BookmarkPurchaseVerifyRequest'];
 export type SchemaBookmarkPurchaseCheckoutRequest = components['schemas']['BookmarkPurchaseCheckoutRequest'];
 export type SchemaBookmarkPurchaseCheckoutView = components['schemas']['BookmarkPurchaseCheckoutView'];
+export type SchemaBlockedUserView = components['schemas']['BlockedUserView'];
+export type SchemaSignupConsent = components['schemas']['SignupConsent'];
 export type SchemaSocialLoginRequest = components['schemas']['SocialLoginRequest'];
 export type SchemaTokenResponse = components['schemas']['TokenResponse'];
 export type SchemaEmailSignupRequest = components['schemas']['EmailSignupRequest'];
@@ -5441,6 +5751,7 @@ export type SchemaPasswordResetRequest = components['schemas']['PasswordResetReq
 export type SchemaEmailCodeRequest = components['schemas']['EmailCodeRequest'];
 export type SchemaEmailCodeResponse = components['schemas']['EmailCodeResponse'];
 export type SchemaEmailLoginRequest = components['schemas']['EmailLoginRequest'];
+export type SchemaEmailCodeVerifyRequest = components['schemas']['EmailCodeVerifyRequest'];
 export type SchemaAttendanceView = components['schemas']['AttendanceView'];
 export type SchemaWalletAdjustRequest = components['schemas']['WalletAdjustRequest'];
 export type SchemaSubscriptionGrantRequest = components['schemas']['SubscriptionGrantRequest'];
@@ -5450,8 +5761,10 @@ export type SchemaResolveRequest = components['schemas']['ResolveRequest'];
 export type SchemaEditorPickCreateRequest = components['schemas']['EditorPickCreateRequest'];
 export type SchemaEditorPickView = components['schemas']['EditorPickView'];
 export type SchemaClubActionRequest = components['schemas']['ClubActionRequest'];
-export type SchemaLoginRequest = components['schemas']['LoginRequest'];
+export type SchemaTotpSecretView = components['schemas']['TotpSecretView'];
+export type SchemaTotpConfirmRequest = components['schemas']['TotpConfirmRequest'];
 export type SchemaAdminProfile = components['schemas']['AdminProfile'];
+export type SchemaLoginRequest = components['schemas']['LoginRequest'];
 export type SchemaLoginResponse = components['schemas']['LoginResponse'];
 export type SchemaCreateAdminRequest = components['schemas']['CreateAdminRequest'];
 export type SchemaUpdateReviewRequest = components['schemas']['UpdateReviewRequest'];
@@ -5475,6 +5788,7 @@ export type SchemaLibrarySummary = components['schemas']['LibrarySummary'];
 export type SchemaPageResponseReviewCommentView = components['schemas']['PageResponseReviewCommentView'];
 export type SchemaVerificationPreview = components['schemas']['VerificationPreview'];
 export type SchemaPageResponseReviewView = components['schemas']['PageResponseReviewView'];
+export type SchemaLegalDocumentView = components['schemas']['LegalDocumentView'];
 export type SchemaBookDetail = components['schemas']['BookDetail'];
 export type SchemaRatingSummary = components['schemas']['RatingSummary'];
 export type SchemaLikerView = components['schemas']['LikerView'];
@@ -5514,6 +5828,7 @@ export type SchemaChatGiftCandidate = components['schemas']['ChatGiftCandidate']
 export type SchemaPageResponseClubPreview = components['schemas']['PageResponseClubPreview'];
 export type SchemaPageResponseChatSummaryView = components['schemas']['PageResponseChatSummaryView'];
 export type SchemaPopularBookView = components['schemas']['PopularBookView'];
+export type SchemaPageResponseBlockedUserView = components['schemas']['PageResponseBlockedUserView'];
 export type SchemaBannerView = components['schemas']['BannerView'];
 export type SchemaSignupConfigResponse = components['schemas']['SignupConfigResponse'];
 export type SchemaPageResponseUserRow = components['schemas']['PageResponseUserRow'];
@@ -5537,6 +5852,100 @@ export type SchemaAuditRow = components['schemas']['AuditRow'];
 export type SchemaPageResponseAuditRow = components['schemas']['PageResponseAuditRow'];
 export type $defs = Record<string, never>;
 export interface operations {
+    setConsent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                kind: "TERMS" | "PRIVACY" | "AGE_14" | "PROFILE_OPTIONAL" | "MARKETING" | "THIRD_PARTY_YES24";
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConsentUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MeResponse"];
+                };
+            };
+        };
+    };
+    mine: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                recordId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["RemarkView"];
+                };
+            };
+        };
+    };
+    write: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                recordId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RemarkRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["RemarkView"];
+                };
+            };
+        };
+    };
+    delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                recordId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     meetingDetail: {
         parameters: {
             query?: never;
@@ -5686,7 +6095,7 @@ export interface operations {
             };
         };
     };
-    delete: {
+    delete_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -5756,7 +6165,7 @@ export interface operations {
             };
         };
     };
-    delete_1: {
+    delete_2: {
         parameters: {
             query?: never;
             header?: never;
@@ -5766,6 +6175,30 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    google: {
+        parameters: {
+            query: {
+                token: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PubSubEnvelope"];
+            };
+        };
         responses: {
             /** @description OK */
             200: {
@@ -5842,6 +6275,50 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["SubscriptionCheckoutView"];
+                };
+            };
+        };
+    };
+    resume: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                sessionId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["SessionView"];
+                };
+            };
+        };
+    };
+    pause: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                sessionId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["SessionView"];
                 };
             };
         };
@@ -6355,7 +6832,7 @@ export interface operations {
             };
         };
     };
-    resume: {
+    resume_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -6377,7 +6854,7 @@ export interface operations {
             };
         };
     };
-    pause: {
+    pause_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -7625,6 +8102,48 @@ export interface operations {
             };
         };
     };
+    block: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["BlockedUserView"];
+                };
+            };
+        };
+    };
+    unblock: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     socialLogin: {
         parameters: {
             query?: never;
@@ -7832,6 +8351,28 @@ export interface operations {
                 content: {
                     "*/*": components["schemas"]["EmailCodeResponse"];
                 };
+            };
+        };
+    };
+    verifyEmailCode: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmailCodeVerifyRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -8249,7 +8790,7 @@ export interface operations {
             };
         };
     };
-    issueTotp: {
+    prepareTotp: {
         parameters: {
             query?: never;
             header?: never;
@@ -8264,9 +8805,31 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": {
-                        [key: string]: string;
-                    };
+                    "*/*": components["schemas"]["TotpSecretView"];
+                };
+            };
+        };
+    };
+    confirmTotp: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TotpConfirmRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["AdminProfile"];
                 };
             };
         };
@@ -8341,7 +8904,7 @@ export interface operations {
             };
         };
     };
-    delete_2: {
+    delete_3: {
         parameters: {
             query?: never;
             header?: never;
@@ -8409,7 +8972,7 @@ export interface operations {
             };
         };
     };
-    delete_3: {
+    delete_4: {
         parameters: {
             query?: never;
             header?: never;
@@ -8686,7 +9249,7 @@ export interface operations {
             };
         };
     };
-    delete_4: {
+    delete_5: {
         parameters: {
             query?: never;
             header?: never;
@@ -8758,7 +9321,7 @@ export interface operations {
             };
         };
     };
-    delete_5: {
+    delete_6: {
         parameters: {
             query?: never;
             header?: never;
@@ -9169,6 +9732,28 @@ export interface operations {
             };
         };
     };
+    document: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["LegalDocumentView"];
+                };
+            };
+        };
+    };
     book: {
         parameters: {
             query?: never;
@@ -9502,7 +10087,7 @@ export interface operations {
             };
         };
     };
-    delete_6: {
+    delete_7: {
         parameters: {
             query?: never;
             header?: never;
@@ -9564,7 +10149,7 @@ export interface operations {
             };
         };
     };
-    delete_7: {
+    delete_8: {
         parameters: {
             query?: never;
             header?: never;
@@ -10104,6 +10689,30 @@ export interface operations {
             };
         };
     };
+    listByBook_1: {
+        parameters: {
+            query?: {
+                size?: number;
+            };
+            header?: never;
+            path: {
+                bookId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["RemarkView"][];
+                };
+            };
+        };
+    };
     posts_1: {
         parameters: {
             query?: {
@@ -10219,6 +10828,29 @@ export interface operations {
         };
     };
     list_10: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponseBlockedUserView"];
+                };
+            };
+        };
+    };
+    list_11: {
         parameters: {
             query?: {
                 kind?: "AD" | "NOTICE";
@@ -10398,7 +11030,7 @@ export interface operations {
             };
         };
     };
-    list_11: {
+    list_12: {
         parameters: {
             query?: {
                 status?: "WAITING" | "ANSWERED";
@@ -10539,6 +11171,10 @@ export interface operations {
             query?: {
                 adminId?: number;
                 action?: string;
+                targetType?: string;
+                targetId?: number;
+                from?: string;
+                to?: string;
                 page?: number;
                 size?: number;
             };
@@ -10559,7 +11195,7 @@ export interface operations {
             };
         };
     };
-    delete_8: {
+    delete_9: {
         parameters: {
             query?: never;
             header?: never;
@@ -10579,7 +11215,7 @@ export interface operations {
             };
         };
     };
-    delete_9: {
+    delete_10: {
         parameters: {
             query?: never;
             header?: never;
@@ -10600,7 +11236,7 @@ export interface operations {
             };
         };
     };
-    delete_10: {
+    delete_11: {
         parameters: {
             query?: never;
             header?: never;
@@ -10621,7 +11257,7 @@ export interface operations {
             };
         };
     };
-    delete_11: {
+    delete_12: {
         parameters: {
             query?: never;
             header?: never;
@@ -10641,7 +11277,7 @@ export interface operations {
             };
         };
     };
-    delete_12: {
+    delete_13: {
         parameters: {
             query?: never;
             header?: never;
@@ -10681,7 +11317,7 @@ export interface operations {
             };
         };
     };
-    delete_13: {
+    delete_14: {
         parameters: {
             query?: never;
             header?: never;

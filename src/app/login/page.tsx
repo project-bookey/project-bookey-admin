@@ -11,7 +11,8 @@ import { Button, Card, Input } from '@/components/ui';
 /** 관리자 로그인 — 서비스 계정과 분리된 이메일·비밀번호 + 2FA (§F13). */
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('admin@bookey.local');
+  // 로컬 시드 계정은 개발 빌드에서만 미리 채운다 — 운영 화면에 계정 이름을 노출하지 않게.
+  const [email, setEmail] = useState(process.env.NODE_ENV === 'production' ? '' : 'admin@bookey.local');
   const [password, setPassword] = useState('');
   const [totpCode, setTotpCode] = useState('');
   const [needsTotp, setNeedsTotp] = useState(false);

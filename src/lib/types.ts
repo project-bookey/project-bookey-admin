@@ -16,6 +16,10 @@ export type Page<T> = Omit<Schemas['PageResponseUserRow'], 'content'> & { conten
 export type AdminProfile = Schemas['AdminProfile'];
 export type LoginResponse = Schemas['LoginResponse'];
 export type AdminRole = NonNullable<AdminProfile['role']>;
+/** 메뉴·버튼을 가리는 권한 — 서버가 역할에서 계산해 내 정보에 실어 준다. */
+export type AdminCapability = AdminProfile['capabilities'][number];
+export type TotpSecretView = Schemas['TotpSecretView'];
+export type CreateAdminRequest = Schemas['CreateAdminRequest'];
 
 // ── 대시보드 ─────────────────────────────────────────────
 export type Dashboard = Schemas['DashboardView'];
@@ -26,27 +30,23 @@ export type UserDetail = Schemas['UserDetailView'];
 export type SanctionRow = Schemas['SanctionRow'];
 export type UserStatus = NonNullable<UserRow['status']>;
 export type SanctionType = NonNullable<SanctionRow['type']>;
+export type WalletAdjustRequest = Schemas['WalletAdjustRequest'];
+export type SubscriptionGrantRequest = Schemas['SubscriptionGrantRequest'];
 
 // ── 도서 ────────────────────────────────────────────────
 export type BookRow = Schemas['BookRow'];
+export type UpdateBookRequest = Schemas['UpdateBookRequest'];
 
 // ── 광고/배너 ───────────────────────────────────────────
-export type BannerAdminView = {
-  id: number;
-  kind: BannerKind;
-  title: string;
-  subtitle?: string;
-  imageUrl?: string;
-  bgColor?: string;
-  linkUrl?: string;
-  sortOrder: number;
-  enabled: boolean;
-  startsAt: string;
-  endsAt: string;
-};
+export type BannerAdminView = Schemas['BannerAdminView'];
+export type BannerUpsertRequest = Schemas['BannerUpsertRequest'];
+export type BannerKind = BannerAdminView['kind'];
 
-export type BannerUpsertRequest = Omit<BannerAdminView, 'id'>;
-export type BannerKind = 'AD' | 'NOTICE';
+// ── 에디터 픽 ───────────────────────────────────────────
+export type EditorPickView = Schemas['EditorPickView'];
+export type EditorPickCreateRequest = Schemas['EditorPickCreateRequest'];
+export type EditorPickUpdateRequest = Schemas['EditorPickUpdateRequest'];
+export type BookSummary = Schemas['BookSummary'];
 
 // ── 신고 큐 ─────────────────────────────────────────────
 export type ModerationRow = Schemas['ModerationRow'];

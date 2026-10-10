@@ -1,10 +1,14 @@
 import { adminApi } from './api';
 import type {
   AdminProfile, AuditRow, BannerAdminView, BannerKind, BannerUpsertRequest, BookRow, ClubRow, ClubStatus, Dashboard,
+  EditorPickCreateRequest, EditorPickUpdateRequest, EditorPickView, TotpSecretView,
   FaqAdminView, FaqUpsertRequest, InquiryAdminView, InquiryCategory, InquiryRow, InquiryStatus, LoginResponse,
   ModerationResolution, ModerationRow, ModerationSource, ModerationStatus, NotificationStats,
-  OpsFlagRow, Page, ReviewRow, SanctionType, UserDetail, UserRow, UserStatus, VerificationLevel,
+  OpsFlagRow, Page, ReviewRow, SanctionType, SubscriptionGrantRequest, UpdateBookRequest, UserDetail, UserRow,
+  UserStatus, VerificationLevel, WalletAdjustRequest,
 } from './types';
+
+const PAGE_SIZE = 20;
 
 export const authApi = {
   login: (email: string, password: string, totpCode?: string) =>
@@ -14,6 +18,11 @@ export const authApi = {
       body: { email, password, totpCode: totpCode || undefined },
     }),
   me: () => adminApi<AdminProfile>('/admin/v1/auth/me'),
+  /** 2FA 등록 1단계 — 시크릿만 발급한다. 확인 전에는 켜지지 않는다. 이미 켜져 있으면 409. */
+  prepareTotp: () => adminApi<TotpSecretView>('/admin/v1/auth/totp', { method: 'POST' }),
+  /** 2FA 등록 2단계 — 인증 앱 코드가 맞아야 켜진다. */
+  confirmTotp: (code: string) =>
+    adminApi<AdminProfile>('/admin/v1/auth/totp/confirm', { method: 'POST', body: { code } }),
 };
 
 export const dashboardApi = {
@@ -22,22 +31,35 @@ export const dashboardApi = {
 
 export const usersApi = {
   list: (keyword?: string, status?: UserStatus, page = 0) =>
-    adminApi<Page<UserRow>>('/admin/v1/users', { query: { keyword, status, page, size: 20 } }),
-  detail: (userId: number, revealReason?: string) =>
-    adminApi<UserDetail>(`/admin/v1/users/${userId}`, { query: { revealReason } }),
+    adminApi<Page<UserRow>>('/admin/v1/users', { query: { keyword, status, page, size: PAGE_SIZE } }),
+  /** 상세 — 이메일은 가려서 온다. 열 때마다 서버가 열람 기록(VIEW_USER)을 남긴다. */
+  detail: (userId: number) => adminApi<UserDetail>(`/admin/v1/users/${userId}`),
+  /** 이메일 전체 보기 — 사유가 개인정보 열람 기록(VIEW_USER_PII)으로 남는다. 한 번만 부르고 결과는 화면에 들고 있는다. */
+  revealEmail: (userId: number, reason: string) =>
+    adminApi<UserDetail>(`/admin/v1/users/${userId}`, { query: { revealReason: reason } }),
+  /** 사유와 기간은 회원에게 알림으로 전달된다. */
   sanction: (userId: number, body: { type: SanctionType; reason: string; durationDays?: number }) =>
     adminApi<void>(`/admin/v1/users/${userId}/sanctions`, { method: 'POST', body }),
+  /** 남은 제재로 상태를 다시 계산한다 — 다른 제재가 살아 있으면 그 상태가 남는다. */
   releaseSanction: (userId: number, sanctionId: number, reason: string) =>
     adminApi<void>(`/admin/v1/users/${userId}/sanctions/${sanctionId}`, {
       method: 'DELETE',
       query: { reason },
     }),
+  /** 각 값은 더하거나 빼는 양(±). 잔액보다 많이 빼면 서버가 막는다. */
+  adjustWallet: (userId: number, body: WalletAdjustRequest) =>
+    adminApi<void>(`/admin/v1/users/${userId}/wallet`, { method: 'POST', body }),
+  /** 남은 구독 기간 뒤에 이어 붙인다. */
+  grantSubscription: (userId: number, body: SubscriptionGrantRequest) =>
+    adminApi<void>(`/admin/v1/users/${userId}/subscription`, { method: 'POST', body }),
+  revokeSubscription: (userId: number, reason: string) =>
+    adminApi<void>(`/admin/v1/users/${userId}/subscription`, { method: 'DELETE', query: { reason } }),
 };
 
 export const booksApi = {
   list: (keyword?: string, page = 0) =>
-    adminApi<Page<BookRow>>('/admin/v1/books', { query: { keyword, page, size: 20 } }),
-  update: (bookId: number, body: Record<string, unknown>) =>
+    adminApi<Page<BookRow>>('/admin/v1/books', { query: { keyword, page, size: PAGE_SIZE } }),
+  update: (bookId: number, body: UpdateBookRequest) =>
     adminApi<void>(`/admin/v1/books/${bookId}`, { method: 'PATCH', body }),
 };
 
@@ -51,10 +73,20 @@ export const adsApi = {
     adminApi<void>(`/admin/v1/banners/${bannerId}`, { method: 'DELETE' }),
 };
 
+/** 홈 '추천' 줄(에디터 픽). 비어 있으면 앱은 YES24 베스트셀러를 대신 보여 준다. */
+export const editorPicksApi = {
+  list: () => adminApi<EditorPickView[]>('/admin/v1/editor-picks'),
+  create: (body: EditorPickCreateRequest) =>
+    adminApi<EditorPickView>('/admin/v1/editor-picks', { method: 'POST', body }),
+  update: (pickId: number, body: EditorPickUpdateRequest) =>
+    adminApi<EditorPickView>(`/admin/v1/editor-picks/${pickId}`, { method: 'PATCH', body }),
+  remove: (pickId: number) => adminApi<void>(`/admin/v1/editor-picks/${pickId}`, { method: 'DELETE' }),
+};
+
 export const moderationApi = {
   queue: (status?: ModerationStatus, sourceType?: ModerationSource, page = 0) =>
     adminApi<Page<ModerationRow>>('/admin/v1/moderation', {
-      query: { status, sourceType, page, size: 20 },
+      query: { status, sourceType, page, size: PAGE_SIZE },
     }),
   assign: (ticketId: number) =>
     adminApi<void>(`/admin/v1/moderation/${ticketId}/assign`, { method: 'POST' }),
@@ -72,7 +104,7 @@ export const inquiriesApi = {
   /** 답변 대기만 거르면 오래 기다린 순, 그 밖에는 최신 순으로 온다. */
   list: (status?: InquiryStatus, category?: InquiryCategory, page = 0) =>
     adminApi<Page<InquiryRow>>('/admin/v1/inquiries', {
-      query: { status, category, page, size: 20 },
+      query: { status, category, page, size: PAGE_SIZE },
     }),
   /** 상세를 열 때마다 서버가 열람 기록(VIEW_INQUIRY)을 남긴다. */
   detail: (inquiryId: number) => adminApi<InquiryAdminView>(`/admin/v1/inquiries/${inquiryId}`),
@@ -105,7 +137,7 @@ export const faqsApi = {
 
 export const reviewsApi = {
   list: (bookId?: number, page = 0) =>
-    adminApi<Page<ReviewRow>>('/admin/v1/reviews', { query: { bookId, page, size: 20 } }),
+    adminApi<Page<ReviewRow>>('/admin/v1/reviews', { query: { bookId, page, size: PAGE_SIZE } }),
   overrideVerification: (reviewId: number, level: VerificationLevel, reason: string) =>
     adminApi<void>(`/admin/v1/reviews/${reviewId}/verification`, {
       method: 'POST',
@@ -115,7 +147,7 @@ export const reviewsApi = {
 
 export const clubsApi = {
   list: (keyword?: string, status?: ClubStatus, page = 0) =>
-    adminApi<Page<ClubRow>>('/admin/v1/clubs', { query: { keyword, status, page, size: 20 } }),
+    adminApi<Page<ClubRow>>('/admin/v1/clubs', { query: { keyword, status, page, size: PAGE_SIZE } }),
   forceEnd: (clubId: number, reason: string) =>
     adminApi<void>(`/admin/v1/clubs/${clubId}/force-end`, { method: 'POST', body: { reason } }),
   rotateCode: (clubId: number, reason: string) =>
@@ -133,6 +165,6 @@ export const opsApi = {
 };
 
 export const auditApi = {
-  list: (adminId?: number, action?: string, page = 0) =>
-    adminApi<Page<AuditRow>>('/admin/v1/audit-logs', { query: { adminId, action, page, size: 50 } }),
+  list: (filter: { adminId?: number; action?: string; targetType?: string; targetId?: number }, page = 0) =>
+    adminApi<Page<AuditRow>>('/admin/v1/audit-logs', { query: { ...filter, page, size: 50 } }),
 };
