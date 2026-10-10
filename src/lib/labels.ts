@@ -6,6 +6,7 @@
  */
 import type {
   AdminRole, AdminStatus, BannerKind, ContentAction, ContentType, PushCampaignKind, PushCampaignStatus, BookmarkPurchaseStatus, ClubStatus, ConsentKind, DeviceRow, IdentityRow,
+  ClubMemberRole, ClubMemberStatus, ClubVisibility,
   InquiryCategory, InquiryStatus, ModerationResolution, ModerationSource, ModerationStatus, SanctionType,
   SubscriptionStatus, SubscriptionStore, UserStatus, VerificationLevel, WalletTransactionKind,
 } from './types';
@@ -284,6 +285,32 @@ export const CLUB_STATUS_TONE: Record<ClubStatus, Tone> = {
   ARCHIVED: 'neutral',
 };
 
+export const CLUB_VISIBILITY_LABEL: Record<ClubVisibility, string> = {
+  CODE_ONLY: '초대 코드로만',
+  LINK: '링크 공유',
+  PUBLIC: '공개',
+};
+
+export const CLUB_MEMBER_ROLE_LABEL: Record<ClubMemberRole, string> = {
+  HOST: '호스트',
+  MODERATOR: '운영진',
+  MEMBER: '멤버',
+};
+
+export const CLUB_MEMBER_STATUSES: ClubMemberStatus[] = ['ACTIVE', 'LEFT', 'KICKED'];
+
+export const CLUB_MEMBER_STATUS_LABEL: Record<ClubMemberStatus, string> = {
+  ACTIVE: '참여 중',
+  LEFT: '나감',
+  KICKED: '내보냄',
+};
+
+export const CLUB_MEMBER_STATUS_TONE: Record<ClubMemberStatus, Tone> = {
+  ACTIVE: 'accent',
+  LEFT: 'neutral',
+  KICKED: 'danger',
+};
+
 // ── 도서 ────────────────────────────────────────────────
 /** 도서 출처는 서버에서 문자열로 온다. 모르는 값은 그대로 보여 준다. */
 export const BOOK_SOURCE_LABEL: Partial<Record<string, string>> = {
@@ -356,7 +383,7 @@ export const ADMIN_ROLE_LABEL: Record<AdminRole, string> = {
 
 /** 역할마다 할 수 있는 일 — 관리자를 만들거나 역할을 바꿀 때 보여 준다(서버 AdminRole 과 같은 내용). */
 export const ADMIN_ROLE_HINT: Record<AdminRole, string> = {
-  SUPER_ADMIN: '모든 기능 · 관리자 계정 · 운영 스위치',
+  SUPER_ADMIN: '모든 기능 · 관리자 계정 · 운영 스위치 · 도서 병합',
   OPERATOR: '신고 처리 · 제재 · 지갑/구독 조정 · 도서 · 광고/공지 · 에디터 픽',
   SUPPORT: '고객문의 · FAQ · 경고 · 결제 내역 열람',
   VIEWER: '보기만 — 결제 내역은 볼 수 없음',
@@ -400,11 +427,15 @@ export const AUDIT_ACTION_LABEL: Partial<Record<string, string>> = {
   GRANT_SUBSCRIPTION: '구독 지급',
   REVOKE_SUBSCRIPTION: '구독 회수',
   ADJUST_WALLET: '지갑 조정',
+  CREATE_BOOK: '도서 등록',
   UPDATE_BOOK: '도서 수정',
+  CLEAR_PAGE_SUGGESTIONS: '페이지 수 제안 비우기',
+  MERGE_BOOK: '도서 병합',
   OVERRIDE_VERIFICATION: '검증 등급 조정',
   FORCE_END_CLUB: '모임 강제 해산',
   ROTATE_CLUB_CODE: '초대 코드 회전',
   TRANSFER_CLUB_HOST: '호스트 승계',
+  KICK_CLUB_MEMBER: '모임 멤버 내보내기',
   UPDATE_OPS_FLAG: '운영 스위치 변경',
   RESOLVE_MODERATION: '신고 처리',
   VIEW_INQUIRY: '문의 열람',

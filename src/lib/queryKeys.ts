@@ -47,6 +47,10 @@ export const qk = {
   books: {
     all: ['books'] as const,
     list: (filter: object) => ['books', 'list', filter] as const,
+    detail: (id: number) => ['books', 'detail', id] as const,
+    suggestions: (filter: object) => ['books', 'suggestions', filter] as const,
+    tally: (id: number) => ['books', 'tally', id] as const,
+    mergePreview: (sourceId: number, targetId: number) => ['books', 'mergePreview', sourceId, targetId] as const,
   },
   reviews: {
     all: ['reviews'] as const,
@@ -55,6 +59,8 @@ export const qk = {
   clubs: {
     all: ['clubs'] as const,
     list: (filter: object) => ['clubs', 'list', filter] as const,
+    detail: (id: number) => ['clubs', 'detail', id] as const,
+    members: (id: number, status: string) => ['clubs', 'members', id, status] as const,
   },
   audit: {
     all: ['audit'] as const,

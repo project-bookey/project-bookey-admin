@@ -30,6 +30,9 @@ function targetHref(row: AuditRow): string | null {
   if (row.targetId === undefined || row.targetId === null) return null;
   if (row.targetType === 'USER') return `/users?id=${row.targetId}`;
   if (row.targetType === 'INQUIRY') return `/inquiries?id=${row.targetId}`;
+  // 병합된 원본 도서는 지워져 상세가 '찾을 수 없음' 으로 열린다.
+  if (row.targetType === 'BOOK') return `/books?id=${row.targetId}`;
+  if (row.targetType === 'CLUB') return `/clubs?id=${row.targetId}`;
   if (row.targetType === 'ADMIN') return '/admins';
   if (row.targetType === 'PUSH_CAMPAIGN') return row.targetId ? `/push?id=${row.targetId}` : '/push';
   if (row.targetType === 'MAINTENANCE') return '/app-versions';

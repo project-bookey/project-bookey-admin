@@ -52,6 +52,13 @@ export type ConsentKind = ConsentRow['kind'];
 // ── 도서 ────────────────────────────────────────────────
 export type BookRow = Schemas['BookRow'];
 export type UpdateBookRequest = Schemas['UpdateBookRequest'];
+export type AdminBookCreateRequest = Schemas['AdminBookCreateRequest'];
+export type AdminBookView = Schemas['AdminBookView'];
+export type BookUsage = Schemas['BookUsage'];
+export type PageSuggestionRow = Schemas['PageSuggestionRow'];
+export type PageSuggestionTally = Schemas['PageSuggestionTally'];
+export type BookMergePreview = Schemas['BookMergePreview'];
+export type BookMergeResult = Schemas['BookMergeResult'];
 
 // ── 광고/배너 ───────────────────────────────────────────
 export type BannerAdminView = Schemas['BannerAdminView'];
@@ -104,6 +111,12 @@ export type VerificationLevel = NonNullable<ReviewRow['verificationLevel']>;
 // ── 모임 ────────────────────────────────────────────────
 export type ClubRow = Schemas['ClubRow'];
 export type ClubStatus = NonNullable<ClubRow['status']>;
+export type AdminClubView = Schemas['AdminClubView'];
+export type ClubVisibility = AdminClubView['visibility'];
+export type ClubCodeView = Schemas['ClubCodeView'];
+export type ClubMemberRow = Schemas['AdminClubMemberRow'];
+export type ClubMemberRole = ClubMemberRow['role'];
+export type ClubMemberStatus = ClubMemberRow['status'];
 
 // ── 고객문의 ────────────────────────────────────────────
 export type InquiryRow = Schemas['InquiryRow'];
