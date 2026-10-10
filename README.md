@@ -119,3 +119,5 @@ GitHub Repository Secrets:
 운영 관리자 주소는 `https://admin.bookey.site`입니다. Google Cloud Run 배포는 제거했고,
 `Deploy to EC2`가 자동 배포를 담당합니다. 빌드·타입 검사·lint를 통과한 소스만 반영하며
 배포 전 이미지·소스를 백업하고 상태 확인 실패 시 이전 버전으로 복구합니다.
+
+AWS 자동배포는 `AWS_DEPLOY_ROLE_ARN`, `EC2_SECURITY_GROUP_ID` 저장소 변수와 GitHub OIDC를 사용합니다. 관리자 저장소 main만 역할을 사용할 수 있으며, 배포 러너 IPv4의 SSH 접근을 임시 허용하고 종료 시 제거합니다.
