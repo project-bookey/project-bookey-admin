@@ -31,6 +31,12 @@ function compareVersion(a: string, b: string): number {
   return 0;
 }
 
+/** 스토어 주소가 비었을 때 앱이 하는 일 — Android 는 패키지 이름으로 Play 스토어를 열고, iOS 는 앱 번호를 몰라 버튼을 감춘다. */
+const STORE_FALLBACK: Record<AppReleaseConfig['platform'], string> = {
+  IOS: '비어 있으면 강제 업데이트 화면에 업데이트 버튼이 없습니다',
+  ANDROID: '비어 있으면 Play 스토어 앱 페이지로 보냅니다',
+};
+
 /** 앱 버전 안내와 점검 예고 — 바꾸는 것은 최고 관리자만. */
 export default function AppVersionsPage() {
   const canEdit = useCan('MANAGE_OPS');
@@ -42,10 +48,16 @@ export default function AppVersionsPage() {
       <PageHeader title="앱 버전 · 점검" description="강제·권장 업데이트 기준과 점검 예고를 관리합니다." />
 
       <div className="px-7 py-6">
-        <p className="mb-5 rounded-lg border-l-4 border-[var(--color-warn)] bg-[var(--color-warn-soft)] px-4 py-3 text-[13px] text-[var(--color-ink)]">
-          지금 배포된 앱은 아직 이 설정을 읽지 않습니다. 앱이 시작할 때 <code className="font-mono text-[12px]">/api/v1/public/app-config</code> 를
-          확인하도록 업데이트한 뒤부터 강제 업데이트·점검 화면이 동작합니다.
-        </p>
+        <div className="mb-5 rounded-lg border-l-4 border-[var(--color-line)] bg-[var(--color-surface-alt)] px-4 py-3 text-[13px] text-[var(--color-ink)]">
+          <p>앱은 켤 때와 다시 열 때 이 설정을 확인합니다. 바꾼 값은 1분 안에 반영됩니다.</p>
+          <ul className="mt-1.5 list-disc space-y-0.5 pl-5 text-[var(--color-muted)]">
+            <li>점검 중·강제 업데이트 — 닫을 수 없는 전체 화면. 점검이 끝나면 앱이 저절로 다시 열립니다.</li>
+            <li>점검 예고·권장 업데이트 — 한 번씩 알립니다. 예고는 일정마다, 권장은 버전마다(&lsquo;나중에&rsquo;를 누르면 그 버전은 다시 묻지 않음).</li>
+          </ul>
+          <p className="mt-2 text-[var(--color-warn)]">
+            2026-10-10 이후 빌드한 앱부터 확인합니다. 그 전에 설치된 앱은 최소 지원 버전을 올려도 막히지 않습니다.
+          </p>
+        </div>
 
         <Eyebrow>앱 버전</Eyebrow>
         <QueryState query={releases} isEmpty={(data) => data.length === 0}>
@@ -67,7 +79,13 @@ export default function AppVersionsPage() {
                     <dt className="text-[var(--color-muted)]">최신</dt>
                     <dd className="numeral">{release.latestVersion}</dd>
                     <dt className="text-[var(--color-muted)]">스토어</dt>
-                    <dd className="truncate font-mono text-[11.5px]">{release.storeUrl ?? '—'}</dd>
+                    <dd className="truncate font-mono text-[11.5px]">
+                      {release.storeUrl ?? (
+                        <span className={release.platform === 'IOS' ? 'text-[var(--color-warn)]' : ''}>
+                          {STORE_FALLBACK[release.platform]}
+                        </span>
+                      )}
+                    </dd>
                     <dt className="text-[var(--color-muted)]">안내 문구</dt>
                     <dd>{release.updateMessage ?? '—'}</dd>
                   </dl>
@@ -131,7 +149,7 @@ function ReleaseDialog({ release, onClose }: { release: AppReleaseConfig; onClos
     if (compareVersion(min, release.minSupportedVersion) > 0) {
       const ok = await confirm({
         title: `${PLATFORM_LABEL[release.platform]} 최소 지원 버전을 ${min} 로 올릴까요?`,
-        body: `${min} 보다 낮은 앱은 스토어에서 업데이트하기 전까지 쓸 수 없습니다.`,
+        body: `${min} 보다 낮은 앱은 스토어에서 업데이트하기 전까지 쓸 수 없습니다. 이 확인이 없는 예전 앱(2026-10-10 전 빌드)은 막히지 않습니다.`,
         confirmLabel: '올리기',
         tone: 'danger',
         typeToConfirm: '강제 업데이트',
@@ -163,7 +181,8 @@ function ReleaseDialog({ release, onClose }: { release: AppReleaseConfig; onClos
           <Input label="최소 지원 버전" value={min} onChange={(e) => setMin(e.target.value)} hint="이보다 낮으면 강제 업데이트" />
           <Input label="최신 버전" value={latest} onChange={(e) => setLatest(e.target.value)} hint="이보다 낮으면 업데이트 권유" />
         </div>
-        <Input label="스토어 주소" value={storeUrl} onChange={(e) => setStoreUrl(e.target.value)} placeholder="https://apps.apple.com/..." />
+        <Input label="스토어 주소" value={storeUrl} onChange={(e) => setStoreUrl(e.target.value)} placeholder="https://apps.apple.com/..."
+          hint={STORE_FALLBACK[release.platform]} />
         <Textarea label="안내 문구" rows={2} maxLength={300} value={message} onChange={(e) => setMessage(e.target.value)}
           placeholder="예: 더 안정적인 새 버전이 나왔어요." />
         <Input label="사유 (필수)" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="예: 1.3.0 결제 오류 수정 배포" />
@@ -187,7 +206,7 @@ function MaintenanceSection({ canEdit }: { canEdit: boolean }) {
   const cancel = async (item: MaintenanceWindow) => {
     await confirm({
       title: '점검을 취소할까요?',
-      body: `"${item.title}" — 앱 안내에서 바로 빠집니다.`,
+      body: `"${item.title}" — 1분 안에 앱 안내에서 빠집니다.`,
       confirmLabel: '취소하기',
       tone: 'danger',
       reason: { label: '사유 (필수)', placeholder: '예: 일정 연기' },
