@@ -149,6 +149,16 @@ export const CLUB_STATUS_TONE: Record<ClubStatus, Tone> = {
   ARCHIVED: 'neutral',
 };
 
+// ── 도서 ────────────────────────────────────────────────
+/** 도서 출처는 서버에서 문자열로 온다. 모르는 값은 그대로 보여 준다. */
+export const BOOK_SOURCE_LABEL: Partial<Record<string, string>> = {
+  KAKAO: '카카오',
+  ALADIN: '알라딘',
+  GOOGLE: '구글',
+  NAVER: '네이버',
+  MANUAL: '직접 등록',
+};
+
 // ── 광고 · 공지 ─────────────────────────────────────────
 export const BANNER_KINDS: BannerKind[] = ['AD', 'NOTICE'];
 

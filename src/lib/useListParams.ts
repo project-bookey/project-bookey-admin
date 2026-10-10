@@ -12,10 +12,11 @@ import { useMemo, useRef } from 'react';
  *
  * spec 은 모듈 최상단에 상수로 두어 렌더마다 새로 만들지 않는다.
  */
+// 메서드 문법으로 적어야 Parser<'A'> 를 Parser<unknown> 자리에 넣을 수 있다(매개변수 이변성).
 export type Parser<T> = {
-  parse: (raw: string | null) => T;
+  parse(raw: string | null): T;
   /** null 이면 URL 에서 뺀다. */
-  serialize: (value: T) => string | null;
+  serialize(value: T): string | null;
 };
 
 export const param = {

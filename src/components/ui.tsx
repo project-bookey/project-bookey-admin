@@ -176,9 +176,6 @@ export function Pager({ page, totalPages, onChange }: {
   );
 }
 
-/** 예전 위치에서 가져다 쓰던 화면을 위해 다시 내보낸다. 새 코드는 '@/lib/format' 을 쓴다. */
-export { formatDateTime, formatDuration, remainingSla } from '@/lib/format';
-
 export function ErrorText({ error }: { error: string | null | undefined }) {
   if (!error) return null;
   return <p className="mt-2 font-mono text-[11.5px] text-[var(--color-danger)]">{error}</p>;
