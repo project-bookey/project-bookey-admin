@@ -96,6 +96,40 @@ export async function adminApi<T>(path: string, options: Options = {}): Promise<
   return data as T;
 }
 
+/**
+ * 파일 업로드(multipart). Content-Type 은 브라우저가 경계(boundary)와 함께 채우도록 비워 둔다.
+ */
+export async function adminUpload<T>(path: string, form: FormData): Promise<T> {
+  const headers: Record<string, string> = {};
+  const token = getToken();
+  if (token) headers.Authorization = `Bearer ${token}`;
+  let response: Response;
+  try {
+    response = await fetch(`${ADMIN_API_BASE}${path}`, { method: 'POST', headers, body: form });
+  } catch {
+    throw new AdminApiError(0, 'NETWORK', '서버에 연결하지 못했습니다. 네트워크를 확인해 주세요.');
+  }
+  if (response.status === 401) {
+    clearToken();
+    if (typeof window !== 'undefined') window.location.href = '/login';
+  }
+  const text = await response.text();
+  let data: ({ code?: string; message?: string } & Record<string, unknown>) | undefined;
+  try {
+    data = text ? JSON.parse(text) : undefined;
+  } catch {
+    data = undefined;
+  }
+  if (!response.ok) {
+    throw new AdminApiError(
+      response.status,
+      data?.code ?? 'UNKNOWN',
+      data?.message ?? (response.status === 413 ? '파일이 너무 큽니다.' : `업로드하지 못했습니다. (${response.status})`),
+    );
+  }
+  return data as T;
+}
+
 /** 화면에 띄울 오류 문구. 서버 메시지가 있으면 그대로 쓴다. */
 export function errorMessage(error: unknown, fallback = '요청을 처리하지 못했습니다.'): string {
   if (error instanceof AdminApiError) return error.message;

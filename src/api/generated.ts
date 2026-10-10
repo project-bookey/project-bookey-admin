@@ -57,6 +57,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/v1/push-campaigns/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 캠페인 상세 — 발송·대기·열람 수 */
+        get: operations["detail"];
+        /** 예약 캠페인 고치기 — 보내기 시작하면 고칠 수 없다 */
+        put: operations["update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/v1/maintenance-windows/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** 점검 일정 수정 (SUPER_ADMIN) — 끝났거나 취소한 점검은 고칠 수 없다 */
+        put: operations["updateMaintenance"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/v1/inquiries/{inquiryId}/answer": {
         parameters: {
             query?: never;
@@ -84,7 +119,7 @@ export interface paths {
         };
         get?: never;
         /** FAQ 수정 · 숨기기 — 전체 필드 교체 */
-        put: operations["update"];
+        put: operations["update_1"];
         post?: never;
         /** FAQ 삭제 */
         delete: operations["delete_1"];
@@ -119,7 +154,7 @@ export interface paths {
         };
         get?: never;
         /** 배너 수정 — 전체 필드 교체 */
-        put: operations["update_1"];
+        put: operations["update_2"];
         post?: never;
         /** 배너 삭제 */
         delete: operations["delete_2"];
@@ -138,6 +173,23 @@ export interface paths {
         get?: never;
         /** 관리자 비밀번호 재설정 (SUPER_ADMIN) — 그 관리자의 기존 로그인은 끊긴다 */
         put: operations["resetPassword"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/v1/app-config/{platform}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** 앱 버전 안내 변경 (SUPER_ADMIN) — 최소 지원 버전을 올리면 그보다 낮은 앱은 업데이트 전까지 막힌다 */
+        put: operations["updateRelease"];
         post?: never;
         delete?: never;
         options?: never;
@@ -1513,6 +1565,58 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/v1/push-campaigns": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 캠페인 목록 — 최근 순 */
+        get: operations["list_4"];
+        put?: never;
+        /** 캠페인 만들기 — scheduledAt 을 비우면 1분 안에 보내기 시작한다 */
+        post: operations["create_8"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/v1/push-campaigns/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 캠페인 취소 — 아직 안 나간 알림은 지운다 */
+        post: operations["cancel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/v1/push-campaigns/test": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 테스트 발송 — 지정한 회원(최대 5명)에게 [테스트] 를 붙여 바로 보낸다 */
+        post: operations["test"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/v1/moderation/{ticketId}/resolve": {
         parameters: {
             query?: never;
@@ -1547,6 +1651,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/v1/maintenance-windows": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 점검 일정 — 최근 시작 순 */
+        get: operations["maintenanceWindows"];
+        put?: never;
+        /** 점검 예고 (SUPER_ADMIN) */
+        post: operations["createMaintenance"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/v1/maintenance-windows/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 점검 취소 (SUPER_ADMIN) */
+        post: operations["cancelMaintenance"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/v1/faqs": {
         parameters: {
             query?: never;
@@ -1555,10 +1694,10 @@ export interface paths {
             cookie?: never;
         };
         /** FAQ 전체 목록 — 숨긴 것 포함, 정렬 순 */
-        get: operations["list_4"];
+        get: operations["list_5"];
         put?: never;
         /** FAQ 추가 — 맨 뒤에 붙는다 */
-        post: operations["create_8"];
+        post: operations["create_9"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1573,10 +1712,10 @@ export interface paths {
             cookie?: never;
         };
         /** 에디터 픽 목록 */
-        get: operations["list_5"];
+        get: operations["list_6"];
         put?: never;
         /** 에디터 픽 추가 */
-        post: operations["create_9"];
+        post: operations["create_10"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1659,10 +1798,27 @@ export interface paths {
             cookie?: never;
         };
         /** 배너/공지 전체 목록 — 비활성·기간 외 포함 */
-        get: operations["list_6"];
+        get: operations["list_7"];
         put?: never;
         /** 배너 생성 */
-        post: operations["create_10"];
+        post: operations["create_11"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/v1/banners/images": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** 배너·공지 이미지 업로드 — 돌려준 url 을 배너의 imageUrl 로 쓴다. 저장소가 꺼져 있으면 503 */
+        post: operations["uploadImage"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1731,7 +1887,7 @@ export interface paths {
         get: operations["admins"];
         put?: never;
         /** 관리자 계정 생성 (SUPER_ADMIN) */
-        post: operations["create_11"];
+        post: operations["create_12"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1746,7 +1902,7 @@ export interface paths {
             cookie?: never;
         };
         /** 리뷰 단건 조회 */
-        get: operations["detail"];
+        get: operations["detail_1"];
         put?: never;
         post?: never;
         /** 리뷰 삭제 */
@@ -1754,7 +1910,7 @@ export interface paths {
         options?: never;
         head?: never;
         /** 리뷰 수정 — 등급은 재산정하지 않는다 */
-        patch: operations["update_2"];
+        patch: operations["update_3"];
         trace?: never;
     };
     "/api/v1/posts/{postId}": {
@@ -1773,7 +1929,7 @@ export interface paths {
         options?: never;
         head?: never;
         /** 독후감 수정 · 공개 범위 변경 */
-        patch: operations["update_3"];
+        patch: operations["update_4"];
         trace?: never;
     };
     "/api/v1/notifications/settings": {
@@ -1809,7 +1965,7 @@ export interface paths {
         options?: never;
         head?: never;
         /** 프로필 수정 */
-        patch: operations["update_4"];
+        patch: operations["update_5"];
         trace?: never;
     };
     "/api/v1/library/{recordId}/progress": {
@@ -1861,7 +2017,7 @@ export interface paths {
         options?: never;
         head?: never;
         /** 모임 정보 수정 (호스트) */
-        patch: operations["update_5"];
+        patch: operations["update_6"];
         trace?: never;
     };
     "/api/v1/clubs/{clubId}/sharing": {
@@ -1889,7 +2045,7 @@ export interface paths {
             cookie?: never;
         };
         /** 토론 상세 — 댓글 포함 */
-        get: operations["detail_1"];
+        get: operations["detail_2"];
         put?: never;
         post?: never;
         /** 삭제 (작성자 또는 운영자) */
@@ -1897,7 +2053,7 @@ export interface paths {
         options?: never;
         head?: never;
         /** 글 · 조각 수정 — 작성자만, 한 줄과 쪽을 보낸 값으로 바꾼다 */
-        patch: operations["update_6"];
+        patch: operations["update_7"];
         trace?: never;
     };
     "/admin/v1/ops-flags/{key}": {
@@ -1932,7 +2088,7 @@ export interface paths {
         options?: never;
         head?: never;
         /** 에디터 픽 수정 — 정렬·메모 */
-        patch: operations["update_7"];
+        patch: operations["update_8"];
         trace?: never;
     };
     "/admin/v1/books/{bookId}": {
@@ -2130,7 +2286,7 @@ export interface paths {
             cookie?: never;
         };
         /** 도서별 세션 목록 */
-        get: operations["list_7"];
+        get: operations["list_8"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2343,6 +2499,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/public/app-config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 앱 설정 — 플랫폼·버전을 보내면 강제/권장 업데이트 여부와 점검 안내를 돌려준다(1분 캐시) */
+        get: operations["appConfig"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/posts/{postId}/likers": {
         parameters: {
             query?: never;
@@ -2453,7 +2626,7 @@ export interface paths {
             cookie?: never;
         };
         /** 내 알림 목록 */
-        get: operations["list_8"];
+        get: operations["list_9"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2487,7 +2660,7 @@ export interface paths {
             cookie?: never;
         };
         /** 독서 기록 상세 — 진척도 포함 */
-        get: operations["detail_2"];
+        get: operations["detail_3"];
         put?: never;
         post?: never;
         /** 서재에서 삭제 */
@@ -2608,7 +2781,7 @@ export interface paths {
             cookie?: never;
         };
         /** FAQ 목록 — 노출 중인 것만, 정렬 순 */
-        get: operations["list_9"];
+        get: operations["list_10"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2891,7 +3064,7 @@ export interface paths {
             cookie?: never;
         };
         /** 도서 상세 — 검증 평점과 전체 평점을 분리해 제공 */
-        get: operations["detail_3"];
+        get: operations["detail_4"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3027,7 +3200,7 @@ export interface paths {
             cookie?: never;
         };
         /** 내가 차단한 사람 — 최근에 막은 순 */
-        get: operations["list_10"];
+        get: operations["list_11"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3044,7 +3217,7 @@ export interface paths {
             cookie?: never;
         };
         /** 활성 배너/공지 목록 — 기간 내, 정렬 순 */
-        get: operations["list_11"];
+        get: operations["list_12"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3172,6 +3345,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/v1/push-campaigns/audience": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 대상자 수 미리보기 — 광고는 수신 동의자만 */
+        get: operations["audience"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/v1/ops-flags": {
         parameters: {
             query?: never;
@@ -3248,7 +3438,7 @@ export interface paths {
             cookie?: never;
         };
         /** 고객문의 목록 — 답변 대기만 보면 오래 기다린 순, 그 밖에는 최신순 */
-        get: operations["list_12"];
+        get: operations["list_13"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3265,7 +3455,7 @@ export interface paths {
             cookie?: never;
         };
         /** 고객문의 상세 — 열람 로그가 남는다 */
-        get: operations["detail_4"];
+        get: operations["detail_5"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3402,6 +3592,23 @@ export interface paths {
         };
         /** 감사 로그 — 모든 관리자 행위 기록. from 이상 to 미만, 최신순 */
         get: operations["auditLogs"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/v1/app-config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 플랫폼별 앱 버전 안내 */
+        get: operations["releases"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3730,6 +3937,66 @@ export interface components {
             /** Format: int32 */
             maxAttendees?: number;
         };
+        PushCampaignRequest: {
+            /** @enum {string} */
+            kind: "NOTICE" | "MARKETING";
+            title: string;
+            body: string;
+            linkUrl?: string;
+            /** Format: date-time */
+            scheduledAt?: string;
+            reason: string;
+        };
+        PushCampaignRow: {
+            /** Format: int64 */
+            id: number;
+            /** @enum {string} */
+            kind: "NOTICE" | "MARKETING";
+            title: string;
+            body: string;
+            linkUrl?: string;
+            /** @enum {string} */
+            status: "SCHEDULED" | "SENDING" | "DONE" | "CANCELLED";
+            /** Format: date-time */
+            scheduledAt: string;
+            /** Format: date-time */
+            startedAt?: string;
+            /** Format: date-time */
+            finishedAt?: string;
+            /** Format: int32 */
+            targetCount: number;
+            /** Format: int64 */
+            createdBy: number;
+            createdByName?: string;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        MaintenanceWindowRequest: {
+            title: string;
+            message: string;
+            /** Format: date-time */
+            startsAt: string;
+            /** Format: date-time */
+            endsAt: string;
+            reason: string;
+        };
+        MaintenanceWindowRow: {
+            /** Format: int64 */
+            id: number;
+            title: string;
+            message: string;
+            /** Format: date-time */
+            startsAt: string;
+            /** Format: date-time */
+            endsAt: string;
+            /** Format: date-time */
+            cancelledAt?: string;
+            /** Format: int64 */
+            createdBy: number;
+            /** Format: date-time */
+            createdAt: string;
+            status: string;
+        };
         InquiryAnswerRequest: {
             answer: string;
         };
@@ -3833,6 +4100,26 @@ export interface components {
         AdminPasswordResetRequest: {
             newPassword: string;
             reason: string;
+        };
+        AppReleaseConfigRequest: {
+            minSupportedVersion: string;
+            latestVersion: string;
+            storeUrl?: string;
+            updateMessage?: string;
+            reason: string;
+        };
+        AppReleaseConfigView: {
+            /** @enum {string} */
+            platform: "IOS" | "ANDROID";
+            minSupportedVersion: string;
+            latestVersion: string;
+            storeUrl?: string;
+            updateMessage?: string;
+            /** Format: int64 */
+            updatedBy?: number;
+            updatedByName?: string;
+            /** Format: date-time */
+            updatedAt: string;
         };
         PubSubEnvelope: {
             message?: components["schemas"]["PubSubMessage"];
@@ -4834,6 +5121,18 @@ export interface components {
             level: "VERIFIED_FULL" | "VERIFIED_PARTIAL" | "UNVERIFIED" | "FLAGGED";
             reason: string;
         };
+        PushTestRequest: {
+            /** @enum {string} */
+            kind: "NOTICE" | "MARKETING";
+            title: string;
+            body: string;
+            linkUrl?: string;
+            userIds: number[];
+        };
+        PushTestResult: {
+            /** Format: int32 */
+            delivered: number;
+        };
         ResolveRequest: {
             /** @enum {string} */
             resolution: "KEEP" | "HIDE" | "DELETE" | "SANCTION";
@@ -4862,6 +5161,13 @@ export interface components {
         };
         ClubActionRequest: {
             reason: string;
+        };
+        BannerImageView: {
+            url: string;
+            /** Format: int32 */
+            width?: number;
+            /** Format: int32 */
+            height?: number;
         };
         TotpSecretView: {
             secret: string;
@@ -5153,6 +5459,26 @@ export interface components {
             /** Format: int64 */
             count: number;
         };
+        AppConfigView: {
+            updateRequired: boolean;
+            updateRecommended: boolean;
+            minSupportedVersion: string;
+            latestVersion: string;
+            storeUrl?: string;
+            updateMessage?: string;
+            maintenance?: components["schemas"]["MaintenanceView"];
+        };
+        MaintenanceView: {
+            /** Format: int64 */
+            id: number;
+            title: string;
+            message: string;
+            /** Format: date-time */
+            startsAt: string;
+            /** Format: date-time */
+            endsAt: string;
+            active: boolean;
+        };
         LikerView: {
             /** Format: int64 */
             userId: number;
@@ -5228,7 +5554,7 @@ export interface components {
             /** Format: int64 */
             id: number;
             /** @enum {string} */
-            type: "HABIT" | "LAG" | "MICRO_MISSION" | "STREAK" | "ALMOST_DONE" | "ACHIEVEMENT" | "CLEANUP" | "POSTCARD_RECEIVED" | "POSTCARD_REPLIED" | "FOLLOWED" | "FOLLOW_CONNECTED" | "CHAT_MESSAGE" | "POST_LIKED" | "POST_COMMENTED" | "INQUIRY_ANSWERED" | "CONSENT_RESULT" | "SANCTION_NOTICE" | "CLUB_CHECKPOINT_DUE" | "CLUB_CHECKPOINT_RESULT" | "CLUB_OVERTAKEN" | "CLUB_FALLBEHIND" | "CLUB_NEW_POST" | "CLUB_NUDGE" | "CLUB_ENDED" | "CLUB_NOTE_PAGE" | "CLUB_WEEKLY_LOG";
+            type: "HABIT" | "LAG" | "MICRO_MISSION" | "STREAK" | "ALMOST_DONE" | "ACHIEVEMENT" | "CLEANUP" | "POSTCARD_RECEIVED" | "POSTCARD_REPLIED" | "FOLLOWED" | "FOLLOW_CONNECTED" | "CHAT_MESSAGE" | "POST_LIKED" | "POST_COMMENTED" | "INQUIRY_ANSWERED" | "CONSENT_RESULT" | "SANCTION_NOTICE" | "ANNOUNCEMENT" | "CLUB_CHECKPOINT_DUE" | "CLUB_CHECKPOINT_RESULT" | "CLUB_OVERTAKEN" | "CLUB_FALLBEHIND" | "CLUB_NEW_POST" | "CLUB_NUDGE" | "CLUB_ENDED" | "CLUB_NOTE_PAGE" | "CLUB_WEEKLY_LOG";
             /** Format: int32 */
             lagLevel?: number;
             /** Format: int64 */
@@ -5829,6 +6155,35 @@ export interface components {
             /** Format: date-time */
             createdAt: string;
         };
+        PageResponsePushCampaignRow: {
+            content?: components["schemas"]["PushCampaignRow"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasNext?: boolean;
+        };
+        PushCampaignView: {
+            campaign: components["schemas"]["PushCampaignRow"];
+            finalTitle: string;
+            finalBody: string;
+            /** Format: int64 */
+            sentCount: number;
+            /** Format: int64 */
+            pendingCount: number;
+            /** Format: int64 */
+            openedCount: number;
+        };
+        PushAudienceView: {
+            /** Format: int64 */
+            eligibleUsers: number;
+            /** Format: int64 */
+            withPushDevice: number;
+        };
         OpsFlagRow: {
             key: string;
             enabled: boolean;
@@ -5943,6 +6298,18 @@ export interface components {
             content?: components["schemas"]["AdminContentDetail"];
             reports: components["schemas"]["AbuseReportRow"][];
             authorSanctions: components["schemas"]["SanctionRow"][];
+        };
+        PageResponseMaintenanceWindowRow: {
+            content?: components["schemas"]["MaintenanceWindowRow"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasNext?: boolean;
         };
         InquiryRow: {
             /** Format: int64 */
@@ -6148,6 +6515,10 @@ export type SchemaUpsertMeetingRequest = components['schemas']['UpsertMeetingReq
 export type SchemaBookSummary = components['schemas']['BookSummary'];
 export type SchemaMeetingAttendeeView = components['schemas']['MeetingAttendeeView'];
 export type SchemaMeetingView = components['schemas']['MeetingView'];
+export type SchemaPushCampaignRequest = components['schemas']['PushCampaignRequest'];
+export type SchemaPushCampaignRow = components['schemas']['PushCampaignRow'];
+export type SchemaMaintenanceWindowRequest = components['schemas']['MaintenanceWindowRequest'];
+export type SchemaMaintenanceWindowRow = components['schemas']['MaintenanceWindowRow'];
 export type SchemaInquiryAnswerRequest = components['schemas']['InquiryAnswerRequest'];
 export type SchemaInquiryAdminView = components['schemas']['InquiryAdminView'];
 export type SchemaInquiryImageView = components['schemas']['InquiryImageView'];
@@ -6157,6 +6528,8 @@ export type SchemaFaqOrderRequest = components['schemas']['FaqOrderRequest'];
 export type SchemaBannerUpsertRequest = components['schemas']['BannerUpsertRequest'];
 export type SchemaBannerAdminView = components['schemas']['BannerAdminView'];
 export type SchemaAdminPasswordResetRequest = components['schemas']['AdminPasswordResetRequest'];
+export type SchemaAppReleaseConfigRequest = components['schemas']['AppReleaseConfigRequest'];
+export type SchemaAppReleaseConfigView = components['schemas']['AppReleaseConfigView'];
 export type SchemaPubSubEnvelope = components['schemas']['PubSubEnvelope'];
 export type SchemaPubSubMessage = components['schemas']['PubSubMessage'];
 export type SchemaExchangeRequest = components['schemas']['ExchangeRequest'];
@@ -6247,11 +6620,14 @@ export type SchemaSubscriptionGrantRequest = components['schemas']['Subscription
 export type SchemaAdminReasonRequest = components['schemas']['AdminReasonRequest'];
 export type SchemaSanctionRequest = components['schemas']['SanctionRequest'];
 export type SchemaOverrideVerificationRequest = components['schemas']['OverrideVerificationRequest'];
+export type SchemaPushTestRequest = components['schemas']['PushTestRequest'];
+export type SchemaPushTestResult = components['schemas']['PushTestResult'];
 export type SchemaResolveRequest = components['schemas']['ResolveRequest'];
 export type SchemaEditorPickCreateRequest = components['schemas']['EditorPickCreateRequest'];
 export type SchemaEditorPickView = components['schemas']['EditorPickView'];
 export type SchemaContentActionRequest = components['schemas']['ContentActionRequest'];
 export type SchemaClubActionRequest = components['schemas']['ClubActionRequest'];
+export type SchemaBannerImageView = components['schemas']['BannerImageView'];
 export type SchemaTotpSecretView = components['schemas']['TotpSecretView'];
 export type SchemaTotpConfirmRequest = components['schemas']['TotpConfirmRequest'];
 export type SchemaAdminProfile = components['schemas']['AdminProfile'];
@@ -6284,6 +6660,8 @@ export type SchemaPageResponseReviewView = components['schemas']['PageResponseRe
 export type SchemaLegalDocumentView = components['schemas']['LegalDocumentView'];
 export type SchemaBookDetail = components['schemas']['BookDetail'];
 export type SchemaRatingSummary = components['schemas']['RatingSummary'];
+export type SchemaAppConfigView = components['schemas']['AppConfigView'];
+export type SchemaMaintenanceView = components['schemas']['MaintenanceView'];
 export type SchemaLikerView = components['schemas']['LikerView'];
 export type SchemaPageResponseLikerView = components['schemas']['PageResponseLikerView'];
 export type SchemaPageResponsePostCommentView = components['schemas']['PageResponsePostCommentView'];
@@ -6339,6 +6717,9 @@ export type SchemaAdminBookmarkPurchaseRow = components['schemas']['AdminBookmar
 export type SchemaPageResponseAdminBookmarkPurchaseRow = components['schemas']['PageResponseAdminBookmarkPurchaseRow'];
 export type SchemaPageResponseReviewRow = components['schemas']['PageResponseReviewRow'];
 export type SchemaReviewRow = components['schemas']['ReviewRow'];
+export type SchemaPageResponsePushCampaignRow = components['schemas']['PageResponsePushCampaignRow'];
+export type SchemaPushCampaignView = components['schemas']['PushCampaignView'];
+export type SchemaPushAudienceView = components['schemas']['PushAudienceView'];
 export type SchemaOpsFlagRow = components['schemas']['OpsFlagRow'];
 export type SchemaNotificationStats = components['schemas']['NotificationStats'];
 export type SchemaModerationRow = components['schemas']['ModerationRow'];
@@ -6347,6 +6728,7 @@ export type SchemaAbuseReportRow = components['schemas']['AbuseReportRow'];
 export type SchemaAdminContentDetail = components['schemas']['AdminContentDetail'];
 export type SchemaAdminContentRow = components['schemas']['AdminContentRow'];
 export type SchemaModerationDetailView = components['schemas']['ModerationDetailView'];
+export type SchemaPageResponseMaintenanceWindowRow = components['schemas']['PageResponseMaintenanceWindowRow'];
 export type SchemaInquiryRow = components['schemas']['InquiryRow'];
 export type SchemaPageResponseInquiryRow = components['schemas']['PageResponseInquiryRow'];
 export type SchemaDashboardView = components['schemas']['DashboardView'];
@@ -6526,6 +6908,80 @@ export interface operations {
             };
         };
     };
+    detail: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PushCampaignView"];
+                };
+            };
+        };
+    };
+    update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PushCampaignRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PushCampaignRow"];
+                };
+            };
+        };
+    };
+    updateMaintenance: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MaintenanceWindowRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MaintenanceWindowRow"];
+                };
+            };
+        };
+    };
     editAnswer: {
         parameters: {
             query?: never;
@@ -6578,7 +7034,7 @@ export interface operations {
             };
         };
     };
-    update: {
+    update_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -6648,7 +7104,7 @@ export interface operations {
             };
         };
     };
-    update_1: {
+    update_2: {
         parameters: {
             query?: never;
             header?: never;
@@ -6715,6 +7171,32 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    updateRelease: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                platform: "IOS" | "ANDROID";
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AppReleaseConfigRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["AppReleaseConfigView"];
+                };
             };
         };
     };
@@ -9091,6 +9573,103 @@ export interface operations {
             };
         };
     };
+    list_4: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponsePushCampaignRow"];
+                };
+            };
+        };
+    };
+    create_8: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PushCampaignRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PushCampaignRow"];
+                };
+            };
+        };
+    };
+    cancel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminReasonRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PushCampaignRow"];
+                };
+            };
+        };
+    };
+    test: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PushTestRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PushTestResult"];
+                };
+            };
+        };
+    };
     resolve: {
         parameters: {
             query?: never;
@@ -9135,7 +9714,80 @@ export interface operations {
             };
         };
     };
-    list_4: {
+    maintenanceWindows: {
+        parameters: {
+            query?: {
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponseMaintenanceWindowRow"];
+                };
+            };
+        };
+    };
+    createMaintenance: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MaintenanceWindowRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MaintenanceWindowRow"];
+                };
+            };
+        };
+    };
+    cancelMaintenance: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminReasonRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["MaintenanceWindowRow"];
+                };
+            };
+        };
+    };
+    list_5: {
         parameters: {
             query?: never;
             header?: never;
@@ -9155,7 +9807,7 @@ export interface operations {
             };
         };
     };
-    create_8: {
+    create_9: {
         parameters: {
             query?: never;
             header?: never;
@@ -9179,7 +9831,7 @@ export interface operations {
             };
         };
     };
-    list_5: {
+    list_6: {
         parameters: {
             query?: never;
             header?: never;
@@ -9199,7 +9851,7 @@ export interface operations {
             };
         };
     };
-    create_9: {
+    create_10: {
         parameters: {
             query?: never;
             header?: never;
@@ -9326,7 +9978,7 @@ export interface operations {
             };
         };
     };
-    list_6: {
+    list_7: {
         parameters: {
             query?: {
                 kind?: "AD" | "NOTICE";
@@ -9348,7 +10000,7 @@ export interface operations {
             };
         };
     };
-    create_10: {
+    create_11: {
         parameters: {
             query?: never;
             header?: never;
@@ -9368,6 +10020,33 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["BannerAdminView"];
+                };
+            };
+        };
+    };
+    uploadImage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["BannerImageView"];
                 };
             };
         };
@@ -9460,7 +10139,7 @@ export interface operations {
             };
         };
     };
-    create_11: {
+    create_12: {
         parameters: {
             query?: never;
             header?: never;
@@ -9484,7 +10163,7 @@ export interface operations {
             };
         };
     };
-    detail: {
+    detail_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -9526,7 +10205,7 @@ export interface operations {
             };
         };
     };
-    update_2: {
+    update_3: {
         parameters: {
             query?: never;
             header?: never;
@@ -9594,7 +10273,7 @@ export interface operations {
             };
         };
     };
-    update_3: {
+    update_4: {
         parameters: {
             query?: never;
             header?: never;
@@ -9680,7 +10359,7 @@ export interface operations {
             };
         };
     };
-    update_4: {
+    update_5: {
         parameters: {
             query?: never;
             header?: never;
@@ -9778,7 +10457,7 @@ export interface operations {
             };
         };
     };
-    update_5: {
+    update_6: {
         parameters: {
             query?: never;
             header?: never;
@@ -9828,7 +10507,7 @@ export interface operations {
             };
         };
     };
-    detail_1: {
+    detail_2: {
         parameters: {
             query?: never;
             header?: never;
@@ -9872,7 +10551,7 @@ export interface operations {
             };
         };
     };
-    update_6: {
+    update_7: {
         parameters: {
             query?: never;
             header?: never;
@@ -9943,7 +10622,7 @@ export interface operations {
             };
         };
     };
-    update_7: {
+    update_8: {
         parameters: {
             query?: never;
             header?: never;
@@ -10222,7 +10901,7 @@ export interface operations {
             };
         };
     };
-    list_7: {
+    list_8: {
         parameters: {
             query?: {
                 readingRecordId?: number;
@@ -10523,6 +11202,29 @@ export interface operations {
             };
         };
     };
+    appConfig: {
+        parameters: {
+            query: {
+                platform: "IOS" | "ANDROID";
+                version?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["AppConfigView"];
+                };
+            };
+        };
+    };
     likers: {
         parameters: {
             query?: {
@@ -10667,7 +11369,7 @@ export interface operations {
             };
         };
     };
-    list_8: {
+    list_9: {
         parameters: {
             query?: {
                 page?: number;
@@ -10713,7 +11415,7 @@ export interface operations {
             };
         };
     };
-    detail_2: {
+    detail_3: {
         parameters: {
             query?: never;
             header?: never;
@@ -10903,7 +11605,7 @@ export interface operations {
             };
         };
     };
-    list_9: {
+    list_10: {
         parameters: {
             query?: never;
             header?: never;
@@ -11289,7 +11991,7 @@ export interface operations {
             };
         };
     };
-    detail_3: {
+    detail_4: {
         parameters: {
             query?: never;
             header?: never;
@@ -11475,7 +12177,7 @@ export interface operations {
             };
         };
     };
-    list_10: {
+    list_11: {
         parameters: {
             query?: {
                 page?: number;
@@ -11498,7 +12200,7 @@ export interface operations {
             };
         };
     };
-    list_11: {
+    list_12: {
         parameters: {
             query?: {
                 kind?: "AD" | "NOTICE";
@@ -11689,6 +12391,28 @@ export interface operations {
             };
         };
     };
+    audience: {
+        parameters: {
+            query: {
+                kind: "NOTICE" | "MARKETING";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PushAudienceView"];
+                };
+            };
+        };
+    };
     opsFlags: {
         parameters: {
             query?: never;
@@ -11776,7 +12500,7 @@ export interface operations {
             };
         };
     };
-    list_12: {
+    list_13: {
         parameters: {
             query?: {
                 status?: "WAITING" | "ANSWERED";
@@ -11801,7 +12525,7 @@ export interface operations {
             };
         };
     };
-    detail_4: {
+    detail_5: {
         parameters: {
             query?: never;
             header?: never;
@@ -12016,6 +12740,26 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["PageResponseAuditRow"];
+                };
+            };
+        };
+    };
+    releases: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["AppReleaseConfigView"][];
                 };
             };
         };
