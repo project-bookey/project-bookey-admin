@@ -1,0 +1,18 @@
+name: Remove retired admin Cloud Run
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  remove:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Authenticate existing deployment account
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+      - uses: google-github-actions/setup-gcloud@v3
+      - name: Delete retired administrator service
+        run: gcloud run services delete bookey-admin --project=project-bookey --region=asia-northeast3 --quiet

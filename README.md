@@ -87,27 +87,35 @@ BOOKEY_API_URL=https://api.bookey.app npm run types
 npm run typecheck
 ```
 
-## GCP 배포
+## AWS 배포
 
-GitHub Actions가 `main` 브랜치 푸시 또는 수동 실행 시 Docker 이미지를 빌드해 Artifact Registry에 푸시하고 Cloud Run에 배포합니다.
+현재 운영 배포는 EC2 프리티어 인스턴스 1대 + Docker Compose 기준입니다. `main` 브랜치에 푸시하면
+`.github/workflows/deploy-ec2.yml` 이 typecheck/lint/build를 통과한 뒤 EC2에 소스를 업로드하고 `admin` 서비스만 다시 빌드/기동합니다.
 
-GitHub Repository Variables에 아래 값을 등록합니다.
+GitHub Repository Variables:
 
 | 키 | 예시 |
 |---|---|
-| `GCP_PROJECT_ID` | `bookey-prod` |
-| `GCP_REGION` | `asia-northeast1` |
-| `GCP_ARTIFACT_REGISTRY_REPOSITORY` | `bookey` |
-| `GCP_CLOUD_RUN_SERVICE` | `bookey-admin` |
-| `GCP_WORKLOAD_IDENTITY_PROVIDER` | `projects/123456789/locations/global/workloadIdentityPools/github/providers/github` |
-| `GCP_SERVICE_ACCOUNT` | `github-cloud-run@bookey-prod.iam.gserviceaccount.com` |
-| `NEXT_PUBLIC_ADMIN_API_URL` | `https://api.bookey.app` |
+| `EC2_APP_DIR` | `/opt/bookey` |
+| `NEXT_PUBLIC_ADMIN_API_URL` | `https://api.bookey.site` |
 
-최초 1회 GCP 리소스 예시:
+GitHub Repository Secrets:
 
-```bash
-gcloud services enable run.googleapis.com artifactregistry.googleapis.com iamcredentials.googleapis.com
-gcloud artifacts repositories create bookey --repository-format=docker --location=asia-northeast1
-```
+| 키 | 담는 값 |
+|---|---|
+| `EC2_HOST` | EC2 public IP 또는 DNS |
+| `EC2_USER` | 예: `ec2-user` |
+| `EC2_SSH_KEY` | EC2 접속용 private key 전체 내용 |
 
-Workload Identity Federation은 GitHub 저장소와 GCP 서비스 계정을 연결해야 합니다. 배포 서비스 계정에는 최소한 Artifact Registry 쓰기 권한과 Cloud Run 배포 권한을 부여합니다.
+준비할 AWS 리소스:
+
+| 리소스 | 권장 이름 | 비고 |
+|---|---|---|
+| EC2 | `bookey-prod` | Amazon Linux 2023, `t4g.micro`, Docker/Compose 설치 |
+| Elastic IP | `43.200.154.240` | DNS A 레코드 대상 |
+| Security Group | `bookey-ec2-sg` | `80`·`443` 공개, nginx가 내부 `3100`으로 연결 |
+| `/opt/bookey/docker-compose.yml` | 서버 로컬 파일 | `admin` 서비스 정의 |
+
+운영 관리자 주소는 `https://admin.bookey.site`입니다. Google Cloud Run 배포는 제거했고,
+`Deploy to EC2`가 자동 배포를 담당합니다. 빌드·타입 검사·lint를 통과한 소스만 반영하며
+배포 전 이미지·소스를 백업하고 상태 확인 실패 시 이전 버전으로 복구합니다.
