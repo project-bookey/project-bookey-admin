@@ -54,6 +54,8 @@ const NAV: { group: string; items: NavItem[] }[] = [
     items: [
       { href: '/ads', label: '광고 · 공지', cap: 'MANAGE_CONTENT' },
       { href: '/notifications', label: '알림 운영' },
+      { href: '/push', label: '전체 푸시', cap: 'BROADCAST' },
+      { href: '/app-versions', label: '앱 버전 · 점검', cap: 'MANAGE_OPS' },
     ],
   },
   {

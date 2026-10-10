@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
 
 import { useConfirm } from '@/components/Confirm';
+import { ImageUpload } from '@/components/ImageUpload';
 import { Modal } from '@/components/Modal';
 import { QueryState } from '@/components/QueryState';
 import { PageHeader } from '@/components/Shell';
@@ -60,13 +61,22 @@ export default function AdsPage() {
   const kind: BannerKind = params.kind || 'AD';
   const [editing, setEditing] = useState<BannerAdminView | null>(null);
   const [creating, setCreating] = useState(false);
+  const [copying, setCopying] = useState<BannerAdminView | null>(null);
 
   const banners = useQuery({
     queryKey: qk.banners.list(kind),
     queryFn: () => adsApi.list(kind),
   });
 
-  const activeCount = banners.data?.filter((banner) => isActiveNow(banner)).length;
+  const activeCount = banners.data?.filter((banner) => bannerState(banner) === 'LIVE').length;
+
+  const toggle = useMutation({
+    mutationFn: (banner: BannerAdminView) => adsApi.update(banner.id, { ...toUpsert(banner), enabled: !banner.enabled }),
+    onSuccess: (_, banner) => {
+      toast.success(banner.enabled ? '껐습니다.' : '켰습니다.');
+      queryClient.invalidateQueries({ queryKey: qk.banners.all });
+    },
+  });
 
   const remove = async (banner: BannerAdminView) => {
     await confirm({
@@ -122,13 +132,7 @@ export default function AdsPage() {
                 {data.map((banner) => (
                   <tr key={banner.id} className="border-b border-[var(--color-line)] last:border-0">
                     <td className="px-4 py-3">
-                      {isActiveNow(banner) ? (
-                        <Tag tone="accent">노출 중</Tag>
-                      ) : banner.enabled ? (
-                        <Tag tone="warn">대기/종료</Tag>
-                      ) : (
-                        <Tag tone="danger">꺼짐</Tag>
-                      )}
+                      <Tag tone={BANNER_STATE_TONE[bannerState(banner)]}>{BANNER_STATE_LABEL[bannerState(banner)]}</Tag>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
@@ -156,6 +160,12 @@ export default function AdsPage() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex justify-end gap-2">
+                        <Button variant="ghost" disabled={toggle.isPending} onClick={() => toggle.mutate(banner)}>
+                          {banner.enabled ? '끄기' : '켜기'}
+                        </Button>
+                        <Button variant="ghost" onClick={() => setCopying(banner)}>
+                          복제
+                        </Button>
                         <Button variant="outline" onClick={() => setEditing(banner)}>
                           수정
                         </Button>
@@ -173,14 +183,28 @@ export default function AdsPage() {
       </div>
 
       {creating ? <AdDialog kind={kind} onClose={() => setCreating(false)} /> : null}
+      {copying ? <AdDialog kind={copying.kind} copyFrom={copying} onClose={() => setCopying(null)} /> : null}
       {editing ? <AdDialog banner={editing} onClose={() => setEditing(null)} /> : null}
     </>
   );
 }
 
-function AdDialog({ kind, banner, onClose }: { kind?: BannerKind; banner?: BannerAdminView; onClose: () => void }) {
+function AdDialog({ kind, banner, copyFrom, onClose }: {
+  kind?: BannerKind;
+  banner?: BannerAdminView;
+  /** 복제 — 내용을 채워 새로 만든다. 꺼진 채로 시작해 실수로 바로 노출되지 않게 한다. */
+  copyFrom?: BannerAdminView;
+  onClose: () => void;
+}) {
   const queryClient = useQueryClient();
-  const [draft, setDraft] = useState<Draft>(() => (banner ? fromBanner(banner) : emptyDraft()));
+  const [draft, setDraft] = useState<Draft>(() =>
+    banner
+      ? fromBanner(banner)
+      : copyFrom
+        ? { ...fromBanner(copyFrom), title: `${copyFrom.title} (복사)`, enabled: false }
+        : emptyDraft(),
+  );
+  const [imageSize, setImageSize] = useState<{ width?: number; height?: number } | null>(null);
 
   const save = useMutation({
     meta: { inlineError: true },
@@ -204,7 +228,7 @@ function AdDialog({ kind, banner, onClose }: { kind?: BannerKind; banner?: Banne
   return (
     <Modal
       size="xl"
-      eyebrow={banner ? `${TAB_LABEL[banner.kind]} 수정` : `${TAB_LABEL[kind ?? 'AD']} 생성`}
+      eyebrow={banner ? `${TAB_LABEL[banner.kind]} 수정` : copyFrom ? `${TAB_LABEL[copyFrom.kind]} 복제` : `${TAB_LABEL[kind ?? 'AD']} 생성`}
       title={<InlineBoldText text={banner ? banner.title : `새 ${TAB_LABEL[kind ?? 'AD']}`} />}
       busy={save.isPending}
       onClose={onClose}
@@ -233,17 +257,39 @@ function AdDialog({ kind, banner, onClose }: { kind?: BannerKind; banner?: Banne
               onChange={(subtitle) => setDraft({ ...draft, subtitle })}
               placeholder="앱에 표시할 짧은 설명"
             />
-            <Input
-              label="이미지 URL"
-              value={draft.imageUrl}
-              onChange={(e) => setDraft({ ...draft, imageUrl: e.target.value })}
-              placeholder="https://..."
-              hint={
-                isNotice
-                  ? '홈 팝업에 4:5 비율로 꽉 채워 보입니다(권장 1080×1350). 비율이 다르면 가운데를 기준으로 잘립니다. 사진이 있으면 제목·부제는 보이지 않으니 필요한 글자는 사진 안에 넣어 주세요.'
-                  : undefined
-              }
-            />
+            <div className="grid grid-cols-[1fr_auto] items-start gap-2">
+              <Input
+                label="이미지 URL"
+                value={draft.imageUrl}
+                onChange={(e) => {
+                  setDraft({ ...draft, imageUrl: e.target.value });
+                  setImageSize(null);
+                }}
+                placeholder="https://... 또는 오른쪽에서 올리기"
+                hint={
+                  isNotice
+                    ? '홈 팝업에 4:5 비율로 꽉 채워 보입니다(권장 1080×1350). 비율이 다르면 가운데를 기준으로 잘립니다. 사진이 있으면 제목·부제는 보이지 않으니 필요한 글자는 사진 안에 넣어 주세요.'
+                    : undefined
+                }
+              />
+              <div className="pt-[22px]">
+                <ImageUpload
+                  upload={adsApi.uploadImage}
+                  onUploaded={(image) => {
+                    setDraft((current) => ({ ...current, imageUrl: image.url }));
+                    setImageSize({ width: image.width, height: image.height });
+                  }}
+                />
+              </div>
+            </div>
+            {imageSize?.width && imageSize.height ? (
+              <p className="-mt-1 font-mono text-[11px] text-[var(--color-muted)]">
+                올린 이미지 {imageSize.width}×{imageSize.height}
+                {isNotice && Math.abs(imageSize.width / imageSize.height - 0.8) > 0.05
+                  ? ' — 4:5 가 아니라 팝업에서 잘립니다.'
+                  : ''}
+              </p>
+            ) : null}
             <div className="grid grid-cols-2 gap-3">
               <Input
                 label="배경색"
@@ -429,7 +475,41 @@ function toInputDateTime(iso: string): string {
   return new Date(date.getTime() - offsetMs).toISOString().slice(0, 16);
 }
 
-function isActiveNow(banner: BannerAdminView): boolean {
+type BannerState = 'LIVE' | 'SCHEDULED' | 'ENDED' | 'OFF';
+
+const BANNER_STATE_LABEL: Record<BannerState, string> = {
+  LIVE: '노출 중',
+  SCHEDULED: '예약',
+  ENDED: '종료',
+  OFF: '꺼짐',
+};
+
+const BANNER_STATE_TONE: Record<BannerState, 'accent' | 'warn' | 'neutral' | 'danger'> = {
+  LIVE: 'accent',
+  SCHEDULED: 'warn',
+  ENDED: 'neutral',
+  OFF: 'danger',
+};
+
+function bannerState(banner: BannerAdminView): BannerState {
+  if (!banner.enabled) return 'OFF';
   const now = Date.now();
-  return banner.enabled && new Date(banner.startsAt).getTime() <= now && now < new Date(banner.endsAt).getTime();
+  if (now < new Date(banner.startsAt).getTime()) return 'SCHEDULED';
+  if (now >= new Date(banner.endsAt).getTime()) return 'ENDED';
+  return 'LIVE';
+}
+
+function toUpsert(banner: BannerAdminView): BannerUpsertRequest {
+  return {
+    kind: banner.kind,
+    title: banner.title,
+    subtitle: banner.subtitle,
+    imageUrl: banner.imageUrl,
+    bgColor: banner.bgColor,
+    linkUrl: banner.linkUrl,
+    sortOrder: banner.sortOrder,
+    enabled: banner.enabled,
+    startsAt: banner.startsAt,
+    endsAt: banner.endsAt,
+  };
 }

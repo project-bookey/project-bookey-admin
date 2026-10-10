@@ -5,7 +5,7 @@
  * 화면마다 따로 들고 있던 표·색을 여기로 모았다 — 같은 상태가 화면마다 다르게 보이지 않게.
  */
 import type {
-  AdminRole, AdminStatus, BannerKind, ContentAction, ContentType, BookmarkPurchaseStatus, ClubStatus, ConsentKind, DeviceRow, IdentityRow,
+  AdminRole, AdminStatus, BannerKind, ContentAction, ContentType, PushCampaignKind, PushCampaignStatus, BookmarkPurchaseStatus, ClubStatus, ConsentKind, DeviceRow, IdentityRow,
   InquiryCategory, InquiryStatus, ModerationResolution, ModerationSource, ModerationStatus, SanctionType,
   SubscriptionStatus, SubscriptionStore, UserStatus, VerificationLevel, WalletTransactionKind,
 } from './types';
@@ -302,6 +302,48 @@ export const BANNER_KIND_LABEL: Record<BannerKind, string> = {
   NOTICE: '공지',
 };
 
+// ── 앱 버전 · 점검 ───────────────────────────────────────
+export const MAINTENANCE_STATUS_LABEL: Partial<Record<string, string>> = {
+  SCHEDULED: '예정',
+  ACTIVE: '진행 중',
+  ENDED: '끝남',
+  CANCELLED: '취소',
+};
+
+export const MAINTENANCE_STATUS_TONE: Partial<Record<string, Tone>> = {
+  SCHEDULED: 'accent',
+  ACTIVE: 'danger',
+  ENDED: 'neutral',
+  CANCELLED: 'neutral',
+};
+
+// ── 전체 푸시 ───────────────────────────────────────────
+export const PUSH_KINDS: PushCampaignKind[] = ['NOTICE', 'MARKETING'];
+
+export const PUSH_KIND_LABEL: Record<PushCampaignKind, string> = {
+  NOTICE: '서비스 공지',
+  MARKETING: '광고',
+};
+
+export const PUSH_KIND_HINT: Record<PushCampaignKind, string> = {
+  NOTICE: '가입자 모두에게 갑니다. 약관 변경·점검·장애처럼 서비스 안내만 — 이벤트·혜택 홍보는 광고로 보내야 합니다.',
+  MARKETING: '광고성 정보 수신에 동의한 회원에게만, 08–21시에만 갑니다. 제목에 (광고), 본문 끝에 수신 거부 방법이 자동으로 붙습니다.',
+};
+
+export const PUSH_STATUS_LABEL: Record<PushCampaignStatus, string> = {
+  SCHEDULED: '예약',
+  SENDING: '보내는 중',
+  DONE: '완료',
+  CANCELLED: '취소',
+};
+
+export const PUSH_STATUS_TONE: Record<PushCampaignStatus, Tone> = {
+  SCHEDULED: 'accent',
+  SENDING: 'warn',
+  DONE: 'neutral',
+  CANCELLED: 'neutral',
+};
+
 // ── 관리자 ──────────────────────────────────────────────
 export const ADMIN_ROLES: AdminRole[] = ['SUPER_ADMIN', 'OPERATOR', 'SUPPORT', 'VIEWER'];
 
@@ -387,6 +429,14 @@ export const AUDIT_ACTION_LABEL: Partial<Record<string, string>> = {
   HIDE_CONTENT: '콘텐츠 숨김',
   RESTORE_CONTENT: '콘텐츠 복구',
   DELETE_CONTENT: '콘텐츠 삭제',
+  UPDATE_APP_RELEASE: '앱 버전 안내 변경',
+  CREATE_MAINTENANCE: '점검 예고',
+  UPDATE_MAINTENANCE: '점검 일정 수정',
+  CANCEL_MAINTENANCE: '점검 취소',
+  CREATE_PUSH_CAMPAIGN: '전체 푸시 만들기',
+  UPDATE_PUSH_CAMPAIGN: '전체 푸시 수정',
+  CANCEL_PUSH_CAMPAIGN: '전체 푸시 취소',
+  TEST_PUSH_CAMPAIGN: '전체 푸시 테스트 발송',
   CREATE_EDITOR_PICK: '에디터 픽 추가',
   UPDATE_EDITOR_PICK: '에디터 픽 수정',
   DELETE_EDITOR_PICK: '에디터 픽 삭제',

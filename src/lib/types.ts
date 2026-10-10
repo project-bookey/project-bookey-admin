@@ -58,6 +58,24 @@ export type BannerAdminView = Schemas['BannerAdminView'];
 export type BannerUpsertRequest = Schemas['BannerUpsertRequest'];
 export type BannerKind = BannerAdminView['kind'];
 
+export type BannerImageView = Schemas['BannerImageView'];
+
+// ── 앱 버전 · 점검 ───────────────────────────────────────
+export type AppReleaseConfig = Schemas['AppReleaseConfigView'];
+export type AppReleaseConfigRequest = Schemas['AppReleaseConfigRequest'];
+export type DevicePlatform = AppReleaseConfig['platform'];
+export type MaintenanceWindow = Schemas['MaintenanceWindowRow'];
+export type MaintenanceWindowRequest = Schemas['MaintenanceWindowRequest'];
+
+// ── 전체 푸시 ───────────────────────────────────────────
+export type PushCampaignRow = Schemas['PushCampaignRow'];
+export type PushCampaignView = Schemas['PushCampaignView'];
+export type PushCampaignRequest = Schemas['PushCampaignRequest'];
+export type PushTestRequest = Schemas['PushTestRequest'];
+export type PushAudience = Schemas['PushAudienceView'];
+export type PushCampaignKind = PushCampaignRow['kind'];
+export type PushCampaignStatus = PushCampaignRow['status'];
+
 // ── 에디터 픽 ───────────────────────────────────────────
 export type EditorPickView = Schemas['EditorPickView'];
 export type EditorPickCreateRequest = Schemas['EditorPickCreateRequest'];

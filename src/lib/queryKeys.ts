@@ -18,6 +18,17 @@ export const qk = {
     list: (filter: object) => ['payments', 'list', filter] as const,
   },
   admins: ['admins'] as const,
+  appConfig: {
+    all: ['appConfig'] as const,
+    releases: ['appConfig', 'releases'] as const,
+    maintenance: (page: number) => ['appConfig', 'maintenance', page] as const,
+  },
+  push: {
+    all: ['push'] as const,
+    list: (page: number) => ['push', 'list', page] as const,
+    detail: (id: number) => ['push', 'detail', id] as const,
+    audience: (kind: string) => ['push', 'audience', kind] as const,
+  },
   inquiries: {
     all: ['inquiries'] as const,
     list: (filter: object) => ['inquiries', 'list', filter] as const,

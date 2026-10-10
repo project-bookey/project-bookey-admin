@@ -1,10 +1,13 @@
-import { adminApi } from './api';
+import { adminApi, adminUpload } from './api';
 import type {
   AdminProfile, AuditRow, BannerAdminView, BannerKind, BannerUpsertRequest, BookRow, ClubRow, ClubStatus, Dashboard,
   EditorPickCreateRequest, EditorPickUpdateRequest, EditorPickView, TotpSecretView,
   AdminRole, AdminRow, AdminStatus, BookmarkPurchaseRow, BookmarkPurchaseStatus, CreateAdminRequest,
   SubscriptionRow, SubscriptionStore, WalletTransactionRow,
   AbuseReportRow, ContentAction, ContentDetail, ContentRow, ContentType, ModerationDetail,
+  AppReleaseConfig, AppReleaseConfigRequest, BannerImageView, DevicePlatform, MaintenanceWindow,
+  MaintenanceWindowRequest, PushAudience, PushCampaignKind, PushCampaignRequest, PushCampaignRow, PushCampaignView,
+  PushTestRequest,
   FaqAdminView, FaqUpsertRequest, InquiryAdminView, InquiryCategory, InquiryRow, InquiryStatus, LoginResponse,
   ModerationResolution, ModerationRow, ModerationSource, ModerationStatus, NotificationStats,
   OpsFlagRow, Page, ReviewRow, SanctionType, SubscriptionGrantRequest, UpdateBookRequest, UserDetail, UserRow,
@@ -115,6 +118,43 @@ export const adsApi = {
     adminApi<BannerAdminView>(`/admin/v1/banners/${bannerId}`, { method: 'PUT', body }),
   remove: (bannerId: number) =>
     adminApi<void>(`/admin/v1/banners/${bannerId}`, { method: 'DELETE' }),
+  /** 운영 서버 저장소가 꺼져 있으면 503 — 그때는 이미지 URL 을 직접 넣는다. */
+  uploadImage: (file: File) => {
+    const form = new FormData();
+    form.append('file', file);
+    return adminUpload<BannerImageView>('/admin/v1/banners/images', form);
+  },
+};
+
+/** 앱 버전 안내 · 점검 일정 — 바꾸는 것은 최고 관리자만. */
+export const appConfigApi = {
+  releases: () => adminApi<AppReleaseConfig[]>('/admin/v1/app-config'),
+  updateRelease: (platform: DevicePlatform, body: AppReleaseConfigRequest) =>
+    adminApi<AppReleaseConfig>(`/admin/v1/app-config/${platform}`, { method: 'PUT', body }),
+  maintenance: (page = 0) =>
+    adminApi<Page<MaintenanceWindow>>('/admin/v1/maintenance-windows', { query: { page, size: PAGE_SIZE } }),
+  createMaintenance: (body: MaintenanceWindowRequest) =>
+    adminApi<MaintenanceWindow>('/admin/v1/maintenance-windows', { method: 'POST', body }),
+  updateMaintenance: (id: number, body: MaintenanceWindowRequest) =>
+    adminApi<MaintenanceWindow>(`/admin/v1/maintenance-windows/${id}`, { method: 'PUT', body }),
+  cancelMaintenance: (id: number, reason: string) =>
+    adminApi<MaintenanceWindow>(`/admin/v1/maintenance-windows/${id}/cancel`, { method: 'POST', body: { reason } }),
+};
+
+/** 전체 푸시 — 최고 관리자만. 실제 발송은 서버 잡이 1분마다 한다. */
+export const pushApi = {
+  list: (page = 0) => adminApi<Page<PushCampaignRow>>('/admin/v1/push-campaigns', { query: { page, size: PAGE_SIZE } }),
+  detail: (id: number) => adminApi<PushCampaignView>(`/admin/v1/push-campaigns/${id}`),
+  audience: (kind: PushCampaignKind) =>
+    adminApi<PushAudience>('/admin/v1/push-campaigns/audience', { query: { kind } }),
+  create: (body: PushCampaignRequest) =>
+    adminApi<PushCampaignRow>('/admin/v1/push-campaigns', { method: 'POST', body }),
+  update: (id: number, body: PushCampaignRequest) =>
+    adminApi<PushCampaignRow>(`/admin/v1/push-campaigns/${id}`, { method: 'PUT', body }),
+  cancel: (id: number, reason: string) =>
+    adminApi<PushCampaignRow>(`/admin/v1/push-campaigns/${id}/cancel`, { method: 'POST', body: { reason } }),
+  test: (body: PushTestRequest) =>
+    adminApi<{ delivered: number }>('/admin/v1/push-campaigns/test', { method: 'POST', body }),
 };
 
 /** 홈 '추천' 줄(에디터 픽). 비어 있으면 앱은 YES24 베스트셀러를 대신 보여 준다. */

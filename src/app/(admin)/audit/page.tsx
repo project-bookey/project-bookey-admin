@@ -26,10 +26,13 @@ const KNOWN_ACTIONS = Object.keys(AUDIT_ACTION_LABEL);
 
 /** 대상 종류별로 상세 화면이 있으면 그리로 잇는다. */
 function targetHref(row: AuditRow): string | null {
+  if (row.targetType === 'APP_RELEASE') return '/app-versions';
   if (row.targetId === undefined || row.targetId === null) return null;
   if (row.targetType === 'USER') return `/users?id=${row.targetId}`;
   if (row.targetType === 'INQUIRY') return `/inquiries?id=${row.targetId}`;
   if (row.targetType === 'ADMIN') return '/admins';
+  if (row.targetType === 'PUSH_CAMPAIGN') return row.targetId ? `/push?id=${row.targetId}` : '/push';
+  if (row.targetType === 'MAINTENANCE') return '/app-versions';
   if (CONTENT_TYPES.includes(row.targetType as ContentType)) {
     return `/contents?type=${row.targetType}&id=${row.targetId}`;
   }
