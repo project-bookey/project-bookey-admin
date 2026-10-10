@@ -386,7 +386,7 @@ export const ADMIN_ROLE_HINT: Record<AdminRole, string> = {
   SUPER_ADMIN: '모든 기능 · 관리자 계정 · 운영 스위치 · 도서 병합',
   OPERATOR: '신고 처리 · 제재 · 지갑/구독 조정 · 도서 · 광고/공지 · 에디터 픽',
   SUPPORT: '고객문의 · FAQ · 경고 · 결제 내역 열람',
-  VIEWER: '보기만 — 결제 내역은 볼 수 없음',
+  VIEWER: '보기만 — 결제 내역·회원 이메일 전체는 볼 수 없음',
 };
 
 export const ADMIN_STATUS_LABEL: Record<AdminStatus, string> = {

@@ -5369,7 +5369,7 @@ export interface components {
             totpEnabled: boolean;
             /** Format: date-time */
             lastLoginAt?: string;
-            capabilities: ("MODERATE" | "SANCTION" | "WARN" | "HANDLE_SUPPORT" | "EDIT_BOOK" | "MERGE_BOOKS" | "MANAGE_CONTENT" | "MANAGE_OPS" | "MANAGE_ADMINS" | "BROADCAST" | "VIEW_PAYMENTS")[];
+            capabilities: ("MODERATE" | "SANCTION" | "WARN" | "HANDLE_SUPPORT" | "EDIT_BOOK" | "MERGE_BOOKS" | "MANAGE_CONTENT" | "MANAGE_OPS" | "MANAGE_ADMINS" | "BROADCAST" | "VIEW_PAYMENTS" | "VIEW_PII")[];
         };
         LoginRequest: {
             /** Format: email */
