@@ -4,6 +4,7 @@ import type {
   EditorPickCreateRequest, EditorPickUpdateRequest, EditorPickView, TotpSecretView,
   AdminRole, AdminRow, AdminStatus, BookmarkPurchaseRow, BookmarkPurchaseStatus, CreateAdminRequest,
   SubscriptionRow, SubscriptionStore, WalletTransactionRow,
+  AbuseReportRow, ContentAction, ContentDetail, ContentRow, ContentType, ModerationDetail,
   FaqAdminView, FaqUpsertRequest, InquiryAdminView, InquiryCategory, InquiryRow, InquiryStatus, LoginResponse,
   ModerationResolution, ModerationRow, ModerationSource, ModerationStatus, NotificationStats,
   OpsFlagRow, Page, ReviewRow, SanctionType, SubscriptionGrantRequest, UpdateBookRequest, UserDetail, UserRow,
@@ -126,11 +127,33 @@ export const editorPicksApi = {
   remove: (pickId: number) => adminApi<void>(`/admin/v1/editor-picks/${pickId}`, { method: 'DELETE' }),
 };
 
+/** 콘텐츠 검수 — 독후감·리뷰·모임 글·댓글·한줄평. */
+export const contentsApi = {
+  list: (
+    type: ContentType,
+    filter: { userId?: number; bookId?: number; clubId?: number; status?: string; keyword?: string; reportedOnly?: boolean },
+    page = 0,
+  ) =>
+    adminApi<Page<ContentRow>>('/admin/v1/contents', {
+      query: { type, ...filter, reportedOnly: filter.reportedOnly || undefined, page, size: PAGE_SIZE },
+    }),
+  /** 원문 — 열람 기록(VIEW_CONTENT)이 남는다. */
+  detail: (type: ContentType, id: number) => adminApi<ContentDetail>(`/admin/v1/contents/${type}/${id}`),
+  /** 숨김·복구·삭제. 열린 신고도 함께 처리된다. */
+  act: (type: ContentType, id: number, action: ContentAction, reason: string) =>
+    adminApi<void>(`/admin/v1/contents/${type}/${id}/actions`, { method: 'POST', body: { action, reason } }),
+};
+
 export const moderationApi = {
   queue: (status?: ModerationStatus, sourceType?: ModerationSource, page = 0) =>
     adminApi<Page<ModerationRow>>('/admin/v1/moderation', {
       query: { status, sourceType, page, size: PAGE_SIZE },
     }),
+  /** 신고 상세 — 신고자·사유·원문·작성자 제재 이력. 열람 기록(VIEW_MODERATION)이 남는다. */
+  detail: (ticketId: number) => adminApi<ModerationDetail>(`/admin/v1/moderation/${ticketId}`),
+  /** 한 회원이 신고한 내역. */
+  reportsBy: (reporterId: number, page = 0) =>
+    adminApi<Page<AbuseReportRow>>('/admin/v1/abuse-reports', { query: { reporterId, page, size: PAGE_SIZE } }),
   assign: (ticketId: number) =>
     adminApi<void>(`/admin/v1/moderation/${ticketId}/assign`, { method: 'POST' }),
   resolve: (
@@ -179,8 +202,14 @@ export const faqsApi = {
 };
 
 export const reviewsApi = {
-  list: (bookId?: number, page = 0) =>
-    adminApi<Page<ReviewRow>>('/admin/v1/reviews', { query: { bookId, page, size: PAGE_SIZE } }),
+  /** 숨김·삭제 리뷰까지 모두 최근 순. */
+  list: (
+    filter: { bookId?: number; userId?: number; status?: string; verificationLevel?: VerificationLevel; reportedOnly?: boolean },
+    page = 0,
+  ) =>
+    adminApi<Page<ReviewRow>>('/admin/v1/reviews', {
+      query: { ...filter, reportedOnly: filter.reportedOnly || undefined, page, size: PAGE_SIZE },
+    }),
   overrideVerification: (reviewId: number, level: VerificationLevel, reason: string) =>
     adminApi<void>(`/admin/v1/reviews/${reviewId}/verification`, {
       method: 'POST',

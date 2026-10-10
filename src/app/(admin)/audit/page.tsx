@@ -6,9 +6,9 @@ import { Fragment, useState } from 'react';
 
 import { auditApi } from '@/lib/endpoints';
 import { formatDateTime } from '@/lib/format';
-import { AUDIT_ACTION_LABEL, auditActionLabel } from '@/lib/labels';
+import { AUDIT_ACTION_LABEL, CONTENT_TYPES, auditActionLabel } from '@/lib/labels';
 import { qk } from '@/lib/queryKeys';
-import type { AuditRow } from '@/lib/types';
+import type { AuditRow, ContentType } from '@/lib/types';
 import { param, useListParams } from '@/lib/useListParams';
 import { useMe } from '@/lib/useMe';
 import { QueryState } from '@/components/QueryState';
@@ -30,6 +30,9 @@ function targetHref(row: AuditRow): string | null {
   if (row.targetType === 'USER') return `/users?id=${row.targetId}`;
   if (row.targetType === 'INQUIRY') return `/inquiries?id=${row.targetId}`;
   if (row.targetType === 'ADMIN') return '/admins';
+  if (CONTENT_TYPES.includes(row.targetType as ContentType)) {
+    return `/contents?type=${row.targetType}&id=${row.targetId}`;
+  }
   return null;
 }
 

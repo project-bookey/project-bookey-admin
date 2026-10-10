@@ -29,6 +29,7 @@ const NAV: { group: string; items: NavItem[] }[] = [
     items: [
       { href: '/moderation', label: '신고 큐', badge: 'pendingModeration' },
       { href: '/inquiries', label: '고객문의', badge: 'waitingInquiries' },
+      { href: '/contents', label: '콘텐츠 검수' },
     ],
   },
   {
