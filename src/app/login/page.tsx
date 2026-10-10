@@ -8,7 +8,7 @@ import { AdminApiError, setToken } from '@/lib/api';
 import { authApi } from '@/lib/endpoints';
 import { Button, Card, Input } from '@/components/ui';
 
-/** 관리자 로그인 — 서비스 계정과 분리된 이메일·비밀번호 + 2FA (§F13). */
+/** 관리자 로그인 — 서비스 계정과 분리된 이메일·비밀번호 + 2FA (§F13).123 */
 export default function LoginPage() {
   const router = useRouter();
   // 로컬 시드 계정은 개발 빌드에서만 미리 채운다 — 운영 화면에 계정 이름을 노출하지 않게.
